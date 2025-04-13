@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://seekengine.vercel.app/sitemap.xml

@@ -50,8 +50,10 @@ export default function Home() {
     return (
         <div className="flex flex-col justify-center h-screen items-center dark:bg-gray-900 bg-opacity-25">
             <Head>
-                <title>SeekEngine</title>
-                <meta name="description" content="Hosting your own search engine has never been easier." />
+                <title>SeekEngine - Fast Search for the Web</title>
+                <meta name="description" content="SeekEngine helps you discover the web quickly and smartly."/>
+                <meta name="robots" content="index, follow" />
+                <meta name="google-site-verification" content="2xKyyjae3sX5nWj0YdT0GG7E8Icsnu6ezopI_AboH6k" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 

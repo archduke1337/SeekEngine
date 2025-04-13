@@ -2,7 +2,8 @@ import Head from "next/head";
 import Header from "../components/Header";
 import { API_KEY, CONTEXT_KEY } from "../keys";
 import { useRouter } from "next/router";
-import SearchResults from "../components/SearchResults";
+import SearchResults from "../components/SearchResults"
+import Footer from "../components/Footer";
 
 function Search({ results }) {
     const router = useRouter();

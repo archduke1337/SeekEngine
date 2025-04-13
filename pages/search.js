@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Header from "../components/Header";
 import { API_KEY, CONTEXT_KEY } from "../keys";
-
 import { useRouter } from "next/router";
 import SearchResults from "../components/SearchResults";
 
@@ -26,11 +25,10 @@ function Search({ results }) {
 export default Search;
 
 export async function getServerSideProps(context) {
-    const useDummyData = false; // Toggle for local testing
     const startIndex = context.query.start || "0";
     const { term } = context.query;
 
-    // Early exit if no term is provided
+    // Early exit if no search term is provided
     if (!term) {
         return {
             props: {
@@ -40,11 +38,9 @@ export async function getServerSideProps(context) {
     }
 
     try {
-        const data = useDummyData
-            ? Response
-            : await fetch(
-                  `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${term}&start=${startIndex}`
-              ).then((res) => res.json());
+        const data = await fetch(
+            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${term}&start=${startIndex}`
+        ).then((res) => res.json());
 
         return {
             props: {

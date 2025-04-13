@@ -28,12 +28,9 @@ export default function Home() {
     const teleport = (e) => {
         e.preventDefault();
         const urlarray = [
-            "google.com",
             "https://www.instagram.com/shrest.xd/",
             "https://www.instagram.com/exeivglobal/",
-            "https://github.com/Shrestt",
-            "instagram.com",
-            "nextjs.org"
+            "https://github.com/Shrestt"
         ];
 
         if (urlarray.length === 0) {

@@ -31,7 +31,6 @@ export default function Home() {
 
     const teleport = () => {
         const urls = [
-            'https://instagram.com/shrest.xd/',
             'https://instagram.com/exeivglobal/',
             'https://github.com/Shrestt',
         ];
@@ -53,24 +52,24 @@ export default function Home() {
             <header className="flex w-full p-5 justify-between text-sm text-gray-700 dark:text-white">
                 <div className="flex space-x-4 items-center">
                     <a
-                        href="https://instagram.com/shrest.xd"
+                        href="https://shresth-dev.vercel.app"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Instagram profile"
-                        title="Shrest's Instagram"
+                        aria-label="Dev profile"
+                        title="Shrest"
                     >
-                        <p className="link">Instagram (Contact)</p>
+                        <p className="link">Dev (Contact)</p>
                     </a>
                 </div>
                 <div className="flex space-x-4 items-center">
                     <a
-                        href="https://shortl.it"
+                        href="https://exeiv.vercel.app"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="URL shortener"
                         title="Use shortl.it"
                     >
-                        <p className="link">shortl.it</p>
+                        <p className="link">Exeiv</p>
                     </a>
                 </div>
             </header>

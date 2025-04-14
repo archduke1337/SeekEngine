@@ -65,7 +65,7 @@ export default function Home() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Visit Instagram profile"
-                        title="Visit Shrest's Instagram"
+                        title="Shrest's Instagram"
                     >
                         <p className="link">Instagram (Contact)</p>
                     </a>

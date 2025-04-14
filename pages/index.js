@@ -51,7 +51,7 @@ export default function Home() {
         <div className="flex flex-col justify-center h-screen items-center dark:bg-gray-900 bg-opacity-25">
             <Head>
                 <title>SeekEngine - Fast Search for the Web</title>
-                <meta name="description" content="SeekEngine helps you discover the web quickly and smartly."/>
+                <meta name="description" content="SeekEngine helps you discover the web quickly and smartly." />
                 <meta name="robots" content="index, follow" />
                 <meta name="google-site-verification" content="2xKyyjae3sX5nWj0YdT0GG7E8Icsnu6ezopI_AboH6k" />
                 <link rel="icon" href="/favicon.ico" />
@@ -60,11 +60,40 @@ export default function Home() {
             {/* Header */}
             <header className="flex w-full p-5 justify-between text-sm text-gray-700 dark:text-white">
                 <div className="flex space-x-4 items-center">
-                    <a href="https://instagram.com" aria-label="Contact"><p className="link">Contact</p></a>
-                    <a href="https://github.com/" aria-label="GitHub"><p className="link">GitHub</p></a>
+                    <a
+                        href="https://instagram.com/shrest.xd"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Visit Instagram profile"
+                        title="Visit Shrest's Instagram"
+                    >
+                        <p className="link">Instagram (Contact)</p>
+                    </a>
+
+                    {/* Uncomment this block if you want to display GitHub link */}
+                    {/*
+                    <a
+                        href="https://github.com/Shrestt"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="View GitHub repository"
+                        title="Check out the code on GitHub"
+                    >
+                        <p className="link">GitHub</p>
+                    </a>
+                    */}
                 </div>
+
                 <div className="flex space-x-4 items-center">
-                    <a href="https://shortl.it" aria-label="Shorten URLs"><p className="link">shortl.it</p></a>
+                    <a
+                        href="https://shortl.it"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="URL Shortener Tool"
+                        title="Visit shortl.it to shorten URLs"
+                    >
+                        <p className="link">shortl.it</p>
+                    </a>
                 </div>
             </header>
 
@@ -92,10 +121,12 @@ export default function Home() {
                 </div>
             </form>
 
+            {/* What's New Banner */}
             <div className="text-center py-4 lg:px-4">
                 <div
                     className="p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex"
-                    role="alert">
+                    role="alert"
+                >
                     <span className="flex rounded-full bg-indigo-500 uppercase px-2 py-1 text-xs font-bold mr-3">What's new</span>
                     <span className="font-semibold mr-2 text-left flex-auto">Teleport me Button works now</span>
                 </div>

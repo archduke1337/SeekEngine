@@ -2,12 +2,19 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { SearchIcon } from '@heroicons/react/outline';
 import Footer from "../components/Footer";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 export default function Home() {
     const router = useRouter();
     const searchInputRef = useRef(null);
+
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://cse.google.com/cse.js?cx=6461d3417b8d54278";
+        script.async = true;
+        document.body.appendChild(script);
+    }, []);
 
     const search = (e) => {
         e.preventDefault();
@@ -41,10 +48,7 @@ export default function Home() {
         const i = Math.floor(Math.random() * urlarray.length);
         const selectedUrl = "https://" + urlarray[i];
 
-        router.push(selectedUrl).catch((error) => {
-            console.error("Failed to navigate:", error);
-            alert("An error occurred while trying to teleport. Please try again.");
-        });
+        window.open(selectedUrl, "_blank");
     };
 
     return (
@@ -69,19 +73,6 @@ export default function Home() {
                     >
                         <p className="link">Instagram (Contact)</p>
                     </a>
-
-                    {/* Uncomment this block if you want to display GitHub link */}
-                    {/*
-                    <a
-                        href="https://github.com/Shrestt"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="View GitHub repository"
-                        title="Check out the code on GitHub"
-                    >
-                        <p className="link">GitHub</p>
-                    </a>
-                    */}
                 </div>
 
                 <div className="flex space-x-4 items-center">
@@ -105,10 +96,9 @@ export default function Home() {
                     width={400}
                     alt="SeekEngine Logo"
                 />
-                        <script async src="https://cse.google.com/cse.js?cx=6461d3417b8d54278">
-</script>
-<div class="gcse-search"></div>
-                        
+
+                <div className="gcse-search mt-5" />
+
                 <div className="flex w-full mt-5 hover:shadow-lg focus-within:shadow-lg max-w-md rounded-full border border-gray-200 px-5 py-3 items-center sm:max-w-xl lg:max-w-2xl">
                     <SearchIcon className="h-5 mr-3 text-gray-500 dark:text-gray-300" />
                     <input
@@ -120,17 +110,14 @@ export default function Home() {
                     />
                 </div>
                 <div className="flex flex-col w-1/2 space-y-2 justify-center mt-8 sm:space-y-0 sm:flex-row sm:space-x-4">
-                    <button type="button" onClick={search} className="btn dark:bg-gray-800 dark:text-white">Search</button>
+                    <button type="submit" className="btn dark:bg-gray-800 dark:text-white">Search</button>
                     <button type="button" onClick={teleport} className="btn dark:bg-gray-800 dark:text-white">Teleport me</button>
                 </div>
             </form>
 
             {/* What's New Banner */}
             <div className="text-center py-4 lg:px-4">
-                <div
-                    className="p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex"
-                    role="alert"
-                >
+                <div className="p-2 bg-indigo-800 items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex" role="alert">
                     <span className="flex rounded-full bg-indigo-500 uppercase px-2 py-1 text-xs font-bold mr-3">What's new</span>
                     <span className="font-semibold mr-2 text-left flex-auto">Teleport me Button works now</span>
                 </div>

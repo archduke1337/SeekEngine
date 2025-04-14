@@ -52,8 +52,8 @@ export default function Home() {
             <Head>
                 <title>SeekEngine - Fast Search for the Web</title>
                 <meta name="description" content="SeekEngine helps you discover the web quickly and smartly." />
-                <meta name="robots" content="index, follow" />
                 <meta name="google-site-verification" content="2xKyyjae3sX5nWj0YdT0GG7E8Icsnu6ezopI_AboH6k" />
+                <meta name="robots" content="index, follow" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
@@ -105,6 +105,10 @@ export default function Home() {
                     width={400}
                     alt="SeekEngine Logo"
                 />
+                        <script async src="https://cse.google.com/cse.js?cx=6461d3417b8d54278">
+</script>
+<div class="gcse-search"></div>
+                        
                 <div className="flex w-full mt-5 hover:shadow-lg focus-within:shadow-lg max-w-md rounded-full border border-gray-200 px-5 py-3 items-center sm:max-w-xl lg:max-w-2xl">
                     <SearchIcon className="h-5 mr-3 text-gray-500 dark:text-gray-300" />
                     <input

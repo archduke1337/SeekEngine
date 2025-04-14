@@ -54,6 +54,7 @@ export default function Home() {
                 <meta name="description" content="SeekEngine helps you discover the web quickly and smartly."/>
                 <meta name="robots" content="index, follow" />
                 <meta name="google-site-verification" content="2xKyyjae3sX5nWj0YdT0GG7E8Icsnu6ezopI_AboH6k" />
+                <meta name="msvalidate.01" content="0D3BCCADCB7DBCCC697503E45F850794" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 

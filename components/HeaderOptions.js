@@ -13,7 +13,7 @@ function HeaderOptions() {
     const [selectedOption, setSelectedOption] = useState("All");
 
     const handleOptionClick = (option) => {
-        setSelectedOption(option);
+        setSelectedOption(option);  // Update the selected state
     };
 
     return (
@@ -60,10 +60,18 @@ function HeaderOptions() {
 
             {/* Right Options */}
             <div className="flex space-x-4 py-2">
-                <button className="link cursor-pointer hover:underline focus:outline-none" aria-label="Settings">
+                <button
+                    className="link cursor-pointer hover:underline focus:outline-none"
+                    aria-label="Settings"
+                    onClick={() => alert('Settings clicked!')} // Example onClick for settings
+                >
                     Settings
                 </button>
-                <button className="link cursor-pointer hover:underline focus:outline-none" aria-label="Tools">
+                <button
+                    className="link cursor-pointer hover:underline focus:outline-none"
+                    aria-label="Tools"
+                    onClick={() => alert('Tools clicked!')} // Example onClick for tools
+                >
                     Tools
                 </button>
             </div>

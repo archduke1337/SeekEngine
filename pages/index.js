@@ -1,17 +1,18 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import { SearchIcon } from '@heroicons/react/outline';
 import Footer from '../components/Footer';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import Button from '../components/Button';
 
 export default function Home() {
     const router = useRouter();
     const searchInputRef = useRef(null);
     const [loading, setLoading] = useState(false);
+    const [teleporting, setTeleporting] = useState(false);
 
     const handleSearch = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent form from refreshing the page
         const term = searchInputRef.current?.value.trim();
 
         if (!term) {
@@ -22,8 +23,9 @@ export default function Home() {
         try {
             setLoading(true);
             const encodedTerm = encodeURIComponent(term);
-            await router.push(`/search?term=${encodedTerm}`);
-            searchInputRef.current.value = '';
+            await router.push(`/search?term=${encodedTerm}`); // Navigate to search page
+            searchInputRef.current.value = ''; // Clear input after search
+            searchInputRef.current.focus(); // Focus input again
         } catch (error) {
             console.error('Navigation error:', error);
             alert('Something went wrong. Please try again.');
@@ -32,13 +34,23 @@ export default function Home() {
         }
     };
 
+    // Function to handle teleportation (random URL navigation)
     const teleport = () => {
         const urls = [
             'https://instagram.com/exeivglobal/',
             'https://github.com/Shrestt',
         ];
         const randomUrl = urls[Math.floor(Math.random() * urls.length)];
-        window.open(randomUrl, '_blank', 'noopener,noreferrer');
+
+        try {
+            setTeleporting(true); // Disable teleport button while it's happening
+            window.open(randomUrl, '_blank', 'noopener,noreferrer');
+        } catch (error) {
+            console.error('Teleport error:', error);
+            alert('Failed to open the link. Please try again.');
+        } finally {
+            setTeleporting(false); // Re-enable button after teleportation
+        }
     };
 
     return (
@@ -84,8 +96,9 @@ export default function Home() {
             <main className="flex flex-col items-center mt-32 w-4/5 flex-grow">
                 <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6 drop-shadow-lg">SeekEngine</h1>
 
+                {/* Search Form */}
                 <form
-                    onSubmit={handleSearch}
+                    onSubmit={handleSearch}  // Only handle search on form submit
                     className="flex w-full max-w-2xl rounded-full border border-gray-200 dark:border-gray-700 px-5 py-3 items-center hover:shadow-lg focus-within:shadow-lg transition-shadow duration-300 bg-white dark:bg-gray-800"
                 >
                     <SearchIcon className="h-5 w-5 mr-3 text-gray-500 dark:text-gray-300" />
@@ -98,22 +111,14 @@ export default function Home() {
                     />
                 </form>
 
+                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row w-full justify-center mt-6 space-y-3 sm:space-y-0 sm:space-x-4 max-w-md">
-                    <button
-                        type="submit"
-                        onClick={handleSearch}
-                        disabled={loading}
-                        className="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition disabled:opacity-50"
-                    >
-                        {loading ? 'Searching...' : 'Search'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={teleport}
-                        className="btn bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md transition"
-                    >
+                    <Button onClick={handleSearch} isLoading={loading} disabled={loading}>
+                        Search
+                    </Button>
+                    <Button onClick={teleport} isLoading={teleporting} disabled={teleporting}>
                         Teleport Me
-                    </button>
+                    </Button>
                 </div>
             </main>
 
@@ -125,6 +130,7 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Footer */}
             <Footer />
         </div>
     );

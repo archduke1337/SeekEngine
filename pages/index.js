@@ -2,14 +2,15 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { SearchIcon } from '@heroicons/react/outline';
 import Footer from '../components/Footer';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
 export default function Home() {
     const router = useRouter();
     const searchInputRef = useRef(null);
+    const [loading, setLoading] = useState(false);
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
         const term = searchInputRef.current?.value.trim();
 
@@ -18,15 +19,17 @@ export default function Home() {
             return;
         }
 
-        const encodedTerm = encodeURIComponent(term);
-        router.push(`/search?term=${encodedTerm}`)
-            .then(() => {
-                searchInputRef.current.value = '';
-            })
-            .catch((error) => {
-                console.error('Navigation error:', error);
-                alert('Something went wrong. Please try again.');
-            });
+        try {
+            setLoading(true);
+            const encodedTerm = encodeURIComponent(term);
+            await router.push(`/search?term=${encodedTerm}`);
+            searchInputRef.current.value = '';
+        } catch (error) {
+            console.error('Navigation error:', error);
+            alert('Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const teleport = () => {
@@ -34,17 +37,20 @@ export default function Home() {
             'https://instagram.com/exeivglobal/',
             'https://github.com/Shrestt',
         ];
-
         const randomUrl = urls[Math.floor(Math.random() * urls.length)];
         window.open(randomUrl, '_blank', 'noopener,noreferrer');
     };
 
     return (
-        <div className="flex flex-col justify-center min-h-screen items-center dark:bg-gray-900 bg-opacity-25">
+        <div className="flex flex-col justify-center min-h-screen items-center bg-white dark:bg-gray-900 transition-colors duration-300">
             <Head>
                 <title>SeekEngine - Fast Search for the Web</title>
                 <meta name="description" content="SeekEngine helps you discover the web quickly and smartly." />
                 <meta name="robots" content="index, follow" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta property="og:title" content="SeekEngine" />
+                <meta property="og:description" content="Fast and intuitive search experience." />
+                <meta property="og:type" content="website" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
@@ -55,10 +61,10 @@ export default function Home() {
                         href="https://shresth-dev.vercel.app"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Dev profile"
-                        title="Shrest"
+                        title="Developer Portfolio"
+                        className="hover:underline"
                     >
-                        <p className="link">Dev (Contact)</p>
+                        Dev (Contact)
                     </a>
                 </div>
                 <div className="flex space-x-4 items-center">
@@ -66,23 +72,23 @@ export default function Home() {
                         href="https://exeiv.vercel.app"
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="URL shortener"
-                        title="Use shortl.it"
+                        title="Exeiv URL shortener"
+                        className="hover:underline"
                     >
-                        <p className="link">Exeiv</p>
+                        Exeiv
                     </a>
                 </div>
             </header>
 
-            {/* Body */}
+            {/* Main Content */}
             <main className="flex flex-col items-center mt-32 w-4/5 flex-grow">
-                <h1 className="text-4xl font-bold text-white mb-6 drop-shadow-lg">SeekEngine</h1>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6 drop-shadow-lg">SeekEngine</h1>
 
                 <form
                     onSubmit={handleSearch}
-                    className="flex w-full mt-4 max-w-2xl rounded-full border border-gray-200 px-5 py-3 items-center hover:shadow-lg focus-within:shadow-lg"
+                    className="flex w-full max-w-2xl rounded-full border border-gray-200 dark:border-gray-700 px-5 py-3 items-center hover:shadow-lg focus-within:shadow-lg transition-shadow duration-300 bg-white dark:bg-gray-800"
                 >
-                    <SearchIcon className="h-5 mr-3 text-gray-500 dark:text-gray-300" />
+                    <SearchIcon className="h-5 w-5 mr-3 text-gray-500 dark:text-gray-300" />
                     <input
                         ref={searchInputRef}
                         type="text"
@@ -96,14 +102,15 @@ export default function Home() {
                     <button
                         type="submit"
                         onClick={handleSearch}
-                        className="btn dark:bg-gray-800 dark:text-white"
+                        disabled={loading}
+                        className="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition disabled:opacity-50"
                     >
-                        Search
+                        {loading ? 'Searching...' : 'Search'}
                     </button>
                     <button
                         type="button"
                         onClick={teleport}
-                        className="btn dark:bg-gray-800 dark:text-white"
+                        className="btn bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md transition"
                     >
                         Teleport Me
                     </button>
@@ -114,11 +121,11 @@ export default function Home() {
             <section className="text-center py-4 lg:px-4">
                 <div className="p-2 bg-indigo-800 text-indigo-100 rounded-lg inline-flex items-center" role="alert">
                     <span className="bg-indigo-500 uppercase px-2 py-1 text-xs font-bold rounded-full mr-3">What's new</span>
-                    <span className="font-semibold">Teleport me button works now!</span>
+                    <span className="font-semibold">The “Teleport Me” button works now!</span>
                 </div>
             </section>
 
             <Footer />
         </div>
     );
-                            }
+}

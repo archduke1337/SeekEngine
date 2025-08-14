@@ -5,7 +5,7 @@ function Footer() {
         <footer className="grid w-full divide-y divide-gray-300 bg-gray-100 text-sm text-gray-400 dark:bg-gray-800">
             {/* Top section */}
             <div className="px-8 py-3">
-                <p>SeekEngine 1.2</p>
+                <p>SeekEngine 0.1</p>
             </div>
 
             {/* Bottom section */}
@@ -13,7 +13,7 @@ function Footer() {
                 {/* Centered globe info */}
                 <div className="flex justify-center items-center md:col-span-2 lg:col-span-1 lg:col-start-2 text-center">
                     <GlobeIcon className="h-5 mr-1 text-green-700" />
-                    <span>Powered with Next.js & Google Search API by Shresth Yadav</span>
+                    <span>Powered with Next.js & Google Search API by Gaurav Yadav</span>
                 </div>
 
                 {/* Report link */}

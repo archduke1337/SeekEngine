@@ -1,7 +1,7 @@
 import Head from 'next/head';
-import { SearchIcon } from '@heroicons/react/outline';
+import { SearchIcon, MoonIcon, SunIcon, DesktopComputerIcon, XIcon } from '@heroicons/react/outline';
 import Footer from '../components/Footer';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Button from '../components/Button';
 
@@ -11,6 +11,28 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [teleporting, setTeleporting] = useState(false);
   const [error, setError] = useState(null);
+  const [theme, setTheme] = useState('system');
+  const [showBanner, setShowBanner] = useState(true);
+
+  // Theme handling
+  useEffect(() => {
+    // Get stored theme or default to system
+    const storedTheme = localStorage.getItem('theme') || 'system';
+    setTheme(storedTheme);
+    document.documentElement.classList.add('theme-transition');
+    
+    const handleTheme = () => {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && isDark));
+    };
+
+    handleTheme();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleTheme);
+    
+    return () => {
+      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', handleTheme);
+    };
+  }, [theme]);
 
   const handleSearch = async (e) => {
     e.preventDefault(); // Prevent form from refreshing the page
@@ -78,7 +100,7 @@ export default function Home() {
       </Head>
 
       {/* Header */}
-      <header className="w-full px-6 py-4">
+      <header className="w-full px-6 py-4 animate-fadeIn">
         <nav className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex space-x-6 items-center">
             <a
@@ -91,7 +113,48 @@ export default function Home() {
               Dev
             </a>
           </div>
-          <div className="flex space-x-6 items-center">
+          <div className="flex items-center space-x-4">
+            <div className="glass p-1 rounded-lg flex items-center space-x-1" role="radiogroup" aria-label="Theme selection">
+              <button
+                onClick={() => {
+                  setTheme('light');
+                  localStorage.setItem('theme', 'light');
+                }}
+                className={`p-2 rounded-md transition-colors ${
+                  theme === 'light' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'
+                }`}
+                aria-label="Light theme"
+                aria-pressed={theme === 'light'}
+              >
+                <SunIcon className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => {
+                  setTheme('dark');
+                  localStorage.setItem('theme', 'dark');
+                }}
+                className={`p-2 rounded-md transition-colors ${
+                  theme === 'dark' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'
+                }`}
+                aria-label="Dark theme"
+                aria-pressed={theme === 'dark'}
+              >
+                <MoonIcon className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => {
+                  setTheme('system');
+                  localStorage.setItem('theme', 'system');
+                }}
+                className={`p-2 rounded-md transition-colors ${
+                  theme === 'system' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'
+                }`}
+                aria-label="System theme"
+                aria-pressed={theme === 'system'}
+              >
+                <ComputerDesktopIcon className="h-5 w-5" />
+              </button>
+            </div>
             <a
               href="https://exeiv.vercel.app"
               target="_blank"
@@ -108,7 +171,27 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-grow container mx-auto px-4 py-16 max-w-5xl">
         <div className="flex flex-col items-center space-y-12">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-center leading-tight">
+          {showBanner && (
+            <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2">
+              <div className="glass py-3 px-6 flex items-center space-x-4">
+                <span className="bg-[var(--primary)] text-white text-xs font-bold px-2 py-1 rounded-full">
+                  NEW
+                </span>
+                <span className="text-[var(--text-primary)]">
+                  Introducing Teleport - Jump to interesting places!
+                </span>
+                <button
+                  onClick={() => setShowBanner(false)}
+                  className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                  aria-label="Dismiss banner"
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <h1 className="text-5xl md:text-6xl font-extrabold text-center leading-tight animate-fadeIn">
             SeekEngine
           </h1>
 

@@ -4,14 +4,14 @@
 
 :root {
   /* Color Scheme */
-  --primary-bg: #111827; /* Darker but not too deep */
-  --surface: #1f2937;
-  --surface-lighter: #374151;
-  --accent: #2563eb;
-  --accent-light: #3b82f6;
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #60a5fa;
+  --primary-bg: #1e293b; /* Lighter slate background */
+  --surface: #334155;
+  --surface-lighter: #475569;
+  --accent: #4c51bf; /* Indigo-600 */
+  --accent-light: #6366f1;
+  --primary: #4c51bf;
+  --primary-dark: #4338ca;
+  --primary-light: #818cf8;
   --secondary: #8b5cf6;
   --secondary-light: #a78bfa;
   
@@ -52,6 +52,15 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Theme transition */
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *:before,
+  html.theme-transition *:after {
+    transition: all 0.3s ease-in-out !important;
+    transition-delay: 0 !important;
   }
 
   body {

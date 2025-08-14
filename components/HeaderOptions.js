@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import HeaderOption from "./HeaderOption";
 import {
-    DotsVerticalIcon,
+    EllipsisVerticalIcon as DotsVerticalIcon,
     MapIcon,
     NewspaperIcon,
-    PhotographIcon,
+    PhotoIcon as PhotographIcon,
     PlayIcon,
-    SearchIcon,
-} from "@heroicons/react/outline";
+    MagnifyingGlassIcon as SearchIcon,
+} from "@heroicons/react/24/outline";
 
 function HeaderOptions() {
     const [selectedOption, setSelectedOption] = useState("All");

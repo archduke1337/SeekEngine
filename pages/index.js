@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { MagnifyingGlassIcon as SearchIcon, MoonIcon, SunIcon, ComputerDesktopIcon, XMarkIcon as XIcon } from '@heroicons/react/24/outline';
+import { SearchIcon, MoonIcon, SunIcon, DesktopComputerIcon, XIcon } from '@heroicons/react/outline';
 import Footer from '../components/Footer';
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -152,7 +152,7 @@ export default function Home() {
                 aria-label="System theme"
                 aria-pressed={theme === 'system'}
               >
-                <ComputerDesktopIcon className="h-5 w-5" />
+                <DesktopComputerIcon className="h-5 w-5" />
               </button>
             </div>
             <a

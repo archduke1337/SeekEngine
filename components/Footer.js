@@ -5,7 +5,7 @@ function Footer() {
         <footer className="grid w-full divide-y divide-gray-300 bg-gray-100 text-sm text-gray-400 dark:bg-gray-800">
             {/* Top section */}
             <div className="px-8 py-3">
-                <p>SeekEngine 1.2</p>
+                <p>SeekEngine</p>
             </div>
 
             {/* Bottom section */}

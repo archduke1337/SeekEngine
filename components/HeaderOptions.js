@@ -17,7 +17,7 @@ function HeaderOptions() {
     };
 
     return (
-        <div className="flex w-full flex-col sm:flex-row justify-between items-center text-gray-700 dark:text-gray-300 text-sm lg:text-base border-b px-4 lg:pl-52">
+        <div className="flex w-full flex-col sm:flex-row justify-between items-center text-[var(--text-secondary)] text-sm lg:text-base border-b border-[var(--border)] px-4 lg:pl-52">
             {/* Left Options */}
             <div className="flex flex-wrap justify-center sm:justify-start space-x-6 lg:space-x-10 py-2">
                 <HeaderOption
@@ -61,16 +61,16 @@ function HeaderOptions() {
             {/* Right Options */}
             <div className="flex space-x-4 py-2">
                 <button
-                    className="link cursor-pointer hover:underline focus:outline-none"
+                    className="glass px-4 py-2 text-[var(--text-primary)] hover:bg-[var(--accent)] transition-all duration-200"
                     aria-label="Settings"
-                    onClick={() => alert('Settings clicked!')} // Example onClick for settings
+                    onClick={() => alert('Settings clicked!')}
                 >
                     Settings
                 </button>
                 <button
-                    className="link cursor-pointer hover:underline focus:outline-none"
+                    className="glass px-4 py-2 text-[var(--text-primary)] hover:bg-[var(--accent)] transition-all duration-200"
                     aria-label="Tools"
-                    onClick={() => alert('Tools clicked!')} // Example onClick for tools
+                    onClick={() => alert('Tools clicked!')}
                 >
                     Tools
                 </button>

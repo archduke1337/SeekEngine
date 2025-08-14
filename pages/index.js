@@ -14,7 +14,12 @@ export default function Home() {
 
   const handleSearch = async (e) => {
     e.preventDefault(); // Prevent form from refreshing the page
-    const term = searchInputRef.current?.value.trim();
+    
+    if (!searchInputRef.current) {
+      return;
+    }
+
+    const term = searchInputRef.current.value.trim();
 
     if (!term) {
       setError('Please enter a search term.');
@@ -25,12 +30,13 @@ export default function Home() {
       setLoading(true);
       setError(null);
       const encodedTerm = encodeURIComponent(term);
-      await router.push(`/search?term=${encodedTerm}`); // Navigate to search page
-      searchInputRef.current.value = ''; // Clear input after search
-      searchInputRef.current.focus(); // Focus input again
+      await router.push(`/search?term=${encodedTerm}`);
     } catch (error) {
       console.error('Navigation error:', error);
       setError('Something went wrong. Please try again.');
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
     } finally {
       setLoading(false);
     }
@@ -57,83 +63,112 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col justify-between min-h-screen items-center bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-[var(--primary-bg)]">
       <Head>
-        <title>SeekEngine - Fast Search for the Web</title>
-        <meta name="description" content="SeekEngine helps you discover the web quickly and smartly." />
+        <title>SeekEngine - Smart Web Search</title>
+        <meta name="description" content="SeekEngine - A modern, fast, and intelligent web search experience" />
         <meta name="robots" content="index, follow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta property="og:title" content="SeekEngine" />
-        <meta property="og:description" content="Fast and intuitive search experience." />
+        <meta property="og:title" content="SeekEngine - Smart Web Search" />
+        <meta property="og:description" content="Experience a modern, fast, and intelligent way to search the web" />
         <meta property="og:type" content="website" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
       {/* Header */}
-      <header className="flex w-full p-5 justify-between text-sm text-gray-700 dark:text-white">
-        <div className="flex space-x-4 items-center">
-          <a
-            href="https://shresth-dev.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Developer Portfolio"
-            className="hover:underline"
-          >
-            Dev (Contact)
-          </a>
-        </div>
-        <div className="flex space-x-4 items-center">
-          <a
-            href="https://exeiv.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Exeiv URL shortener"
-            className="hover:underline"
-          >
-            Exeiv
-          </a>
-        </div>
+      <header className="w-full px-6 py-4">
+        <nav className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex space-x-6 items-center">
+            <a
+              href="https://shresth-dev.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Developer Portfolio"
+              className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors duration-200"
+            >
+              Dev
+            </a>
+          </div>
+          <div className="flex space-x-6 items-center">
+            <a
+              href="https://exeiv.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Exeiv URL shortener"
+              className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors duration-200"
+            >
+              Exeiv
+            </a>
+          </div>
+        </nav>
       </header>
 
       {/* Main Content */}
-      <main className="flex flex-col items-center mt-16 sm:mt-24 w-11/12 sm:w-4/5 flex-grow">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6 drop-shadow-lg">SeekEngine</h1>
+      <main className="flex-grow container mx-auto px-4 py-16 max-w-5xl">
+        <div className="flex flex-col items-center space-y-12">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-center leading-tight">
+            SeekEngine
+          </h1>
 
-        {/* Search Form */}
-        <form
-          onSubmit={handleSearch}
-          className="flex w-full max-w-2xl rounded-full border border-gray-200 dark:border-gray-700 px-5 py-3 items-center hover:shadow-lg focus-within:shadow-lg transition-shadow duration-300 bg-white dark:bg-gray-800"
-        >
-          <label htmlFor="search-input" className="sr-only">
-            Search
-          </label>
-          <SearchIcon className="h-5 w-5 mr-3 text-gray-500 dark:text-gray-300" aria-hidden="true" />
-          <input
-            id="search-input"
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search..."
-            className="flex-grow focus:outline-none bg-transparent dark:text-white"
-            aria-label="Search the web"
-          />
-        </form>
+          {/* Search Form */}
+          <div className="search-container">
+            <form
+              id="search-form"
+              onSubmit={handleSearch}
+              className="search-input-wrapper glass"
+            >
+              <input
+                id="search-input"
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search anything..."
+                className="search-input"
+                aria-label="Search the web"
+                disabled={loading}
+                autoComplete="off"
+              />
+              <SearchIcon className="search-icon h-5 w-5" aria-hidden="true" />
+            </form>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mt-4 text-red-600 dark:text-red-400 text-sm" role="alert">
-            {error}
+            {/* Error Message */}
+            {error && (
+              <div 
+                className="mt-4 text-[var(--error)] text-sm flex items-center justify-center space-x-2" 
+                role="alert"
+              >
+                <span className="bg-[var(--error)] bg-opacity-10 px-2 py-1 rounded">
+                  {error}
+                </span>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row w-full justify-center mt-6 space-y-3 sm:space-y-0 sm:space-x-4 max-w-md">
-          <Button type="submit" form="search-form" isLoading={loading} disabled={loading}>
-            Search
-          </Button>
-          <Button onClick={teleport} isLoading={teleporting} disabled={teleporting}>
-            Teleport Me
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md px-4">
+            <Button 
+              onClick={handleSearch} 
+              isLoading={loading} 
+              disabled={loading}
+              className="btn btn-primary w-full sm:w-auto"
+              aria-label="Search the web"
+            >
+              <span className="flex items-center justify-center gap-2">
+                <SearchIcon className="h-5 w-5" />
+                Search Now
+              </span>
+            </Button>
+            <Button 
+              onClick={teleport} 
+              isLoading={teleporting} 
+              disabled={teleporting || loading}
+              className="btn w-full sm:w-auto"
+              aria-label="Go to a random interesting website"
+            >
+              Teleport Me
+            </Button>
+          </div>
         </div>
       </main>
 

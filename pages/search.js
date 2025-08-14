@@ -1,19 +1,52 @@
 import Head from "next/head";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import SearchResults from "../components/SearchResults";
 import { useRouter } from "next/router";
 import { API_KEY, CONTEXT_KEY } from "../keys";
+import { useApiError } from "../hooks/useSearch";
+import { LoadingSpinner } from "../components/LoadingStates";
+import ErrorBoundary from "../components/ErrorBoundary";
 
-function Search({ results }) {
+function Search({ initialResults }) {
     const router = useRouter();
     const { term } = router.query;
+    const [results, setResults] = useState(initialResults);
+    const { error, isLoading, setIsLoading, handleError, clearError } = useApiError();
 
-    const hasError = results?.error;
-    const noResults = results?.items?.length === 0;
+    useEffect(() => {
+        if (!term) return;
+
+        const fetchResults = async () => {
+            setIsLoading(true);
+            clearError();
+
+            try {
+                const response = await fetch(
+                    `/api/search?term=${encodeURIComponent(term)}&start=${router.query.start || "1"}`
+                );
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to fetch search results");
+                }
+
+                setResults(data);
+            } catch (error) {
+                handleError(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, [term, router.query.start]);
+
+    const noResults = !error && results?.items?.length === 0;
 
     return (
-        <div className="min-h-screen flex flex-col justify-between dark:bg-gray-900 text-white">
+        <div className="min-h-screen flex flex-col justify-between bg-[var(--primary-bg)]">
             <Head>
                 <title>{term ? `${term} - SeekEngine` : "SeekEngine"}</title>
                 <meta name="description" content={`Search results for ${term || "your query"}`} />
@@ -23,16 +56,29 @@ function Search({ results }) {
             <Header />
 
             <main className="flex-grow px-4 pt-6 max-w-4xl mx-auto w-full">
-                {hasError ? (
-                    <p className="text-red-400 text-center text-lg">
-                        {results.error}
-                    </p>
+                {error ? (
+                    <div className="card text-center p-8">
+                        <h2 className="text-xl font-bold text-[var(--error)] mb-4">{error.title}</h2>
+                        <p className="text-[var(--text-secondary)] mb-6">{error.message}</p>
+                        <button
+                            onClick={() => {
+                                clearError();
+                                router.reload();
+                            }}
+                            className="btn bg-[var(--primary)] text-white hover:bg-[var(--secondary)]"
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 ) : noResults ? (
-                    <p className="text-center text-lg">
-                        No results found for "<strong>{term}</strong>"
-                    </p>
+                    <div className="card text-center p-8">
+                        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">No Results Found</h2>
+                        <p className="text-[var(--text-secondary)]">
+                            No results found for "<strong>{term}</strong>". Try different keywords or check your spelling.
+                        </p>
+                    </div>
                 ) : (
-                    <SearchResults results={results} />
+                    <SearchResults results={results} isLoading={isLoading} />
                 )}
             </main>
 

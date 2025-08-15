@@ -363,3 +363,49 @@
     }
   }
 }
+
+/* Light theme overrides (applied when html has .light) */
+.light {
+  --primary-bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-lighter: #f1f5f9;
+  --accent: #4c51bf;
+  --accent-light: #6366f1;
+  --primary: #4c51bf;
+  --primary-dark: #4338ca;
+  --primary-light: #818cf8;
+  --secondary: #8b5cf6;
+  --secondary-light: #a78bfa;
+
+  --success: #10b981;
+  --success-light: #34d399;
+  --warning: #f59e0b;
+  --warning-light: #fbbf24;
+  --error: #ef4444;
+  --error-light: #f87171;
+
+  --brand-gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+  --brand-gradient-hover: linear-gradient(135deg, var(--primary-dark), var(--secondary-light));
+
+  --text-primary: #0f172a; /* slate-900 */
+  --text-secondary: #475569; /* slate-600 */
+  --text-disabled: #6c6c7d;
+
+  --border: #e6eef6;
+  --border-light: #dbe7f5;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.06);
+
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
+  --gradient-hover: linear-gradient(135deg, var(--primary-dark), var(--secondary-light));
+
+  --shadow-sm: 0 1px 3px rgba(16,24,40,0.06);
+  --shadow-md: 0 4px 12px rgba(16,24,40,0.08);
+  --shadow-lg: 0 8px 32px rgba(16,24,40,0.12);
+  --shadow-inner: inset 0 1px 2px rgba(0,0,0,0.02);
+}
+
+/* Ensure theme-transition class exists on html to enable smooth transitions */
+.theme-transition {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}

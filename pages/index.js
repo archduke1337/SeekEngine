@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Button from '../components/Button';
+import { useTheme } from '../components/ThemeProvider';
 
 export default function Home() {
   const router = useRouter();
@@ -11,28 +12,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [teleporting, setTeleporting] = useState(false);
   const [error, setError] = useState(null);
-  const [theme, setTheme] = useState('system');
   const [showBanner, setShowBanner] = useState(true);
 
-  // Theme handling
-  useEffect(() => {
-    // Get stored theme or default to system
-    const storedTheme = localStorage.getItem('theme') || 'system';
-    setTheme(storedTheme);
-    document.documentElement.classList.add('theme-transition');
-    
-    const handleTheme = () => {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && isDark));
-    };
-
-    handleTheme();
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleTheme);
-    
-    return () => {
-      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', handleTheme);
-    };
-  }, [theme]);
+  // Theme is managed by ThemeProvider
+  const { theme, setTheme } = useTheme();
 
   const handleSearch = async (e) => {
     e.preventDefault(); // Prevent form from refreshing the page
@@ -116,10 +99,7 @@ export default function Home() {
           <div className="flex items-center space-x-4">
             <div className="glass p-1 rounded-lg flex items-center space-x-1" role="radiogroup" aria-label="Theme selection">
               <button
-                onClick={() => {
-                  setTheme('light');
-                  localStorage.setItem('theme', 'light');
-                }}
+                onClick={() => setTheme('light')}
                 className={`p-2 rounded-md transition-colors ${
                   theme === 'light' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'
                 }`}
@@ -129,10 +109,7 @@ export default function Home() {
                 <SunIcon className="h-5 w-5" />
               </button>
               <button
-                onClick={() => {
-                  setTheme('dark');
-                  localStorage.setItem('theme', 'dark');
-                }}
+                onClick={() => setTheme('dark')}
                 className={`p-2 rounded-md transition-colors ${
                   theme === 'dark' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'
                 }`}
@@ -142,10 +119,7 @@ export default function Home() {
                 <MoonIcon className="h-5 w-5" />
               </button>
               <button
-                onClick={() => {
-                  setTheme('system');
-                  localStorage.setItem('theme', 'system');
-                }}
+                onClick={() => setTheme('system')}
                 className={`p-2 rounded-md transition-colors ${
                   theme === 'system' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:text-[var(--primary)]'
                 }`}

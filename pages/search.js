@@ -11,7 +11,7 @@ import ErrorBoundary from "../components/ErrorBoundary";
 
 function Search({ initialResults }) {
     const router = useRouter();
-    const { term } = router.query;
+    const { term, type = 'all' } = router.query;
     const [results, setResults] = useState(initialResults);
     const { error, isLoading, setIsLoading, handleError, clearError } = useApiError();
 
@@ -24,7 +24,7 @@ function Search({ initialResults }) {
 
             try {
                 const response = await fetch(
-                    `/api/search?term=${encodeURIComponent(term)}&start=${router.query.start || "1"}`
+                    `/api/search?term=${encodeURIComponent(term)}&start=${router.query.start || "1"}&type=${type}`
                 );
                 const data = await response.json();
 
@@ -41,7 +41,7 @@ function Search({ initialResults }) {
         };
 
         fetchResults();
-    }, [term, router.query.start]);
+    }, [term, type, router.query.start]);
 
     const noResults = !error && results?.items?.length === 0;
 
@@ -92,6 +92,7 @@ export default Search;
 export async function getServerSideProps(context) {
     const startIndex = context.query.start || "1";
     const term = context.query.term || "";
+    const type = context.query.type || "all";
 
     if (!term) {
         return {
@@ -102,8 +103,9 @@ export async function getServerSideProps(context) {
     }
 
     try {
+        const searchType = type === 'all' ? '' : `&searchType=${type === 'image' ? 'image' : 'web'}`;
         const response = await fetch(
-            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(term)}&start=${startIndex}`
+            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(term)}&start=${startIndex}${searchType}`
         );
         const data = await response.json();
 
@@ -121,4 +123,4 @@ export async function getServerSideProps(context) {
             },
         };
     }
-    }
+}

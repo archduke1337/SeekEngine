@@ -9,10 +9,16 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { term, start = "1" } = req.query;
+    const { term, start = "1", searchType = "all" } = req.query;
 
     if (!term) {
         return res.status(400).json({ error: "Search term is required" });
+    }
+
+    // Validate search type
+    const validSearchTypes = ["all", "image", "video", "news"];
+    if (!validSearchTypes.includes(searchType)) {
+        return res.status(400).json({ error: "Invalid search type" });
     }
 
     // Create cache key
@@ -26,7 +32,7 @@ export default async function handler(req, res) {
 
     try {
         const response = await fetch(
-            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(term)}&start=${start}`
+            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(term)}&start=${start}${searchType !== 'all' ? `&searchType=${searchType}` : ''}`
         );
         
         const data = await response.json();

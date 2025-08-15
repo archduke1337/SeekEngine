@@ -9,11 +9,13 @@
     "start": "next start"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.7",
     "@tailwindcss/line-clamp": "^0.2.1",
     "next": "^15.4.6",
     "next-sitemap": "^4.2.3",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@heroicons/react": "^1.0.1",

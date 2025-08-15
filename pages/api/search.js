@@ -35,14 +35,26 @@ export default async function handler(req, res) {
             `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(term)}&start=${start}${searchType !== 'all' ? `&searchType=${searchType}` : ''}`
         );
         
-        const data = await response.json();
+        const contentType = (response.headers.get('content-type') || '').toLowerCase();
+        let data;
 
         if (!response.ok) {
-            let error = "Failed to fetch search results";
-            if (response.status === 429) {
-                error = "Rate limit exceeded. Please try again later.";
+            // Try to read body for diagnostics
+            const text = await response.text();
+            console.error('Google API returned non-OK status', response.status, text);
+            return res.status(response.status).json({ error: text || 'External search API error' });
+        }
+
+        if (contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            try {
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                console.warn('Google search returned non-JSON response, returning empty result set');
+                data = { items: [], searchInformation: {} };
             }
-            throw new Error(error);
         }
 
         // Update cache

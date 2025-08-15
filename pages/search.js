@@ -26,10 +26,31 @@ function Search({ initialResults }) {
                 const response = await fetch(
                     `/api/search?term=${encodeURIComponent(term)}&start=${router.query.start || "1"}&type=${type}`
                 );
-                const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || "Failed to fetch search results");
+                    const text = await response.text();
+                    let errMsg = `Search endpoint returned ${response.status}`;
+                    try {
+                        const parsed = JSON.parse(text);
+                        errMsg = parsed.error || parsed.message || errMsg;
+                    } catch (_) {
+                        errMsg = text || errMsg;
+                    }
+                    throw new Error(errMsg);
+                }
+
+                const contentType = (response.headers.get('content-type') || '').toLowerCase();
+                let data;
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    try {
+                        data = JSON.parse(text);
+                    } catch (parseErr) {
+                        console.warn('Search response not JSON, using empty results fallback:', text);
+                        data = {};
+                    }
                 }
 
                 setResults(data);

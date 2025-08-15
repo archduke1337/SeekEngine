@@ -70,8 +70,44 @@ function Search({ initialResults }) {
         <div className="min-h-screen flex flex-col justify-between bg-[var(--primary-bg)]">
             <Head>
                 <title>{term ? `${term} - SeekEngine` : "SeekEngine"}</title>
-                <meta name="description" content={`Search results for ${term || "your query"}`} />
+                <meta name="description" content={term ? `Search results for ${term}. Find websites, images, videos and news related to ${term}.` : "SeekEngine - Fast, modern search experience"} />
+                <meta name="robots" content="index, follow" />
                 <link rel="icon" href="/favicon.ico" />
+                {/* Open Graph */}
+                <meta property="og:title" content={term ? `${term} - SeekEngine` : "SeekEngine"} />
+                <meta property="og:description" content={term ? `Search results for ${term}` : "SeekEngine - Fast, modern search experience"} />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content={canonicalUrl || ''} />
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary" />
+
+                {/* canonical */}
+                {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+                {/* rel prev/next for pagination (sensible when start index present) */}
+                {typeof router.query.start !== 'undefined' && (() => {
+                    const start = Number(router.query.start || 1);
+                    const prev = start > 1 ? start - 10 : null;
+                    const next = start + 10;
+                    return (
+                        <>
+                            {prev !== null && <link rel="prev" href={`${canonicalUrl?.split('?')[0]}?term=${encodeURIComponent(term)}&start=${prev}${type && type !== 'all' ? `&type=${type}` : ''}`} />}
+                            <link rel="next" href={`${canonicalUrl?.split('?')[0]}?term=${encodeURIComponent(term)}&start=${next}${type && type !== 'all' ? `&type=${type}` : ''}`} />
+                        </>
+                    );
+                })()}
+
+                {/* JSON-LD WebSite SearchAction to help search engines understand site search */}
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "url": canonicalUrl || '',
+                    "potentialAction": {
+                        "@type": "SearchAction",
+                        "target": `${canonicalUrl?.split('?')[0]}?term={search_term_string}`,
+                        "query-input": "required name=search_term_string"
+                    }
+                }) }} />
             </Head>
 
             <Header />
@@ -99,7 +135,7 @@ function Search({ initialResults }) {
                         </p>
                     </div>
                 ) : (
-                    <SearchResults results={results} isLoading={isLoading} />
+                    <SearchResults results={results} isLoading={isLoading} term={term} />
                 )}
             </main>
 
@@ -115,10 +151,18 @@ export async function getServerSideProps(context) {
     const term = context.query.term || "";
     const type = context.query.type || "all";
 
+    // Build canonical absolute URL
+    const host = context.req.headers.host || 'localhost:3000';
+    const proto = context.req.headers['x-forwarded-proto'] || 'http';
+    const baseUrl = `${proto}://${host}`;
+    const canonicalUrl = `${baseUrl}/search?term=${encodeURIComponent(term)}${startIndex ? `&start=${startIndex}` : ''}${type && type !== 'all' ? `&type=${type}` : ''}`;
+
     if (!term) {
         return {
             props: {
-                results: { error: "No search term provided." },
+                initialResults: { error: "No search term provided." },
+                canonicalUrl,
+                totalResults: 0
             },
         };
     }
@@ -130,9 +174,13 @@ export async function getServerSideProps(context) {
         );
         const data = await response.json();
 
+        const totalResults = data?.searchInformation?.totalResults || 0;
+
         return {
             props: {
-                results: data,
+                initialResults: data,
+                canonicalUrl,
+                totalResults
             },
         };
     } catch (error) {
@@ -140,7 +188,9 @@ export async function getServerSideProps(context) {
 
         return {
             props: {
-                results: { error: "Failed to fetch search results." },
+                initialResults: { error: "Failed to fetch search results." },
+                canonicalUrl,
+                totalResults: 0
             },
         };
     }

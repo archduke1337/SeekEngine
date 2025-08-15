@@ -5,8 +5,8 @@ const ThemeContext = createContext();
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('system'); // 'light' | 'dark' | 'system'
 
+  // Initialize theme from localStorage (client-only)
   useEffect(() => {
-    // initialize from localStorage (client-only)
     try {
       const stored = localStorage.getItem('theme');
       if (stored) setTheme(stored);
@@ -15,49 +15,55 @@ export function ThemeProvider({ children }) {
     }
   }, []);
 
+  // Apply theme whenever it changes
   useEffect(() => {
     const applyTheme = (current) => {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const isDark = current === 'dark' || (current === 'system' && prefersDark);
 
-      document.documentElement.classList.toggle('dark', isDark);
-      document.documentElement.classList.toggle('light', !isDark);
+      // Toggle both Tailwind's dark class and our light class (we use light overrides)
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
     };
 
-    applyTheme(theme);
-
-    // If theme is 'system', listen to changes
-    let mql;
-    if (theme === 'system' && window.matchMedia) {
-      mql = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = () => applyTheme('system');
-      try {
-        mql.addEventListener ? mql.addEventListener('change', handler) : mql.addListener(handler);
-      } catch (e) {
-        // fallback for older browsers
-        mql.addListener(handler);
-      }
-
-      return () => {
-        try {
-          mql.removeEventListener ? mql.removeEventListener('change', handler) : mql.removeListener(handler);
-        } catch (e) {
-          mql.removeListener(handler);
-        }
-      };
+    // Add a smooth transition helper while changing theme
+    try {
+      document.documentElement.classList.add('theme-transition');
+      applyTheme(theme);
+      const t = window.setTimeout(() => {
+        document.documentElement.classList.remove('theme-transition');
+      }, 300);
+      return () => window.clearTimeout(t);
+    } catch (e) {
+      // ignore (SSR safety)
+      applyTheme(theme);
+      return undefined;
     }
-
-    return undefined;
   }, [theme]);
 
+  // Persist selection
   useEffect(() => {
     try {
       localStorage.setItem('theme', theme);
     } catch (e) {}
   }, [theme]);
 
+  // Toggle helper: if value provided, set explicitly, otherwise toggle between light/dark
   const toggleTheme = (value) => {
-    setTheme(value || (theme === 'dark' ? 'light' : 'dark'));
+    setTheme((prev) => {
+      if (value) return value;
+      if (prev === 'system') {
+        // choose opposite of system preference
+        const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        return prefersDark ? 'light' : 'dark';
+      }
+      return prev === 'dark' ? 'light' : 'dark';
+    });
   };
 
   return (

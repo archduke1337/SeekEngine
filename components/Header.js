@@ -80,6 +80,7 @@ function Header() {
                     </div>
 
                     <Transition
+                        as="div"
                         show={showTypeSelector}
                         enter="transition-opacity duration-200"
                         enterFrom="opacity-0"

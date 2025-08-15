@@ -9,7 +9,7 @@ import { useApiError } from "../hooks/useSearch";
 import { LoadingSpinner } from "../components/LoadingStates";
 import ErrorBoundary from "../components/ErrorBoundary";
 
-function Search({ initialResults }) {
+function Search({ initialResults, canonicalUrl, totalResults }) {
     const router = useRouter();
     const { term, type = 'all' } = router.query;
     const [results, setResults] = useState(initialResults);

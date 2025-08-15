@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MicrophoneIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import HeaderOptions from './HeaderOptions';
 import { useVoiceSearch } from '../hooks/useSearch';
-import { LoadingSpinner } from './LoadingStates';
+import { LoadingSpinner } from './LoadingStates'; 
 import { Transition } from '@headlessui/react';
 import SearchInput from './SearchInput';
 

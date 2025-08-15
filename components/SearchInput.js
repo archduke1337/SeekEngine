@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSearchSuggestions } from '../hooks/useSearchSuggestions';
-import { SearchIcon, XCircleIcon } from '@heroicons/react/outline';
+import { MagnifyingGlassIcon as SearchIcon, XMarkIcon as XIcon } from '@heroicons/react/24/outline';
 
 export default function SearchInput({ defaultValue = '', onSearch }) {
     const router = useRouter();
@@ -64,7 +64,7 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                         }}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2"
                     >
-                        <XCircleIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                        <XIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                     </button>
                 )}
             </form>

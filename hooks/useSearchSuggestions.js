@@ -15,7 +15,7 @@ export function useSearchSuggestions(term, delay = 300) {
             try {
                 const response = await fetch(`/api/suggestions?term=${encodeURIComponent(searchTerm)}`);
                 const data = await response.json();
-                setSuggestions(data);
+                setSuggestions(data.suggestions || []);
             } catch (error) {
                 console.error('Error fetching suggestions:', error);
                 setSuggestions([]);

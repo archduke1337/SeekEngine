@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { SearchIcon, MoonIcon, SunIcon, DesktopComputerIcon, XIcon } from '@heroicons/react/outline';
+import { MagnifyingGlassIcon as SearchIcon, MoonIcon, SunIcon, ComputerDesktopIcon as DesktopComputerIcon, XMarkIcon as XIcon } from '@heroicons/react/24/outline';
 import Footer from '../components/Footer';
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';

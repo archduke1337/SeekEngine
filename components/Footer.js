@@ -1,4 +1,4 @@
-import { GlobeAltIcon } from "@heroicons/react/outline";
+import { GlobeAltIcon } from "@heroicons/react/24/outline";
 
 function Footer() {
     return (

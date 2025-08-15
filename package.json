@@ -18,7 +18,7 @@
     "react-toastify": "^11.0.5"
   },
   "devDependencies": {
-    "@heroicons/react": "2.0.18",
+    "@heroicons/react": "^2.2.0",
     "autoprefixer": "^10.2.5",
     "postcss": "^8.3.0",
     "tailwindcss": "^2.2.7"

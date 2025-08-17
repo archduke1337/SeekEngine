@@ -36,44 +36,53 @@ SeekEngine is built with **Next.js** and designed to provide a clean, minimal in
    ```bash
    git clone https://github.com/archduke1337/SeekEngine.git
    cd SeekEngine
+     ```
 
-# Install dependencies:
+ Install dependencies:
+
+```bash
 npm install
  or
 yarn install
+```
 
-# Configure your .env.local file with Google API credentials:
+
+ Configure your .env.local file with Google API credentials:
+```
 NEXT_PUBLIC_GOOGLE_API_KEY=your-google-api-key
 NEXT_PUBLIC_GOOGLE_CX=your-custom-search-engine-id
-
-# Run the development server:
+```
+ Run the development server:
+```
 npm run dev
 or
 yarn dev
+```
+ Open your browser at http://localhost:3000 🎉
 
-# Open your browser at http://localhost:3000 🎉
-
-# ☁ Deployment
-
+*☁ Deployment*
+ ```
 Deploy instantly with Vercel:
 Fork this repo
 Import it into your Vercel dashboard
 Add the required environment variables (NEXT_PUBLIC_GOOGLE_API_KEY, NEXT_PUBLIC_GOOGLE_CX)
 Deploy 🚀
+```
 
-# 🤝 Contributing
+*🤝 Contributing*
+```
 Contributions are welcome!
 Fork the project
 Create a new branch (git checkout -b feature/awesome-feature)
 Commit your changes (git commit -m 'Add awesome feature')
 Push to your branch (git push origin feature/awesome-feature)
 Open a Pull Request
-
-# 📜 License
+```
+ 📜 License
 This project is licensed under the MIT License – see the LICENSE file for details.
 
 
-# 🙏 Acknowledgments
+*🙏 Acknowledgments*
 Google Custom Search API
 Next.js
 The open-source community 🚀

@@ -86,7 +86,7 @@ This project is licensed under the MIT [LICENSE](LICENSE) – see the LICENSE fi
 
 
 
-**🙏 Acknowledgments**
+**🙏 Acknowledgments!**
 
 Google Custom Search API
 Next.js

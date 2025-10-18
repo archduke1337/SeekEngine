@@ -87,7 +87,7 @@ export default function Home() {
         <nav className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex space-x-6 items-center">
             <a
-              href="https://shresth-dev.vercel.app"
+              href="https://gurv.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
               title="Developer Portfolio"
@@ -130,13 +130,13 @@ export default function Home() {
               </button>
             </div>
             <a
-              href="https://exeiv.vercel.app"
+              href="https://github.com/archduke1337/SeekEngine"
               target="_blank"
               rel="noopener noreferrer"
               title="Exeiv URL shortener"
               className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors duration-200"
             >
-              Exeiv
+              Github
             </a>
           </div>
         </nav>

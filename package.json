@@ -1,7 +1,7 @@
 {
   "name": "seekengine",
-  "version": "1.0.2",
-  "description": "A modern, secure, and responsive search engine powered by Google Custom Search API",
+  "version": "1.0.3",
+  "description": "A modern, secure, and responsive search engine powered by Google Custom Search API with Vercel Web Analytics",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.7",
     "@tailwindcss/line-clamp": "^0.2.1",
+    "@vercel/analytics": "^1.4.0",
     "express-rate-limit": "^8.1.0",
     "next": "^15.4.6",
     "next-sitemap": "^4.2.3",

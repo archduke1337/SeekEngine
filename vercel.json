@@ -1,10 +1,14 @@
 {
   "buildCommand": "next build",
   "outputDirectory": ".next",
-  "env": [
-    "NEXT_PUBLIC_GOOGLE_API_KEY",
-    "NEXT_PUBLIC_GOOGLE_CX"
-  ],
+  "env": {
+    "NEXT_PUBLIC_GOOGLE_API_KEY": {
+      "description": "Google API Key for Custom Search"
+    },
+    "NEXT_PUBLIC_GOOGLE_CX": {
+      "description": "Google Custom Search Engine ID"
+    }
+  },
   "functions": {
     "pages/api/**": {
       "maxDuration": 10,

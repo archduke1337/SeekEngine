@@ -133,7 +133,7 @@ export default function Home() {
                 onClick={() => setTheme('light')}
                 className={`p-2 rounded-md transition-all duration-300 ${
                   theme === 'light' 
-                    ? 'bg-gradient-primary text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Light theme"
@@ -144,7 +144,7 @@ export default function Home() {
                 onClick={() => setTheme('dark')}
                 className={`p-2 rounded-md transition-all duration-300 ${
                   theme === 'dark' 
-                    ? 'bg-gradient-primary text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Dark theme"
@@ -155,7 +155,7 @@ export default function Home() {
                 onClick={() => setTheme('system')}
                 className={`p-2 rounded-md transition-all duration-300 ${
                   theme === 'system' 
-                    ? 'bg-gradient-primary text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="System theme"
@@ -202,7 +202,7 @@ export default function Home() {
             <form onSubmit={handleSearch} className="w-full max-w-2xl">
               <div className="group relative">
                 {/* Glow background */}
-                <div className="absolute inset-0 bg-gradient-primary opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500"></div>
 
                 <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-2xl overflow-hidden">
                   <div className="flex items-center px-6 py-4 gap-4">
@@ -211,7 +211,7 @@ export default function Home() {
                       ref={searchInputRef}
                       type="text"
                       placeholder="Search for anything..."
-                      className="flex-1 bg-transparent text-text-primary placeholder-text-tertiary outline-none text-lg font-medium"
+                      className="flex-1 bg-transparent text-text-primary placeholder-text-tertiary outline-none text-lg font-medium transition-colors duration-300"
                       disabled={loading}
                       autoComplete="off"
                     />
@@ -276,12 +276,12 @@ export default function Home() {
                   id={idx === 1 ? 'teleport' : undefined}
                 >
                   <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="p-4 bg-gradient-primary/20 rounded-2xl group-hover:bg-gradient-primary/30 transition-colors">
+                    <div className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-colors duration-300">
                       <feature.icon className="h-8 w-8 text-primary" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-bold text-2xl text-text-primary">{feature.label}</h3>
-                      <p className="text-text-secondary text-base leading-relaxed">{feature.desc}</p>
+                      <h3 className="font-bold text-2xl text-text-primary transition-colors duration-300">{feature.label}</h3>
+                      <p className="text-text-secondary text-base leading-relaxed transition-colors duration-300">{feature.desc}</p>
                     </div>
                   </div>
                 </div>
@@ -293,15 +293,15 @@ export default function Home() {
         {/* What's New Section */}
         <section className="w-full px-4 py-20 transition-colors duration-300">
           <div className="max-w-2xl mx-auto text-center space-y-6 animate-slideInUp">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/30 rounded-full">
-              <CheckCircleIcon className="h-4 w-4 text-success" />
-              <span className="text-sm font-semibold text-success">LATEST UPDATE</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/30 rounded-full transition-colors duration-300">
+              <CheckCircleIcon className="h-4 w-4 text-success transition-colors duration-300" />
+              <span className="text-sm font-semibold text-success transition-colors duration-300">LATEST UPDATE</span>
             </div>
             <div className="card glass border-border-light group hover:border-primary transition-all duration-300 p-8">
-              <p className="text-lg text-text-primary font-semibold mb-2">
+              <p className="text-lg text-text-primary font-semibold mb-2 transition-colors duration-300">
                 The "Teleport Me" button is now live!
               </p>
-              <p className="text-text-secondary">
+              <p className="text-text-secondary transition-colors duration-300">
                 Give it a try and discover something new. Jump to a random corner of the internet and explore beyond your bubble.
               </p>
             </div>
@@ -314,30 +314,30 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div className="text-center md:text-left">
-              <p className="text-text-primary font-semibold mb-2">A project by</p>
-              <p className="text-text-secondary">
-                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              <p className="text-text-primary font-semibold mb-2 transition-colors duration-300">A project by</p>
+              <p className="text-text-secondary transition-colors duration-300">
+                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300">
                   Gaurav Yadav (Archduke)
                 </a>
               </p>
             </div>
             <div className="text-center">
-              <div className="flex flex-wrap justify-center gap-4 text-sm text-text-secondary">
-                <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-                <span>•</span>
-                <a href="#" className="hover:text-primary transition-colors">Terms</a>
-                <span>•</span>
-                <a href="https://github.com/archduke1337/SeekEngine/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Report</a>
+              <div className="flex flex-wrap justify-center gap-4 text-sm text-text-secondary transition-colors duration-300">
+                <a href="#" className="hover:text-primary transition-colors duration-300">Privacy</a>
+                <span className="transition-colors duration-300">•</span>
+                <a href="#" className="hover:text-primary transition-colors duration-300">Terms</a>
+                <span className="transition-colors duration-300">•</span>
+                <a href="https://github.com/archduke1337/SeekEngine/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300">Report</a>
               </div>
             </div>
             <div className="text-center md:text-right">
-              <p className="text-text-secondary text-sm">
+              <p className="text-text-secondary text-sm transition-colors duration-300">
                 © 2025 SeekEngine<br />
                 <span className="text-xs">Powered by Next.js + Turbopack & Google Search API</span>
               </p>
             </div>
           </div>
-          <div className="border-t border-border-light pt-8 text-center text-text-tertiary text-sm">
+          <div className="border-t border-border-light pt-8 text-center text-text-tertiary text-sm transition-colors duration-300">
             <p>Made with ❤️ for better web discovery</p>
           </div>
         </div>

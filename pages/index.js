@@ -51,7 +51,7 @@ export default function Home() {
   const teleport = () => {
     const urls = [
       'https://instagram.com/exeivglobal/',
-      'https://github.com/Shrestt',
+      'https://github.com/archduke',
     ];
     const randomUrl = urls[Math.floor(Math.random() * urls.length)];
 
@@ -87,7 +87,7 @@ export default function Home() {
         <nav className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex space-x-6 items-center">
             <a
-              href="https://gurv.vercel.app"
+              href="https://archduke.is-a.dev"
               target="_blank"
               rel="noopener noreferrer"
               title="Developer Portfolio"

@@ -20,6 +20,7 @@ git commit -m "Remove environment file from tracking"
 ```
 
 **Verify .gitignore includes .env.local:**
+
 ```bash
 grep -i "env.local" .gitignore
 # Should output: .env.local

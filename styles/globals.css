@@ -126,7 +126,7 @@ html.light {
 
 html {
   scroll-behavior: smooth;
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -278,9 +278,124 @@ html.theme-transition *::after {
    RESPONSIVE
    ============================================ */
 
+
 @media (max-width: 768px) {
   h1 { font-size: 2rem; }
   h2 { font-size: 1.5rem; }
 }
 
+/* ============================================
+   MOBILE OPTIMIZATION
+   ============================================ */
+
+@media (max-width: 640px) {
+  /* Reduce animations on mobile for better performance */
+  .animate-blob {
+    animation-duration: 8s;
+  }
+
+  /* Touch-friendly targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimized spacing for mobile */
+  .card {
+    padding: 1rem;
+  }
+
+  /* Better readability on small screens */
+  body {
+    line-height: 1.7;
+  }
+}
+
+/* ============================================
+   TABLET OPTIMIZATION (641px - 1024px)
+   ============================================ */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Medium size optimizations */
+  .glass {
+    border-radius: 0.875rem;
+  }
+
+  /* Optimized for tablet interaction */
+  button:active {
+    transform: scale(0.98);
+  }
+}
+
+/* ============================================
+   DESKTOP OPTIMIZATION (1025px+)
+   ============================================ */
+
+@media (min-width: 1025px) {
+  /* Smooth interactions on desktop */
+  button, a {
+    cursor: pointer;
+  }
+
+  /* Enhanced hover states */
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  a:hover:not(.no-hover) {
+    text-decoration: underline;
+  }
+}
+
+/* ============================================
+   HIGH DPI SCREEN OPTIMIZATION
+   ============================================ */
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper text and icons on high-DPI displays */
+  * {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* ============================================
+   LANDSCAPE ORIENTATION OPTIMIZATION
+   ============================================ */
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* Reduce vertical padding in landscape */
+  section {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Compact layout for small landscape screens */
+  h1 { font-size: clamp(1.5rem, 5vw, 3rem); }
+  h2 { font-size: clamp(1.25rem, 4vw, 2rem); }
+}
+
+/* ============================================
+   TOUCH DEVICE OPTIMIZATION
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  button:hover,
+  a:hover {
+    background-color: inherit;
+  }
+
+  /* Larger touch targets */
+  button, a, input, [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Reduce animation on touch devices */
+  * {
+    animation-duration: 0.5s;
+  }
+}
+
 /* End of enhanced global styles */
+

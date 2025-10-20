@@ -110,11 +110,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden relative bg-bg-primary text-text-primary transition-colors duration-300">
-      {/* Animated background gradients */}
-      <div className="fixed inset-0 z-0 pointer-events-none hidden md:block">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '4s'}}></div>
+      {/* Animated background gradients - Responsive sizes */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
+        <div className="absolute top-1/2 right-1/4 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-purple-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-0 left-1/2 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-pink-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '4s'}}></div>
       </div>
 
       <Head>
@@ -130,71 +130,68 @@ export default function Home() {
       </Head>
 
       {/* Header */}
-      <header className="w-full px-6 py-4 relative z-10 backdrop-blur-sm border-b border-border-light transition-colors duration-300 animate-slideInDown">
-        <nav className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-8">
-            <a href="/" className="text-2xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-300 hover:animate-pulse">
+      <header className="w-full px-3 sm:px-6 py-3 sm:py-4 relative z-10 backdrop-blur-sm border-b border-border-light transition-colors duration-300 animate-slideInDown">
+        <nav className="max-w-7xl mx-auto flex justify-between items-center gap-4">
+          <div className="flex items-center gap-4 sm:gap-8 min-w-0">
+            <a href="/" className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-300 hover:animate-pulse truncate">
               SeekEngine
             </a>
-            <div className="hidden md:flex items-center space-x-6">
-              <a href="#features" className="text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift">
+            <div className="hidden md:flex items-center gap-3 lg:gap-6">
+              <a href="#features" className="text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift whitespace-nowrap">
                 About
               </a>
-              <a href="#teleport" className="text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift">
-                What is Teleport?
+              <a href="#teleport" className="text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift whitespace-nowrap">
+                Teleport?
               </a>
-              <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift">
-                Developer
+              <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift whitespace-nowrap">
+                Dev
               </a>
             </div>
           </div>
-          <div className="flex items-center space-x-6">
-            <div className="glass p-1.5 rounded-lg flex items-center space-x-1 transition-colors duration-300 hover:shadow-lg">
+          <div className="flex items-center gap-2 sm:gap-6 flex-shrink-0">
+            <div className="glass p-1 sm:p-1.5 rounded-lg flex items-center gap-0.5 sm:gap-1 transition-colors duration-300 hover:shadow-lg">
               <button
                 onClick={() => setTheme('light')}
-                className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'light'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg md-only-animate md:animate-bounce'
+                className={`p-1.5 sm:p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
+                  theme === 'light' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Light theme"
               >
-                <SunIcon className="h-5 w-5" />
+                <SunIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-
               <button
                 onClick={() => setTheme('dark')}
-                className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'dark'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg md-only-animate md:animate-bounce'
+                className={`p-1.5 sm:p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
+                  theme === 'dark' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Dark theme"
               >
-                <MoonIcon className="h-5 w-5" />
+                <MoonIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-
               <button
                 onClick={() => setTheme('system')}
-                className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'system'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg md-only-animate md:animate-bounce'
+                className={`p-1.5 sm:p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
+                  theme === 'system' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="System theme"
               >
-                <DesktopComputerIcon className="h-5 w-5" />
+                <DesktopComputerIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
-
             <a
               href="https://github.com/archduke1337/SeekEngine"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-2 hover:md:animate-lift"
+              className="hidden sm:flex text-xs lg:text-sm text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-1 sm:gap-2 hover:animate-lift whitespace-nowrap"
             >
-              <BoltIcon className="h-4 w-4" />
-              Github
+              <BoltIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden lg:inline">Github</span>
             </a>
           </div>
         </nav>
@@ -203,43 +200,43 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-grow relative z-10 flex flex-col transition-colors duration-300">
         {/* Hero Section */}
-        <section className="w-full px-4 py-20 md:py-32 flex items-center justify-center">
-          <div className="max-w-4xl w-full flex flex-col items-center text-center space-y-8 animate-fadeIn">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown md-only-animate hover:md:animate-lift transition-all duration-300 cursor-default">
-              <SparklesIcon className="h-4 w-4 text-primary md-only-animate md:animate-bounce" />
-              <span className="text-sm font-semibold text-primary">Latest Update: Teleport Me is Live 🚀</span>
+        <section className="w-full px-3 sm:px-4 py-12 sm:py-20 md:py-32 flex items-center justify-center">
+          <div className="max-w-4xl w-full flex flex-col items-center text-center space-y-4 sm:space-y-6 md:space-y-8 animate-fadeIn">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown hover:animate-lift transition-all duration-300 cursor-default">
+              <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 text-primary animate-bounce flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-semibold text-primary">Latest: Teleport Me is Live 🚀</span>
             </div>
 
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-extrabold leading-tight">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent md-only-animate md:animate-pulse hover:md:animate-gradient-shift transition-all duration-300">
+            <div className="space-y-3 sm:space-y-4 md:space-y-6 w-full">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold leading-tight break-words">
+                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse hover:animate-gradient-shift transition-all duration-300">
                   SeekEngine
                 </span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-text-secondary animate-slideInUp transition-all duration-300">
+              <p className="text-base sm:text-xl md:text-2xl text-text-secondary animate-slideInUp transition-all duration-300 px-2 sm:px-0">
                 Your smarter, more adventurous way to search the web.
               </p>
             </div>
 
             {/* Search Form */}
-            <form onSubmit={handleSearch} className="w-full max-w-2xl animate-slideInUp">
+            <form onSubmit={handleSearch} className="w-full max-w-2xl animate-slideInUp px-2 sm:px-0">
               <div className="group relative">
                 {/* Glow background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500 md-only-animate group-hover:md:animate-glow"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-xl sm:rounded-2xl blur-xl transition-opacity duration-500 group-hover:animate-glow"></div>
 
-                <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-2xl overflow-hidden group-hover:shadow-2xl">
-                  <div className="flex items-center px-6 py-4 gap-4">
-                    <SearchIcon className="h-6 w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0 group-hover:md:animate-bounce" />
+                <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-xl sm:rounded-2xl overflow-hidden group-hover:shadow-2xl">
+                  <div className="flex items-center px-3 sm:px-6 py-3 sm:py-4 gap-2 sm:gap-4">
+                    <SearchIcon className="h-5 w-5 sm:h-6 sm:w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0 group-hover:animate-bounce" />
                     <input
                       ref={searchInputRef}
                       type="text"
                       placeholder="Search for anything..."
-                      className="flex-1 bg-transparent text-text-primary placeholder-text-tertiary outline-none text-lg font-medium transition-colors duration-300"
+                      className="flex-1 bg-transparent text-text-primary placeholder-text-tertiary outline-none text-sm sm:text-base md:text-lg font-medium transition-colors duration-300"
                       disabled={loading}
                       autoComplete="off"
                     />
-                    {loading && <SparklesIcon className="h-5 w-5 text-primary md-only-animate md:animate-spin flex-shrink-0" />}
+                    {loading && <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-spin flex-shrink-0" />}
                   </div>
                 </div>
               </div>
@@ -247,7 +244,7 @@ export default function Home() {
               {/* Error Message */}
               {error && (
                 <div 
-                  className="mt-4 p-4 bg-error/10 border border-error/30 rounded-lg text-error text-sm animate-slideInUp"
+                  className="mt-3 sm:mt-4 p-3 sm:p-4 bg-error/10 border border-error/30 rounded-lg text-error text-xs sm:text-sm animate-slideInUp"
                   role="alert"
                 >
                   <p className="font-semibold">{error}</p>
@@ -256,42 +253,44 @@ export default function Home() {
             </form>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full animate-slideInUp" style={{ animationDelay: '0.1s' }}>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center w-full animate-slideInUp px-2 sm:px-0" style={{ animationDelay: '0.1s' }}>
               <button 
                 onClick={handleSearch} 
                 disabled={loading}
-                className="group relative px-8 py-4 bg-gradient-to-r from-blue-300 to-purple-400 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-lift"
+                className="group relative px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-300 to-purple-400 text-white font-bold text-sm sm:text-base rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-lift"
               >
-                <SearchIcon className="h-5 w-5 group-hover:animate-bounce" />
-                <span>{loading ? 'Searching...' : 'Search Now'}</span>
-                <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-bounce" />
+                <span className="hidden sm:inline">{loading ? 'Searching...' : 'Search Now'}</span>
+                <span className="sm:hidden">{loading ? 'Searching...' : 'Search'}</span>
+                <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
                 onClick={teleport} 
                 disabled={teleporting || loading}
-                className="group relative px-8 py-4 border-2 border-primary bg-primary/10 text-primary font-bold rounded-xl transition-all duration-300 hover:bg-primary/20 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-pulse"
+                className="group relative px-4 sm:px-8 py-3 sm:py-4 border-2 border-primary bg-primary/10 text-primary font-bold text-sm sm:text-base rounded-lg sm:rounded-xl transition-all duration-300 hover:bg-primary/20 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-pulse"
               >
-                <RocketLaunchIcon className="h-5 w-5 group-hover:animate-bounce" />
-                <span>{teleporting ? 'Teleporting...' : 'Teleport Me 🚀'}</span>
+                <RocketLaunchIcon className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-bounce" />
+                <span className="hidden sm:inline">{teleporting ? 'Teleporting...' : 'Teleport Me 🚀'}</span>
+                <span className="sm:hidden">Teleport</span>
               </button>
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="w-full px-4 py-20 bg-surface-1/50 transition-colors duration-300">
+        <section id="features" className="w-full px-3 sm:px-4 py-12 sm:py-20 bg-surface-1/50 transition-colors duration-300">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16 animate-slideInUp">
-              <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
+            <div className="text-center mb-8 sm:mb-16 animate-slideInUp px-2 sm:px-0">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-2 sm:mb-4 break-words">
                 <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-gradient-shift">
                   Go Beyond Just Links
                 </span>
               </h2>
-              <p className="text-text-secondary text-lg animate-slideInUp" style={{ animationDelay: '0.1s' }}>Discover why SeekEngine is different</p>
+              <p className="text-text-secondary text-xs sm:text-base md:text-lg animate-slideInUp" style={{ animationDelay: '0.1s' }}>Discover why SeekEngine is different</p>
             </div>
 
             {/* Two Column Layout */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 px-2 sm:px-0">
               {features.map((feature, idx) => (
                 <div 
                   key={idx}
@@ -299,13 +298,13 @@ export default function Home() {
                   style={{ animationDelay: `${idx * 150}ms` }}
                   id={idx === 1 ? 'teleport' : undefined}
                 >
-                  <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-colors duration-300 group-hover:animate-bounce">
-                      <feature.icon className="h-8 w-8 text-primary transition-colors duration-300 group-hover:animate-spin-360" />
+                  <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4">
+                    <div className="p-2 sm:p-4 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-lg sm:rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-colors duration-300 group-hover:animate-bounce">
+                      <feature.icon className="h-6 w-6 sm:h-8 sm:w-8 text-primary transition-colors duration-300 group-hover:animate-spin-360" />
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="font-bold text-2xl text-text-primary transition-colors duration-300">{feature.label}</h3>
-                      <p className="text-text-secondary text-base leading-relaxed transition-colors duration-300">{feature.desc}</p>
+                    <div className="space-y-1 sm:space-y-2">
+                      <h3 className="font-bold text-lg sm:text-2xl text-text-primary transition-colors duration-300">{feature.label}</h3>
+                      <p className="text-text-secondary text-xs sm:text-base leading-relaxed transition-colors duration-300">{feature.desc}</p>
                     </div>
                   </div>
                 </div>
@@ -315,17 +314,17 @@ export default function Home() {
         </section>
 
         {/* What's New Section */}
-        <section className="w-full px-4 py-20 transition-colors duration-300">
-          <div className="max-w-2xl mx-auto text-center space-y-6 animate-slideInUp">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/30 rounded-full transition-colors duration-300 animate-bounce">
-              <CheckCircleIcon className="h-4 w-4 text-success transition-colors duration-300 animate-pulse" />
-              <span className="text-sm font-semibold text-success transition-colors duration-300">LATEST UPDATE</span>
+        <section className="w-full px-3 sm:px-4 py-12 sm:py-20 transition-colors duration-300">
+          <div className="max-w-2xl mx-auto text-center space-y-3 sm:space-y-6 animate-slideInUp px-2 sm:px-0">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-success/10 border border-success/30 rounded-full transition-colors duration-300 animate-bounce">
+              <CheckCircleIcon className="h-3 w-3 sm:h-4 sm:w-4 text-success transition-colors duration-300 animate-pulse flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-semibold text-success transition-colors duration-300">LATEST UPDATE</span>
             </div>
-            <div className="card glass border-border-light group hover:border-primary transition-all duration-300 p-8 hover:shadow-2xl hover:-translate-y-2 cursor-default">
-              <p className="text-lg text-text-primary font-semibold mb-2 transition-colors duration-300 animate-slideInText">
+            <div className="card glass border-border-light group hover:border-primary transition-all duration-300 p-4 sm:p-8 hover:shadow-2xl hover:-translate-y-2 cursor-default">
+              <p className="text-base sm:text-lg text-text-primary font-semibold mb-1 sm:mb-2 transition-colors duration-300 animate-slideInText">
                 The "Teleport Me" button is now live!
               </p>
-              <p className="text-text-secondary transition-colors duration-300 animate-slideInText" style={{ animationDelay: '0.1s' }}>
+              <p className="text-text-secondary text-sm sm:text-base transition-colors duration-300 animate-slideInText" style={{ animationDelay: '0.1s' }}>
                 Give it a try and discover something new. Jump to a random corner of the internet and explore beyond your bubble.
               </p>
             </div>
@@ -335,18 +334,18 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full border-t border-border-light bg-surface-1/30 backdrop-blur-sm relative z-10 transition-colors duration-300 animate-slideInUp">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div className="text-center md:text-left animate-slideInUp" style={{ animationDelay: '0.1s' }}>
-              <p className="text-text-primary font-semibold mb-2 transition-colors duration-300">A project by</p>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
+            <div className="text-center sm:text-left animate-slideInUp text-xs sm:text-sm md:text-base" style={{ animationDelay: '0.1s' }}>
+              <p className="text-text-primary font-semibold mb-1 sm:mb-2 transition-colors duration-300">A project by</p>
               <p className="text-text-secondary transition-colors duration-300">
-                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">
+                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift break-words">
                   Gaurav Yadav (Archduke)
                 </a>
               </p>
             </div>
-            <div className="text-center animate-slideInUp" style={{ animationDelay: '0.2s' }}>
-              <div className="flex flex-wrap justify-center gap-4 text-sm text-text-secondary transition-colors duration-300">
+            <div className="text-center animate-slideInUp text-xs sm:text-sm md:text-base" style={{ animationDelay: '0.2s' }}>
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-text-secondary transition-colors duration-300">
                 <a href="#" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Privacy</a>
                 <span className="transition-colors duration-300">•</span>
                 <a href="#" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Terms</a>
@@ -354,14 +353,14 @@ export default function Home() {
                 <a href="https://github.com/archduke1337/SeekEngine/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Report</a>
               </div>
             </div>
-            <div className="text-center md:text-right animate-slideInUp" style={{ animationDelay: '0.3s' }}>
-              <p className="text-text-secondary text-sm transition-colors duration-300">
+            <div className="text-center sm:text-right animate-slideInUp text-xs sm:text-sm md:text-base" style={{ animationDelay: '0.3s' }}>
+              <p className="text-text-secondary text-xs sm:text-sm transition-colors duration-300 leading-relaxed">
                 © 2025 SeekEngine<br />
-                <span className="text-xs">Powered by Next.js + Turbopack & Google Search API</span>
+                <span className="text-xs">Next.js + Turbopack</span>
               </p>
             </div>
           </div>
-          <div className="border-t border-border-light pt-8 text-center text-text-tertiary text-sm transition-colors duration-300">
+          <div className="border-t border-border-light pt-6 sm:pt-8 text-center text-text-tertiary text-xs sm:text-sm transition-colors duration-300">
             <p className="animate-slideInUp" style={{ animationDelay: '0.4s' }}>Made with ❤️ for better web discovery</p>
           </div>
         </div>

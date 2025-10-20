@@ -1438,20 +1438,3 @@ html {
     scroll-behavior: auto !important;
   }
 }
-
-/* Utility: explicit no-motion helper to opt-out of animations */
-.no-motion,
-.no-motion * {
-  animation: none !important;
-  transition: none !important;
-}
-
-/* Utility: only enable certain animations on medium+ screens (md: min-width: 768px) */
-@media (max-width: 767px) {
-  .md-only-animate {
-    animation: none !important;
-  }
-  .md-only-animate * {
-    animation: none !important;
-  }
-}

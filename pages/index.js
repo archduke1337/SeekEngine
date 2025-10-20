@@ -109,31 +109,31 @@ export default function Home() {
       </Head>
 
       {/* Header */}
-      <header className="w-full px-6 py-4 relative z-10 backdrop-blur-sm border-b border-border-light transition-colors duration-300">
+      <header className="w-full px-6 py-4 relative z-10 backdrop-blur-sm border-b border-border-light transition-colors duration-300 animate-slideInDown">
         <nav className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-8">
-            <a href="/" className="text-2xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-300">
+            <a href="/" className="text-2xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-300 hover:animate-pulse">
               SeekEngine
             </a>
             <div className="hidden md:flex items-center space-x-6">
-              <a href="#features" className="text-text-secondary hover:text-primary transition-colors duration-300">
+              <a href="#features" className="text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift">
                 About
               </a>
-              <a href="#teleport" className="text-text-secondary hover:text-primary transition-colors duration-300">
+              <a href="#teleport" className="text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift">
                 What is Teleport?
               </a>
-              <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-primary transition-colors duration-300">
+              <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift">
                 Developer
               </a>
             </div>
           </div>
           <div className="flex items-center space-x-6">
-            <div className="glass p-1.5 rounded-lg flex items-center space-x-1 transition-colors duration-300">
+            <div className="glass p-1.5 rounded-lg flex items-center space-x-1 transition-colors duration-300 hover:shadow-lg">
               <button
                 onClick={() => setTheme('light')}
-                className={`p-2 rounded-md transition-all duration-300 ${
+                className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
                   theme === 'light' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Light theme"
@@ -142,9 +142,9 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setTheme('dark')}
-                className={`p-2 rounded-md transition-all duration-300 ${
+                className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
                   theme === 'dark' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Dark theme"
@@ -153,9 +153,9 @@ export default function Home() {
               </button>
               <button
                 onClick={() => setTheme('system')}
-                className={`p-2 rounded-md transition-all duration-300 ${
+                className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
                   theme === 'system' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="System theme"
@@ -167,7 +167,7 @@ export default function Home() {
               href="https://github.com/archduke1337/SeekEngine"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-2"
+              className="hidden sm:flex text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-2 hover:animate-lift"
             >
               <BoltIcon className="h-4 w-4" />
               Github
@@ -181,32 +181,32 @@ export default function Home() {
         {/* Hero Section */}
         <section className="w-full px-4 py-20 md:py-32 flex items-center justify-center">
           <div className="max-w-4xl w-full flex flex-col items-center text-center space-y-8 animate-fadeIn">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown">
-              <SparklesIcon className="h-4 w-4 text-primary" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown hover:animate-lift transition-all duration-300 cursor-default">
+              <SparklesIcon className="h-4 w-4 text-primary animate-bounce" />
               <span className="text-sm font-semibold text-primary">Latest Update: Teleport Me is Live 🚀</span>
             </div>
 
             <div className="space-y-6">
               <h1 className="text-5xl md:text-7xl font-extrabold leading-tight">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse hover:animate-gradient-shift transition-all duration-300">
                   SeekEngine
                 </span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-text-secondary">
+              <p className="text-xl md:text-2xl text-text-secondary animate-slideInUp transition-all duration-300">
                 Your smarter, more adventurous way to search the web.
               </p>
             </div>
 
             {/* Search Form */}
-            <form onSubmit={handleSearch} className="w-full max-w-2xl">
+            <form onSubmit={handleSearch} className="w-full max-w-2xl animate-slideInUp">
               <div className="group relative">
                 {/* Glow background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500 group-hover:animate-glow"></div>
 
-                <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-2xl overflow-hidden">
+                <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-2xl overflow-hidden group-hover:shadow-2xl">
                   <div className="flex items-center px-6 py-4 gap-4">
-                    <SearchIcon className="h-6 w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0" />
+                    <SearchIcon className="h-6 w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0 group-hover:animate-bounce" />
                     <input
                       ref={searchInputRef}
                       type="text"
@@ -232,22 +232,22 @@ export default function Home() {
             </form>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full animate-slideInUp" style={{ animationDelay: '0.1s' }}>
               <button 
                 onClick={handleSearch} 
                 disabled={loading}
-                className="group relative px-8 py-4 bg-gradient-to-r from-blue-300 to-purple-400 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-300 to-purple-400 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-lift"
               >
-                <SearchIcon className="h-5 w-5" />
+                <SearchIcon className="h-5 w-5 group-hover:animate-bounce" />
                 <span>{loading ? 'Searching...' : 'Search Now'}</span>
                 <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
                 onClick={teleport} 
                 disabled={teleporting || loading}
-                className="group relative px-8 py-4 border-2 border-primary bg-primary/10 text-primary font-bold rounded-xl transition-all duration-300 hover:bg-primary/20 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="group relative px-8 py-4 border-2 border-primary bg-primary/10 text-primary font-bold rounded-xl transition-all duration-300 hover:bg-primary/20 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-pulse"
               >
-                <RocketLaunchIcon className="h-5 w-5" />
+                <RocketLaunchIcon className="h-5 w-5 group-hover:animate-bounce" />
                 <span>{teleporting ? 'Teleporting...' : 'Teleport Me 🚀'}</span>
               </button>
             </div>
@@ -259,11 +259,11 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16 animate-slideInUp">
               <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-gradient-shift">
                   Go Beyond Just Links
                 </span>
               </h2>
-              <p className="text-text-secondary text-lg">Discover why SeekEngine is different</p>
+              <p className="text-text-secondary text-lg animate-slideInUp" style={{ animationDelay: '0.1s' }}>Discover why SeekEngine is different</p>
             </div>
 
             {/* Two Column Layout */}
@@ -271,13 +271,13 @@ export default function Home() {
               {features.map((feature, idx) => (
                 <div 
                   key={idx}
-                  className="card glass group hover:border-primary transition-all duration-300 animate-slideInUp"
+                  className="card glass group hover:border-primary transition-all duration-300 animate-slideInUp hover:shadow-2xl hover:-translate-y-2 cursor-default"
                   style={{ animationDelay: `${idx * 150}ms` }}
                   id={idx === 1 ? 'teleport' : undefined}
                 >
                   <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-colors duration-300">
-                      <feature.icon className="h-8 w-8 text-primary" />
+                    <div className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-colors duration-300 group-hover:animate-bounce">
+                      <feature.icon className="h-8 w-8 text-primary transition-colors duration-300 group-hover:animate-spin-360" />
                     </div>
                     <div className="space-y-2">
                       <h3 className="font-bold text-2xl text-text-primary transition-colors duration-300">{feature.label}</h3>
@@ -293,15 +293,15 @@ export default function Home() {
         {/* What's New Section */}
         <section className="w-full px-4 py-20 transition-colors duration-300">
           <div className="max-w-2xl mx-auto text-center space-y-6 animate-slideInUp">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/30 rounded-full transition-colors duration-300">
-              <CheckCircleIcon className="h-4 w-4 text-success transition-colors duration-300" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 border border-success/30 rounded-full transition-colors duration-300 animate-bounce">
+              <CheckCircleIcon className="h-4 w-4 text-success transition-colors duration-300 animate-pulse" />
               <span className="text-sm font-semibold text-success transition-colors duration-300">LATEST UPDATE</span>
             </div>
-            <div className="card glass border-border-light group hover:border-primary transition-all duration-300 p-8">
-              <p className="text-lg text-text-primary font-semibold mb-2 transition-colors duration-300">
+            <div className="card glass border-border-light group hover:border-primary transition-all duration-300 p-8 hover:shadow-2xl hover:-translate-y-2 cursor-default">
+              <p className="text-lg text-text-primary font-semibold mb-2 transition-colors duration-300 animate-slideInText">
                 The "Teleport Me" button is now live!
               </p>
-              <p className="text-text-secondary transition-colors duration-300">
+              <p className="text-text-secondary transition-colors duration-300 animate-slideInText" style={{ animationDelay: '0.1s' }}>
                 Give it a try and discover something new. Jump to a random corner of the internet and explore beyond your bubble.
               </p>
             </div>
@@ -310,27 +310,27 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-border-light bg-surface-1/30 backdrop-blur-sm relative z-10 transition-colors duration-300">
+      <footer className="w-full border-t border-border-light bg-surface-1/30 backdrop-blur-sm relative z-10 transition-colors duration-300 animate-slideInUp">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left animate-slideInUp" style={{ animationDelay: '0.1s' }}>
               <p className="text-text-primary font-semibold mb-2 transition-colors duration-300">A project by</p>
               <p className="text-text-secondary transition-colors duration-300">
-                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300">
+                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">
                   Gaurav Yadav (Archduke)
                 </a>
               </p>
             </div>
-            <div className="text-center">
+            <div className="text-center animate-slideInUp" style={{ animationDelay: '0.2s' }}>
               <div className="flex flex-wrap justify-center gap-4 text-sm text-text-secondary transition-colors duration-300">
-                <a href="#" className="hover:text-primary transition-colors duration-300">Privacy</a>
+                <a href="#" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Privacy</a>
                 <span className="transition-colors duration-300">•</span>
-                <a href="#" className="hover:text-primary transition-colors duration-300">Terms</a>
+                <a href="#" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Terms</a>
                 <span className="transition-colors duration-300">•</span>
-                <a href="https://github.com/archduke1337/SeekEngine/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300">Report</a>
+                <a href="https://github.com/archduke1337/SeekEngine/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Report</a>
               </div>
             </div>
-            <div className="text-center md:text-right">
+            <div className="text-center md:text-right animate-slideInUp" style={{ animationDelay: '0.3s' }}>
               <p className="text-text-secondary text-sm transition-colors duration-300">
                 © 2025 SeekEngine<br />
                 <span className="text-xs">Powered by Next.js + Turbopack & Google Search API</span>
@@ -338,7 +338,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-border-light pt-8 text-center text-text-tertiary text-sm transition-colors duration-300">
-            <p>Made with ❤️ for better web discovery</p>
+            <p className="animate-slideInUp" style={{ animationDelay: '0.4s' }}>Made with ❤️ for better web discovery</p>
           </div>
         </div>
       </footer>

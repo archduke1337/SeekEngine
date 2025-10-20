@@ -1,0 +1,17 @@
+{
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "env": [
+    "NEXT_PUBLIC_GOOGLE_API_KEY",
+    "NEXT_PUBLIC_GOOGLE_CX"
+  ],
+  "functions": {
+    "pages/api/**": {
+      "maxDuration": 10,
+      "memory": 1024
+    }
+  },
+  "regions": [
+    "iad1"
+  ]
+}

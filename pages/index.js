@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Button from '../components/Button';
 import { useTheme } from '../components/ThemeProvider';
+import { validateSearchTerm } from '../utils/validation';
 
 export default function Home() {
   const router = useRouter();
@@ -19,38 +20,34 @@ export default function Home() {
 
   const handleSearch = async (e) => {
     e.preventDefault(); // Prevent form from refreshing the page
-    
+
     if (!searchInputRef.current) {
       return;
     }
 
     const term = searchInputRef.current.value.trim();
 
-    if (!term) {
-      setError('Please enter a search term.');
-      return;
-    }
-
     try {
-      setLoading(true);
+      // Validate search term
+      const validatedTerm = validateSearchTerm(term);
       setError(null);
-      const encodedTerm = encodeURIComponent(term);
+      setLoading(true);
+      const encodedTerm = encodeURIComponent(validatedTerm);
       await router.push(`/search?term=${encodedTerm}`);
-    } catch (error) {
-      console.error('Navigation error:', error);
-      setError('Something went wrong. Please try again.');
+    } catch (validationError) {
+      // Show validation error to user
+      setError(validationError.message);
+      setLoading(false);
       if (searchInputRef.current) {
         searchInputRef.current.focus();
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   // Function to handle teleportation (random URL navigation)
   const teleport = () => {
     const urls = [
-      'https://instagram.com/exeivglobal/',
+      'https://instagram.com/gurv.xd',
       'https://github.com/archduke',
     ];
     const randomUrl = urls[Math.floor(Math.random() * urls.length)];

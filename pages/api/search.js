@@ -1,38 +1,46 @@
 import { API_KEY, CONTEXT_KEY } from "../../keys";
+import { validateSearchTerm, validateSearchType, validatePaginationStart } from "../../utils/validation";
+import { searchLimiter } from "../../middleware/rateLimit";
 
 // Simple in-memory cache
 const cache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export default async function handler(req, res) {
+    // Apply rate limiting FIRST
+    await new Promise((resolve, reject) => {
+        searchLimiter(req, res, (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    }).catch(() => {
+        // Rate limit error already handled by searchLimiter
+        return;
+    });
+
     if (req.method !== "GET") {
         return res.status(405).json({ error: "Method not allowed" });
     }
 
     const { term, start = "1", searchType = "all" } = req.query;
 
-    if (!term) {
-        return res.status(400).json({ error: "Search term is required" });
-    }
-
-    // Validate search type
-    const validSearchTypes = ["all", "image", "video", "news"];
-    if (!validSearchTypes.includes(searchType)) {
-        return res.status(400).json({ error: "Invalid search type" });
-    }
-
-    // Create cache key
-    const cacheKey = `${term}-${start}`;
-
-    // Check cache
-    const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        return res.status(200).json(cached.data);
-    }
-
     try {
+        // Validate all inputs
+        const validTerm = validateSearchTerm(term);
+        const validType = validateSearchType(searchType);
+        const validStart = validatePaginationStart(start);
+
+        // Create cache key
+        const cacheKey = `${validTerm}-${validStart}`;
+
+        // Check cache
+        const cached = cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+            return res.status(200).json(cached.data);
+        }
+
         const response = await fetch(
-            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(term)}&start=${start}${searchType !== 'all' ? `&searchType=${searchType}` : ''}`
+            `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${encodeURIComponent(validTerm)}&start=${validStart}${validType !== 'all' ? `&searchType=${validType}` : ''}`
         );
         
         const contentType = (response.headers.get('content-type') || '').toLowerCase();
@@ -66,7 +74,13 @@ export default async function handler(req, res) {
         res.status(200).json(data);
     } catch (error) {
         console.error("Search API Error:", error);
-        res.status(500).json({
+        
+        // Return appropriate error response based on error type
+        if (error.message.includes('Search term') || error.message.includes('Invalid') || error.message.includes('Start')) {
+            return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(500).json({
             error: error.message || "Failed to fetch search results"
         });
     }

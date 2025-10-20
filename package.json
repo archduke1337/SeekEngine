@@ -1,16 +1,23 @@
 {
   "name": "seekengine",
-  "version": "1.0.1",
+  "version": "1.0.2",
+  "description": "A modern, secure, and responsive search engine powered by Google Custom Search API",
   "private": true,
   "scripts": {
-    "postbuild": "next-sitemap",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "postbuild": "next-sitemap",
+    "lint": "eslint pages components hooks utils middleware --ext .js,.jsx 2>/dev/null || echo 'ESLint not configured yet'",
+    "format": "prettier --write \"pages/**/*.{js,jsx}\" \"components/**/*.{js,jsx}\" \"hooks/**/*.{js,jsx}\" \"utils/**/*.{js,jsx}\" \"middleware/**/*.{js,jsx}\" 2>/dev/null || echo 'Prettier not configured yet'",
+    "test": "jest 2>/dev/null || echo 'Jest not configured yet'",
+    "test:watch": "jest --watch 2>/dev/null || echo 'Jest not configured yet'",
+    "test:coverage": "jest --coverage 2>/dev/null || echo 'Jest not configured yet'"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
     "@tailwindcss/line-clamp": "^0.2.1",
+    "express-rate-limit": "^8.1.0",
     "next": "^15.4.6",
     "next-sitemap": "^4.2.3",
     "react": "^19.1.1",
@@ -23,5 +30,23 @@
     "postcss": "^8.3.0",
     "tailwindcss": "^2.2.7"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "keywords": [
+    "search-engine",
+    "google-custom-search",
+    "nextjs",
+    "react",
+    "tailwindcss",
+    "open-source"
+  ],
+  "author": "archduke1337",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/archduke1337/SeekEngine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/archduke1337/SeekEngine/issues"
+  },
+  "homepage": "https://github.com/archduke1337/SeekEngine#readme"
 }

@@ -111,7 +111,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col overflow-hidden relative bg-bg-primary text-text-primary transition-colors duration-300">
       {/* Animated background gradients */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none hidden md:block">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
         <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '2s'}}></div>
         <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '4s'}}></div>
@@ -153,30 +153,32 @@ export default function Home() {
               <button
                 onClick={() => setTheme('light')}
                 className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'light' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg md-only-animate md:animate-bounce'
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Light theme"
               >
                 <SunIcon className="h-5 w-5" />
               </button>
+
               <button
                 onClick={() => setTheme('dark')}
                 className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
+                  theme === 'dark'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg md-only-animate md:animate-bounce'
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="Dark theme"
               >
                 <MoonIcon className="h-5 w-5" />
               </button>
+
               <button
                 onClick={() => setTheme('system')}
                 className={`p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'system' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
+                  theme === 'system'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg md-only-animate md:animate-bounce'
                     : 'text-text-secondary hover:text-primary'
                 }`}
                 title="System theme"
@@ -184,11 +186,12 @@ export default function Home() {
                 <DesktopComputerIcon className="h-5 w-5" />
               </button>
             </div>
+
             <a
               href="https://github.com/archduke1337/SeekEngine"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-2 hover:animate-lift"
+              className="hidden sm:flex text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-2 hover:md:animate-lift"
             >
               <BoltIcon className="h-4 w-4" />
               Github
@@ -202,14 +205,14 @@ export default function Home() {
         {/* Hero Section */}
         <section className="w-full px-4 py-20 md:py-32 flex items-center justify-center">
           <div className="max-w-4xl w-full flex flex-col items-center text-center space-y-8 animate-fadeIn">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown hover:animate-lift transition-all duration-300 cursor-default">
-              <SparklesIcon className="h-4 w-4 text-primary animate-bounce" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown md-only-animate hover:md:animate-lift transition-all duration-300 cursor-default">
+              <SparklesIcon className="h-4 w-4 text-primary md-only-animate md:animate-bounce" />
               <span className="text-sm font-semibold text-primary">Latest Update: Teleport Me is Live 🚀</span>
             </div>
 
             <div className="space-y-6">
               <h1 className="text-5xl md:text-7xl font-extrabold leading-tight">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse hover:animate-gradient-shift transition-all duration-300">
+                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent md-only-animate md:animate-pulse hover:md:animate-gradient-shift transition-all duration-300">
                   SeekEngine
                 </span>
               </h1>
@@ -223,11 +226,11 @@ export default function Home() {
             <form onSubmit={handleSearch} className="w-full max-w-2xl animate-slideInUp">
               <div className="group relative">
                 {/* Glow background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500 group-hover:animate-glow"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-2xl blur-xl transition-opacity duration-500 md-only-animate group-hover:md:animate-glow"></div>
 
                 <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-2xl overflow-hidden group-hover:shadow-2xl">
                   <div className="flex items-center px-6 py-4 gap-4">
-                    <SearchIcon className="h-6 w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0 group-hover:animate-bounce" />
+                    <SearchIcon className="h-6 w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0 group-hover:md:animate-bounce" />
                     <input
                       ref={searchInputRef}
                       type="text"
@@ -236,7 +239,7 @@ export default function Home() {
                       disabled={loading}
                       autoComplete="off"
                     />
-                    {loading && <SparklesIcon className="h-5 w-5 text-primary animate-spin flex-shrink-0" />}
+                    {loading && <SparklesIcon className="h-5 w-5 text-primary md-only-animate md:animate-spin flex-shrink-0" />}
                   </div>
                 </div>
               </div>

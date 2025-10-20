@@ -56,9 +56,30 @@ export default function Home() {
 
   const teleport = () => {
     const urls = [
-      'https://archduke.is-a.dev',
-      'https://github.com/archduke1337',
-      'https://instagram.com/gurv.xd',
+      'https://thatsthefinger.com/',
+      'https://alwaysjudgeabookbyitscover.com/',
+      'https://puginarug.com/',
+      'https://optical.toys/',
+      'https://maze.toys/mazes/mini/daily/',
+      'https://paint.toys/calligram/',
+      'https://heeeeeeeey.com/',
+      'https://cursoreffects.com/',
+      'http://endless.horse/',
+      'https://trypap.com/',
+      'https://smashthewalls.com/',
+      'http://www.staggeringbeauty.com/',
+      'https://burymewithmymoney.com/',
+      'https://www.pointerpointer.com/',
+      'https://jacksonpollock.org/',
+      'http://www.republiquedesmangues.fr/',
+      'https://checkboxrace.com/',
+      'http://drawing.garden/',
+      'https://www.partridgegetslucky.com/',
+      'https://rotatingsandwiches.com/',
+      'https://www.rrrgggbbb.com/',
+      'https://www.fallingfalling.com/',
+      'https://cat-bounce.com/',
+      'http://maninthedark.com/'
     ];
     const randomUrl = urls[Math.floor(Math.random() * urls.length)];
 

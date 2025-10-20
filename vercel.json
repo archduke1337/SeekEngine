@@ -1,6 +1,7 @@
 {
   "buildCommand": "next build",
   "outputDirectory": ".next",
+  "env": {},
   "functions": {
     "pages/api/**": {
       "maxDuration": 10,

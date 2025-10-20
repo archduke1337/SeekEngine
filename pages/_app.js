@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import '../styles/animations.css';
 import ThemeProvider from '../components/ThemeProvider';
 import { validateEnvironment } from '../utils/env';
 import { Analytics } from '@vercel/analytics/react';

@@ -1,7 +1,7 @@
 {
   "name": "seekengine",
-  "version": "1.0.3",
-  "description": "A modern, secure, and responsive search engine powered by Google Custom Search API with Vercel Web Analytics",
+  "version": "1.1.0",
+  "description": "A modern, secure, and responsive search engine powered by Google Custom Search API with professional UI/UX, animations, and component library",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,9 @@
     "format": "prettier --write \"pages/**/*.{js,jsx}\" \"components/**/*.{js,jsx}\" \"hooks/**/*.{js,jsx}\" \"utils/**/*.{js,jsx}\" \"middleware/**/*.{js,jsx}\" 2>/dev/null || echo 'Prettier not configured yet'",
     "test": "jest 2>/dev/null || echo 'Jest not configured yet'",
     "test:watch": "jest --watch 2>/dev/null || echo 'Jest not configured yet'",
-    "test:coverage": "jest --coverage 2>/dev/null || echo 'Jest not configured yet'"
+    "test:coverage": "jest --coverage 2>/dev/null || echo 'Jest not configured yet'",
+    "analyze": "ANALYZE=true next build",
+    "type-check": "tsc --noEmit || echo 'TypeScript not configured yet'"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
@@ -38,7 +40,13 @@
     "nextjs",
     "react",
     "tailwindcss",
-    "open-source"
+    "open-source",
+    "animations",
+    "ui-components",
+    "secure",
+    "responsive",
+    "accessible",
+    "pwa-ready"
   ],
   "author": "archduke1337",
   "license": "MIT",

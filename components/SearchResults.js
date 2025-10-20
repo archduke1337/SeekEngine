@@ -46,7 +46,7 @@ function SearchResults({ results = {}, isLoading, term }) {
             {/* Results list - semantic markup for better accessibility */}
             {hasResults ? (
                 <ul className="space-y-8" role="list">
-                    {results.items.map((result) => {
+                    {results.items.map((result, index) => {
                         const key = result.cacheId || result.link || result.title;
 
                         // Safe hostname extraction
@@ -66,15 +66,19 @@ function SearchResults({ results = {}, isLoading, term }) {
                             || null;
 
                         return (
-                            <li key={key} className="card hover:scale-[1.02] motion-reduce:transform-none transition-all duration-300">
+                            <li 
+                              key={key} 
+                              className="card hover:shadow-xl motion-reduce:transform-none transition-all duration-300 hover:scale-[1.02] animate-slideInUp"
+                              style={{ animationDelay: `${index * 50}ms` }}
+                            >
                                 <div className="flex gap-4">
                                     {thumbnail && (
-                                        <a href={result.link} target="_blank" rel="noopener noreferrer" aria-hidden="true" className="flex-shrink-0">
+                                        <a href={result.link} target="_blank" rel="noopener noreferrer" aria-hidden="true" className="flex-shrink-0 overflow-hidden rounded-md">
                                             <img
                                                 src={thumbnail}
                                                 alt={`Thumbnail for ${result.title}`}
                                                 loading="lazy"
-                                                className="w-28 h-20 object-cover rounded-md"
+                                                className="w-28 h-20 object-cover rounded-md transition-transform duration-300 hover:scale-110"
                                             />
                                         </a>
                                     )}
@@ -97,7 +101,7 @@ function SearchResults({ results = {}, isLoading, term }) {
                                         </div>
 
                                         <a href={result.link} target="_blank" rel="noopener noreferrer" className="block mt-2" aria-label={`Open ${result.title}${hostname ? ` on ${hostname}` : ''}`}>
-                                            <h2 className="text-xl font-medium text-[var(--primary)] group-hover:text-[var(--secondary)] transition-colors duration-200">
+                                            <h2 className="text-xl font-medium text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-200">
                                                 {result.title}
                                             </h2>
                                         </a>

@@ -60,6 +60,8 @@ const nextConfig = {
         config.optimization.minimize = true;
         return config;
     },
+
+    turbopack: {},
 };
 
 module.exports = nextConfig;

@@ -42,7 +42,7 @@ const Card = ({
     transition-all duration-300 transform
     ${isPadding}
     ${animated ? 'animate-slideInUp' : ''}
-    ${hoverable && 'hover:border-[var(--primary)] hover:shadow-lg hover:scale-[1.02]'}
+    ${hoverable && 'hover:border-[var(--border-medium)] hover:shadow-lg hover:scale-[1.02]'}
     ${interactive && 'cursor-pointer'}
     ${clickable && 'hover:shadow-xl hover:scale-105 cursor-pointer'}
     ${isHovered && hoverable ? 'shadow-lg' : 'shadow-sm'}

@@ -24,22 +24,22 @@ const Button = ({
 
   // Color variants
   const variantClasses = {
-    primary: `bg-gradient-to-r from-indigo-600 to-indigo-700 text-white 
-              hover:from-indigo-700 hover:to-indigo-800 hover:shadow-lg
-              active:from-indigo-800 active:to-indigo-900
-              focus:ring-indigo-500/50`,
-    secondary: `bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white
-                hover:bg-slate-300 dark:hover:bg-slate-600 hover:shadow-md
-                active:bg-slate-400 dark:active:bg-slate-500
-                focus:ring-slate-500/50`,
-    ghost: `bg-transparent text-indigo-600 dark:text-indigo-400
-            hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:shadow-sm
-            active:bg-indigo-100 dark:active:bg-indigo-900/30
-            focus:ring-indigo-500/50`,
-    danger: `bg-red-600 text-white hover:bg-red-700 hover:shadow-lg
-             active:bg-red-800 focus:ring-red-500/50`,
-    success: `bg-green-600 text-white hover:bg-green-700 hover:shadow-lg
-              active:bg-green-800 focus:ring-green-500/50`
+    primary: `bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white 
+              hover:from-[var(--primary-dark)] hover:to-[var(--secondary-dark)] hover:shadow-lg
+              active:from-[var(--primary-dark)] active:to-[var(--secondary-dark)]
+              focus:ring-[var(--primary)]/50`,
+    secondary: `bg-[var(--surface-2)] text-[var(--text-primary)]
+                hover:bg-[var(--surface-3)] hover:shadow-md
+                active:bg-[var(--surface-3)]
+                focus:ring-[var(--primary)]/50 border border-[var(--border)]`,
+    ghost: `bg-transparent text-[var(--primary)]
+            hover:bg-[var(--primary)]/10 hover:shadow-sm
+            active:bg-[var(--primary)]/20
+            focus:ring-[var(--primary)]/50`,
+    danger: `bg-[var(--error)] text-white hover:bg-[var(--error-dark)] hover:shadow-lg
+             active:bg-[var(--error-dark)] focus:ring-[var(--error)]/50`,
+    success: `bg-[var(--success)] text-white hover:bg-[var(--success-dark)] hover:shadow-lg
+              active:bg-[var(--success-dark)] focus:ring-[var(--success)]/50`
   };
 
   return (

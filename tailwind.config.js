@@ -16,6 +16,7 @@ module.exports = {
         'error': 'var(--error)',
         'bg-primary': 'var(--bg-primary)',
         'bg-secondary': 'var(--bg-secondary)',
+        'surface': 'var(--surface)',
         'surface-1': 'var(--surface-1)',
         'surface-2': 'var(--surface-2)',
         'surface-3': 'var(--surface-3)',
@@ -30,10 +31,25 @@ module.exports = {
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(-10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' }
-        }
+        },
+        slideInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        slideInDown: {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        slideInRight: {
+          '0%': { opacity: '0', transform: 'translateX(-10px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
       },
       animation: {
-        fadeIn: 'fadeIn 0.5s ease-out forwards'
+        fadeIn: 'fadeIn 0.5s ease-out forwards',
+        slideInUp: 'slideInUp 0.3s ease-out',
+        slideInDown: 'slideInDown 0.3s ease-out',
+        slideInRight: 'slideInRight 0.2s ease-out',
       }
     },
   },

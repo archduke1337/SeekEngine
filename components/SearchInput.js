@@ -104,15 +104,15 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                     {/* Input wrapper with border animation */}
                     <div className={`relative transition-all duration-300 ${
                         isFocused 
-                            ? 'ring-2 ring-blue-500/50' 
-                            : 'ring-1 ring-gray-200 dark:ring-gray-700'
-                    } rounded-full`}>
+                            ? 'ring-2 ring-[var(--primary)]/50' 
+                            : 'ring-1 ring-[var(--border)]'
+                    } rounded-full`} style={{ ringColor: isFocused ? 'var(--primary)' : 'var(--border)' }}>
                         {/* Search Icon */}
                         <SearchIcon 
                             className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-all duration-300 ${
                                 isFocused 
-                                    ? 'text-blue-500 scale-110' 
-                                    : 'text-gray-400'
+                                    ? 'text-[var(--primary)] scale-110' 
+                                    : 'text-[var(--text-secondary)]'
                             }`} 
                         />
 
@@ -132,7 +132,7 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                             }}
                             onBlur={() => setIsFocused(false)}
                             onKeyDown={handleKeyDown}
-                            className="w-full py-3 px-12 pr-20 rounded-full bg-white dark:bg-gray-800/50 backdrop-blur-sm border-0 outline-none transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
+                            className="w-full py-3 px-12 pr-20 rounded-full bg-[var(--surface)] border-0 outline-none transition-all duration-300 placeholder-[var(--text-tertiary)] text-[var(--text-primary)]"
                             placeholder="Search anything..."
                             autoComplete="off"
                         />
@@ -141,23 +141,23 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                             {isLoading && term && (
                                 <div className="animate-spin">
-                                    <SparklesIcon className="h-5 w-5 text-purple-500" />
+                                    <SparklesIcon className="h-5 w-5 text-[var(--secondary)]" />
                                 </div>
                             )}
                             {term && (
                                 <button
                                     type="button"
                                     onClick={clearInput}
-                                    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group"
+                                    className="p-1 rounded-full hover:bg-[var(--surface-2)] transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                                     title="Clear search"
                                 >
-                                    <XIcon className="h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
+                                    <XIcon className="h-5 w-5 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
                                 </button>
                             )}
                             <button
                                 type="submit"
                                 disabled={!term.trim()}
-                                className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="p-2 rounded-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--primary-dark)] hover:to-[var(--secondary-dark)] disabled:from-[var(--text-tertiary)] disabled:to-[var(--text-tertiary)] text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                                 title="Search"
                             >
                                 <ArrowRightIcon className="h-5 w-5" />
@@ -170,15 +170,16 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                 {isOpen && (suggestions.length > 0 || isLoading) && (
                     <div
                         ref={suggestionsRef}
-                        className="absolute top-full mt-3 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-slideDownFast backdrop-blur-sm"
+                        className="absolute top-full mt-3 w-full bg-[var(--surface-1)] rounded-2xl shadow-2xl border border-[var(--border)] z-50 overflow-hidden animate-slideInDown backdrop-blur-sm"
+                        style={{ borderColor: 'var(--border)' }}
                     >
                         {isLoading ? (
                             <div className="px-4 py-8 flex items-center justify-center">
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="animate-spin">
-                                        <SparklesIcon className="h-6 w-6 text-purple-500" />
+                                        <SparklesIcon className="h-6 w-6 text-[var(--secondary)]" />
                                     </div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Finding suggestions...</p>
+                                    <p className="text-sm text-[var(--text-secondary)]">Finding suggestions...</p>
                                 </div>
                             </div>
                         ) : (
@@ -190,8 +191,8 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                                         onMouseEnter={() => setSelectedIndex(index)}
                                         className={`px-4 py-3 cursor-pointer transition-all duration-150 flex items-center gap-3 border-l-4 ${
                                             selectedIndex === index
-                                                ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-l-blue-500 text-blue-600 dark:text-blue-400'
-                                                : 'border-l-transparent hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300'
+                                                ? 'bg-[var(--surface-2)] border-l-[var(--primary)] text-[var(--primary)]'
+                                                : 'border-l-transparent hover:bg-[var(--surface-2)] text-[var(--text-secondary)]'
                                         }`}
                                     >
                                         <SearchIcon className="h-4 w-4 flex-shrink-0 opacity-60" />
@@ -210,12 +211,13 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
                 {isOpen && !isLoading && suggestions.length === 0 && term.trim() && (
                     <div
                         ref={suggestionsRef}
-                        className="absolute top-full mt-3 w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 animate-slideDownFast"
+                        className="absolute top-full mt-3 w-full bg-[var(--surface-1)] rounded-2xl shadow-2xl border border-[var(--border)] z-50 animate-slideInDown"
+                        style={{ borderColor: 'var(--border)' }}
                     >
                         <div className="px-4 py-8 text-center">
-                            <SearchIcon className="h-8 w-8 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-                            <p className="text-sm text-gray-500 dark:text-gray-400">No suggestions found</p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Try a different search term</p>
+                            <SearchIcon className="h-8 w-8 mx-auto text-[var(--text-tertiary)] mb-2" />
+                            <p className="text-sm text-[var(--text-secondary)]">No suggestions found</p>
+                            <p className="text-xs text-[var(--text-tertiary)] mt-1">Try a different search term</p>
                         </div>
                     </div>
                 )}
@@ -223,7 +225,7 @@ export default function SearchInput({ defaultValue = '', onSearch }) {
 
             {/* Helper text */}
             {isFocused && (
-                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 animate-fadeIn">
+                <div className="mt-2 text-xs text-[var(--text-tertiary)] animate-fadeIn">
                     <p>💡 Use ↑ ↓ to navigate • ↵ to search • ESC to close</p>
                 </div>
             )}

@@ -44,7 +44,7 @@ function Header() {
     };
 
     return (
-        <header className="sticky top-0 bg-[var(--surface)] z-50 shadow-md">
+        <header className="sticky top-0 bg-[var(--surface)] z-50 shadow-md border-b border-[var(--border)]" style={{ borderColor: 'var(--border)' }}>
             <div className="flex w-full p-6 items-center">
                 <Image
                     src="https://i.imgur.com/9fAjOoB.png"
@@ -56,7 +56,7 @@ function Header() {
                 />
 
                 <div className="relative flex-grow max-w-3xl ml-10">
-                    <div className="glass flex items-center px-6 py-3 transition-all duration-300">
+                    <div className="glass flex items-center px-6 py-3 transition-all duration-300 border border-[var(--border)]" style={{ borderColor: 'var(--border)' }}>
                         <SearchInput defaultValue={searchTerm} onSearch={handleSearch} />
                         
                         <div className="flex items-center space-x-3 ml-3">
@@ -64,17 +64,17 @@ function Header() {
                                 type="button"
                                 onClick={startListening}
                                 disabled={isListening}
-                                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                className="p-2 rounded-full hover:bg-[var(--surface-2)] dark:hover:bg-[var(--surface-2)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                             >
-                                <MicrophoneIcon className={`h-5 w-5 ${isListening ? 'text-[var(--primary)]' : 'text-gray-400'}`} />
+                                <MicrophoneIcon className={`h-5 w-5 ${isListening ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)]'}`} />
                             </button>
 
                             <button
                                 type="button"
                                 onClick={() => setShowTypeSelector(!showTypeSelector)}
-                                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                className="p-2 rounded-full hover:bg-[var(--surface-2)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                             >
-                                <AdjustmentsHorizontalIcon className="h-5 w-5 text-gray-400" />
+                                <AdjustmentsHorizontalIcon className="h-5 w-5 text-[var(--text-secondary)]" />
                             </button>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ function Header() {
                         leave="transition-opacity duration-200"
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
-                        className="absolute right-0 mt-2 py-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50"
+                        className="absolute right-0 mt-2 py-2 w-48 bg-[var(--surface-1)] rounded-lg shadow-xl z-50 border border-[var(--border)]" style={{ borderColor: 'var(--border)' }}
                     >
                         {searchTypes.map((type) => (
                             <button
@@ -97,10 +97,10 @@ function Header() {
                                     setSearchType(type.id);
                                     setShowTypeSelector(false);
                                 }}
-                                className={`block w-full text-left px-4 py-2 text-sm ${
+                                className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
                                     searchType === type.id
-                                        ? 'text-[var(--primary)] bg-gray-100 dark:bg-gray-700'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        ? 'text-[var(--primary)] bg-[var(--surface-2)]'
+                                        : 'text-[var(--text-secondary)] hover:bg-[var(--surface-2)]'
                                 }`}
                             >
                                 {type.label}
@@ -115,7 +115,7 @@ function Header() {
                     onClick={handleThemeToggle}
                     aria-label="Toggle theme"
                     title={`Theme: ${theme}`}
-                    className="p-2 rounded-md hover:bg-[var(--surface-lighter)] transition-colors"
+                    className="p-2 rounded-md hover:bg-[var(--surface-2)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                   >
                     {theme === 'light' ? (
                       <MoonIcon className="h-5 w-5 text-[var(--text-secondary)]" />

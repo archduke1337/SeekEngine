@@ -1,9 +1,9 @@
 /* ============================================
-   SeekEngine - Enhanced Global Styles v3.0
-   Modern Design System with Premium Feel
+   SeekEngine - Global Styles v3.1
+   Modern Design System with Performance Focus
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sohne:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* Tailwind Directives */
 @tailwind base;
@@ -63,12 +63,22 @@
 }
 
 /* ============================================
-   COLOR & THEME VARIABLES
+   ROOT VARIABLES
    ============================================ */
 
 :root {
-  /* Theme Transitions */
+  /* System */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
   --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  
+  /* Effects */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.15);
+  --glow-primary: 0 0 20px rgba(59, 130, 246, 0.3);
+  --glass-blur: blur(10px);
   
   /* Spacing System */
   --space-xs: 0.25rem;
@@ -124,7 +134,7 @@
   --error-dark: #dc2626;
   --error-light: #fca5a5;
 
-  /* Light Mode Colors (Default) */
+  /* Theme Colors - Light Mode (Default) */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
@@ -140,9 +150,16 @@
   --text-disabled: #94a3b8;
 
   --border-light: rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --border-medium: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.2);
+
+  --glass-bg: rgba(248, 250, 252, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  --gradient-secondary: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
 }
 
 /* Dark Mode Colors */
@@ -163,9 +180,15 @@
     --text-disabled: #64748b;
 
     --border-light: rgba(255, 255, 255, 0.05);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --border-medium: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.2);
+
+    --glass-bg: rgba(15, 23, 42, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
   }
 }
   --border-medium: rgba(255, 255, 255, 0.1);
@@ -283,14 +306,16 @@ button {
    ============================================ */
 
 @layer components {
+  /* Glass Effect Component */
   .glass {
-    background: var(--glass-bg);
+    background-color: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border-radius: 1rem;
   }
 
+  /* Card Component */
   .card {
     background: var(--surface-1);
     border: 1px solid var(--border-light);
@@ -305,6 +330,7 @@ button {
     box-shadow: var(--shadow-md);
   }
 
+  /* Button Component */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -317,16 +343,21 @@ button {
     transition: all var(--transition-fast);
   }
 
-  .btn-primary {
-    background: var(--gradient-primary);
-    color: white;
-  }
-
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-dark);
+  }
+
+  /* Input Component */
   .input {
     width: 100%;
     padding: 0.75rem 1rem;
@@ -340,21 +371,22 @@ button {
   .input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-light);
   }
 
+  /* Badge Component */
   .badge {
     display: inline-flex;
     align-items: center;
     padding: 0.375rem 0.875rem;
     border-radius: 9999px;
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .badge-primary {
     background: rgba(59, 130, 246, 0.1);
-    color: var(--primary-light);
+    color: var(--primary);
   }
 }
 
@@ -362,11 +394,13 @@ button {
    THEME TRANSITION
    ============================================ */
 
-html.theme-transition,
-html.theme-transition *,
-html.theme-transition *::before,
-html.theme-transition *::after {
-  transition: background-color var(--transition-normal) !important, color var(--transition-normal) !important, border-color var(--transition-normal) !important;
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease;
 }
 
 /* ============================================
@@ -378,65 +412,62 @@ html.theme-transition *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE DESIGN
    ============================================ */
 
-
-@media (max-width: 768px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
-}
-
-/* ============================================
-   MOBILE OPTIMIZATION
-   ============================================ */
-
-@media (max-width: 640px) {
-  /* Reduce animations on mobile for better performance */
-  .animate-blob {
-    animation-duration: 8s;
+/* Mobile (< 640px) */
+@media (max-width: 639px) {
+  html {
+    font-size: 14px;
   }
 
-  /* Touch-friendly targets */
-  button, a {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Optimized spacing for mobile */
   .card {
     padding: 1rem;
   }
 
-  /* Better readability on small screens */
-  body {
-    line-height: 1.7;
+  button, 
+  a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 1rem;
+  }
+
+  .glass {
+    backdrop-filter: blur(8px);
   }
 }
 
-/* ============================================
-   TABLET OPTIMIZATION (641px - 1024px)
-   ============================================ */
+/* Tablet (640px - 1024px) */
+@media (min-width: 640px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
 
-@media (min-width: 641px) and (max-width: 1024px) {
-  /* Medium size optimizations */
+  .card {
+    padding: 1.25rem;
+  }
+
   .glass {
     border-radius: 0.875rem;
   }
-
-  /* Optimized for tablet interaction */
-  button:active {
-    transform: scale(0.98);
-  }
 }
 
-/* ============================================
-   DESKTOP OPTIMIZATION (1025px+)
-   ============================================ */
+/* Desktop (> 1024px) */
+@media (min-width: 1025px) {
+  html {
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+}
 
 @media (min-width: 1025px) {
   /* Smooth interactions on desktop */

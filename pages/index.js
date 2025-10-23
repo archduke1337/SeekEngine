@@ -1,24 +1,45 @@
 import Head from 'next/head';
-import { 
-  MagnifyingGlassIcon as SearchIcon, 
-  MoonIcon, 
-  SunIcon, 
-  ComputerDesktopIcon as DesktopComputerIcon, 
-  XMarkIcon as XIcon,
+import {
+  MagnifyingGlassIcon as SearchIcon,
+  MoonIcon,
+  SunIcon,
+  ComputerDesktopIcon as DesktopComputerIcon,
   SparklesIcon,
   ArrowRightIcon,
   CheckCircleIcon,
-  LightBulbIcon,
   RocketLaunchIcon,
-  BoltIcon,
   GlobeAltIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import Footer from '../components/Footer';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import Button from '../components/Button';
 import { useTheme } from '../components/ThemeProvider';
 import { validateSearchTerm } from '../utils/validation';
+
+const themeOptions = [
+  { value: 'light', label: 'Light', icon: SunIcon },
+  { value: 'dark', label: 'Dark', icon: MoonIcon },
+  { value: 'system', label: 'System', icon: ComputerDesktopIcon },
+];
+
+const features = [
+  {
+    icon: GlobeAltIcon,
+    title: 'Google-backed results',
+    description: 'SeekEngine taps into the Google Search API for accurate, up-to-date answers without the clutter.',
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: 'Respectful experience',
+    description: 'Fast performance, accessible contrast, and a calm interface that works in light or dark mode.',
+  },
+  {
+    icon: RocketLaunchIcon,
+    title: 'Teleport discovery',
+    description: 'Jump to a curated, delightful corner of the web whenever you need a fresh perspective.',
+  },
+];
 
 export default function Home() {
   const router = useRouter();
@@ -26,31 +47,35 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [teleporting, setTeleporting] = useState(false);
   const [error, setError] = useState(null);
-
-  // Theme is managed by ThemeProvider
   const { theme, setTheme } = useTheme();
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  const handleThemeChange = (value) => {
+    setTheme(value);
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      document.documentElement.classList.add('theme-transition');
+      window.setTimeout(() => document.documentElement.classList.remove('theme-transition'), 300);
+    }
+  };
 
-    if (!searchInputRef.current) {
+  const handleSearch = async (event) => {
+    event.preventDefault();
+
+    const term = searchInputRef.current?.value.trim() ?? '';
+    if (!term) {
+      setError('Enter a search term to get started.');
+      searchInputRef.current?.focus();
       return;
     }
-
-    const term = searchInputRef.current.value.trim();
 
     try {
       const validatedTerm = validateSearchTerm(term);
       setError(null);
       setLoading(true);
-      const encodedTerm = encodeURIComponent(validatedTerm);
-      await router.push(`/search?term=${encodedTerm}`);
+      await router.push(`/search?term=${encodeURIComponent(validatedTerm)}`);
     } catch (validationError) {
       setError(validationError.message);
       setLoading(false);
-      if (searchInputRef.current) {
-        searchInputRef.current.focus();
-      }
+      searchInputRef.current?.focus();
     }
   };
 
@@ -79,292 +104,192 @@ export default function Home() {
       'https://www.rrrgggbbb.com/',
       'https://www.fallingfalling.com/',
       'https://cat-bounce.com/',
-      'http://maninthedark.com/'
+      'http://maninthedark.com/',
     ];
+
     const randomUrl = urls[Math.floor(Math.random() * urls.length)];
 
     try {
       setTeleporting(true);
       setError(null);
       window.open(randomUrl, '_blank', 'noopener,noreferrer');
-    } catch (error) {
-      console.error('Teleport error:', error);
+    } catch (teleportError) {
+      console.error('Teleport error:', teleportError);
       setError('Failed to open the link. Please try again.');
     } finally {
       setTeleporting(false);
     }
   };
 
-  const features = [
-    { 
-      icon: SearchIcon, 
-      label: 'Precision Results', 
-      desc: 'Powered by the Google Search API, SeekEngine delivers the fast, relevant, and comprehensive results you trust.' 
-    },
-    { 
-      icon: GlobeAltIcon, 
-      label: 'Discover the Web', 
-      desc: 'Click "Teleport Me" to jump to a random, interesting, and curated corner of the internet. Break out of your bubble!' 
-    },
-  ];
-
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden relative bg-bg-primary text-text-primary transition-colors duration-300">
-      {/* Animated background gradients - Responsive sizes */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-blue-500/20 rounded-full blur-3xl animate-blob"></div>
-        <div className="absolute top-1/2 right-1/4 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-purple-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-0 left-1/2 w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-pink-500/20 rounded-full blur-3xl animate-blob" style={{animationDelay: '4s'}}></div>
-      </div>
-
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
       <Head>
         <title>SeekEngine - Smart Web Search</title>
-        <meta name="description" content="SeekEngine - Your smarter, more adventurous way to search the web. Smart Search powered by Google + Teleport feature to discover new sites." />
-        <meta name="robots" content="index, follow" />
+        <meta
+          name="description"
+          content="SeekEngine pairs the power of Google Search with a calm, theme-aware interface and a playful teleport feature."
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="SeekEngine - Smart Web Search" />
-        <meta property="og:description" content="Your smarter, more adventurous way to search the web" />
+        <meta
+          property="og:description"
+          content="A modern search experience that respects your eyes and keeps discovery fun."
+        />
         <meta property="og:type" content="website" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
-      {/* Header */}
-      <header className="w-full px-3 sm:px-6 py-3 sm:py-4 relative z-10 backdrop-blur-sm border-b border-border-light transition-colors duration-300 animate-slideInDown">
-        <nav className="max-w-7xl mx-auto flex justify-between items-center gap-4">
-          <div className="flex items-center gap-4 sm:gap-8 min-w-0">
-            <a href="/" className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-300 hover:animate-pulse truncate">
-              SeekEngine
-            </a>
-            <div className="hidden md:flex items-center gap-3 lg:gap-6">
-              <a href="#features" className="text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift whitespace-nowrap">
-                About
-              </a>
-              <a href="#teleport" className="text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift whitespace-nowrap">
-                Teleport?
-              </a>
-              <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors duration-300 hover:animate-color-shift whitespace-nowrap">
-                Dev
-              </a>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-6 flex-shrink-0">
-            <div className="glass p-1 sm:p-1.5 rounded-lg flex items-center gap-0.5 sm:gap-1 transition-colors duration-300 hover:shadow-lg">
-              <button
-                onClick={() => setTheme('light')}
-                className={`p-1.5 sm:p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'light' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
-                    : 'text-text-secondary hover:text-primary'
-                }`}
-                title="Light theme"
-              >
-                <SunIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-              <button
-                onClick={() => setTheme('dark')}
-                className={`p-1.5 sm:p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
-                    : 'text-text-secondary hover:text-primary'
-                }`}
-                title="Dark theme"
-              >
-                <MoonIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-              <button
-                onClick={() => setTheme('system')}
-                className={`p-1.5 sm:p-2 rounded-md transition-all duration-300 hover:animate-rotate-in ${
-                  theme === 'system' 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg animate-bounce' 
-                    : 'text-text-secondary hover:text-primary'
-                }`}
-                title="System theme"
-              >
-                <DesktopComputerIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
-            </div>
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[var(--surface-2)]/80 via-transparent to-transparent pointer-events-none" />
+
+      <header className="relative border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-sm">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+          <a
+            href="/"
+            className="text-xl font-semibold tracking-tight text-[var(--text-primary)] transition-colors hover:text-[var(--primary)] sm:text-2xl"
+          >
+            SeekEngine
+          </a>
+
+          <div className="flex items-center gap-2">
             <a
               href="https://github.com/archduke1337/SeekEngine"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex text-xs lg:text-sm text-text-secondary hover:text-primary transition-all duration-300 font-medium hover:scale-105 items-center gap-1 sm:gap-2 hover:animate-lift whitespace-nowrap"
+              className="hidden rounded-md border border-transparent px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--border)] hover:text-[var(--text-primary)] sm:inline-flex"
             >
-              <BoltIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden lg:inline">Github</span>
+              View on GitHub
             </a>
+
+            <div className="flex items-center gap-1 rounded-md border border-[var(--border)] bg-[var(--surface-1)] p-1">
+              {themeOptions.map((option) => {
+                const Icon = option.icon;
+                const isActive = theme === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => handleThemeChange(option.value)}
+                    className={`flex items-center gap-2 rounded-md px-2 py-1 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] ${
+                      isActive
+                        ? 'bg-[var(--primary)] text-white shadow-sm'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-grow relative z-10 flex flex-col transition-colors duration-300">
-        {/* Hero Section */}
-        <section className="w-full px-3 sm:px-4 py-12 sm:py-20 md:py-32 flex items-center justify-center">
-          <div className="max-w-4xl w-full flex flex-col items-center text-center space-y-4 sm:space-y-6 md:space-y-8 animate-fadeIn">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500/10 border border-blue-500/30 rounded-full backdrop-blur-sm animate-slideInDown hover:animate-lift transition-all duration-300 cursor-default">
-              <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 text-primary animate-bounce flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-semibold text-primary">Latest: Teleport Me is Live 🚀</span>
-            </div>
+      <main className="relative z-10 flex flex-col gap-20 px-4 py-16 sm:py-20 lg:py-24">
+        <section className="mx-auto flex w-full max-w-5xl flex-col items-center text-center lg:items-start lg:text-left">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-1)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)]">
+            <SparklesIcon className="h-4 w-4 text-[var(--primary)]" />
+            <span>Teleport discovery is live</span>
+          </div>
 
-            <div className="space-y-3 sm:space-y-4 md:space-y-6 w-full">
-              <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold leading-tight break-words">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse hover:animate-gradient-shift transition-all duration-300">
-                  SeekEngine
-                </span>
-              </h1>
+          <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl lg:text-6xl">
+            Search with focus. Explore with delight.
+          </h1>
 
-              <p className="text-base sm:text-xl md:text-2xl text-text-secondary animate-slideInUp transition-all duration-300 px-2 sm:px-0">
-                Your smarter, more adventurous way to search the web.
-              </p>
-            </div>
+          <p className="mt-4 max-w-2xl text-base text-[var(--text-secondary)] sm:text-lg">
+            SeekEngine pairs trusted Google results with a carefully tuned interface that adapts to your theme. When you
+            need inspiration, teleport to a hand-picked corner of the web.
+          </p>
 
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="w-full max-w-2xl animate-slideInUp px-2 sm:px-0">
-              <div className="group relative">
-                {/* Glow background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-focus-within:opacity-20 rounded-xl sm:rounded-2xl blur-xl transition-opacity duration-500 group-hover:animate-glow"></div>
-
-                <div className="relative glass backdrop-blur-xl border border-border-light group-focus-within:border-primary transition-all duration-300 rounded-xl sm:rounded-2xl overflow-hidden group-hover:shadow-2xl">
-                  <div className="flex items-center px-3 sm:px-6 py-3 sm:py-4 gap-2 sm:gap-4">
-                    <SearchIcon className="h-5 w-5 sm:h-6 sm:w-6 text-text-tertiary group-focus-within:text-primary transition-colors duration-300 flex-shrink-0 group-hover:animate-bounce" />
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder="Search for anything..."
-                      className="flex-1 bg-transparent text-text-primary placeholder-text-tertiary outline-none text-sm sm:text-base md:text-lg font-medium transition-colors duration-300"
-                      disabled={loading}
-                      autoComplete="off"
-                    />
-                    {loading && <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-spin flex-shrink-0" />}
-                  </div>
-                </div>
+          <form onSubmit={handleSearch} className="mt-10 w-full max-w-2xl space-y-3" noValidate>
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-1)] shadow-sm transition-colors focus-within:border-[var(--primary)]">
+              <label className="sr-only" htmlFor="seek-search">
+                Search the web
+              </label>
+              <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
+                <SearchIcon className="h-5 w-5 text-[var(--text-tertiary)]" />
+                <input
+                  id="seek-search"
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Try “design systems” or “best productivity tips”"
+                  className="flex-1 border-none bg-transparent text-base text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
+                  autoComplete="off"
+                  disabled={loading}
+                />
+                {loading && <SparklesIcon className="h-5 w-5 animate-spin text-[var(--primary)]" />}
               </div>
+            </div>
 
-              {/* Error Message */}
-              {error && (
-                <div 
-                  className="mt-3 sm:mt-4 p-3 sm:p-4 bg-error/10 border border-error/30 rounded-lg text-error text-xs sm:text-sm animate-slideInUp"
-                  role="alert"
-                >
-                  <p className="font-semibold">{error}</p>
-                </div>
-              )}
-            </form>
+            {error && (
+              <p className="text-sm font-medium text-[var(--error)]" role="alert">
+                {error}
+              </p>
+            )}
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center w-full animate-slideInUp px-2 sm:px-0" style={{ animationDelay: '0.1s' }}>
-              <button 
-                onClick={handleSearch} 
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="submit"
                 disabled={loading}
-                className="group relative px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-300 to-purple-400 text-white font-bold text-sm sm:text-base rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-lift"
+                className="inline-flex items-center gap-2 rounded-lg bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-bounce" />
-                <span className="hidden sm:inline">{loading ? 'Searching...' : 'Search Now'}</span>
-                <span className="sm:hidden">{loading ? 'Searching...' : 'Search'}</span>
-                <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+                <SearchIcon className="h-5 w-5" />
+                {loading ? 'Searching…' : 'Search the web'}
+                <ArrowRightIcon className="h-4 w-4" />
               </button>
-              <button 
-                onClick={teleport} 
+
+              <button
+                type="button"
+                onClick={teleport}
                 disabled={teleporting || loading}
-                className="group relative px-4 sm:px-8 py-3 sm:py-4 border-2 border-primary bg-primary/10 text-primary font-bold text-sm sm:text-base rounded-lg sm:rounded-xl transition-all duration-300 hover:bg-primary/20 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:animate-pulse"
+                className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-1)] px-5 py-3 text-sm font-semibold text-[var(--text-primary)] transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <RocketLaunchIcon className="h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-bounce" />
-                <span className="hidden sm:inline">{teleporting ? 'Teleporting...' : 'Teleport Me 🚀'}</span>
-                <span className="sm:hidden">Teleport</span>
+                <RocketLaunchIcon className="h-5 w-5 text-[var(--primary)]" />
+                {teleporting ? 'Teleporting…' : 'Teleport me'}
               </button>
             </div>
-          </div>
+          </form>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="w-full px-3 sm:px-4 py-12 sm:py-20 bg-surface-1/50 transition-colors duration-300">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8 sm:mb-16 animate-slideInUp px-2 sm:px-0">
-              <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-2 sm:mb-4 break-words">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent animate-gradient-shift">
-                  Go Beyond Just Links
-                </span>
-              </h2>
-              <p className="text-text-secondary text-xs sm:text-base md:text-lg animate-slideInUp" style={{ animationDelay: '0.1s' }}>Discover why SeekEngine is different</p>
-            </div>
-
-            {/* Two Column Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8 px-2 sm:px-0">
-              {features.map((feature, idx) => (
-                <div 
-                  key={idx}
-                  className="card glass group hover:border-primary transition-all duration-300 animate-slideInUp hover:shadow-2xl hover:-translate-y-2 cursor-default"
-                  style={{ animationDelay: `${idx * 150}ms` }}
-                  id={idx === 1 ? 'teleport' : undefined}
+        <section className="mx-auto w-full max-w-5xl">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <article
+                  key={feature.title}
+                  className="rounded-2xl border border-[var(--border)] bg-[var(--surface-1)] p-6 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md"
                 >
-                  <div className="flex flex-col items-center text-center space-y-3 sm:space-y-4">
-                    <div className="p-2 sm:p-4 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-lg sm:rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-colors duration-300 group-hover:animate-bounce">
-                      <feature.icon className="h-6 w-6 sm:h-8 sm:w-8 text-primary transition-colors duration-300 group-hover:animate-spin-360" />
-                    </div>
-                    <div className="space-y-1 sm:space-y-2">
-                      <h3 className="font-bold text-lg sm:text-2xl text-text-primary transition-colors duration-300">{feature.label}</h3>
-                      <p className="text-text-secondary text-xs sm:text-base leading-relaxed transition-colors duration-300">{feature.desc}</p>
-                    </div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)]">
+                    <Icon className="h-6 w-6" />
                   </div>
-                </div>
-              ))}
-            </div>
+                  <h3 className="mt-4 text-lg font-semibold text-[var(--text-primary)]">{feature.title}</h3>
+                  <p className="mt-2 text-sm text-[var(--text-secondary)]">{feature.description}</p>
+                </article>
+              );
+            })}
           </div>
         </section>
 
-        {/* What's New Section */}
-        <section className="w-full px-3 sm:px-4 py-12 sm:py-20 transition-colors duration-300">
-          <div className="max-w-2xl mx-auto text-center space-y-3 sm:space-y-6 animate-slideInUp px-2 sm:px-0">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-success/10 border border-success/30 rounded-full transition-colors duration-300 animate-bounce">
-              <CheckCircleIcon className="h-3 w-3 sm:h-4 sm:w-4 text-success transition-colors duration-300 animate-pulse flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-semibold text-success transition-colors duration-300">LATEST UPDATE</span>
-            </div>
-            <div className="card glass border-border-light group hover:border-primary transition-all duration-300 p-4 sm:p-8 hover:shadow-2xl hover:-translate-y-2 cursor-default">
-              <p className="text-base sm:text-lg text-text-primary font-semibold mb-1 sm:mb-2 transition-colors duration-300 animate-slideInText">
-                The "Teleport Me" button is now live!
-              </p>
-              <p className="text-text-secondary text-sm sm:text-base transition-colors duration-300 animate-slideInText" style={{ animationDelay: '0.1s' }}>
-                Give it a try and discover something new. Jump to a random corner of the internet and explore beyond your bubble.
-              </p>
-            </div>
+        <section className="mx-auto w-full max-w-4xl rounded-3xl border border-[var(--border)] bg-[var(--surface-1)] p-8 text-center shadow-sm">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[var(--success)]/40 bg-[var(--success)]/10 px-3 py-1 text-xs font-semibold text-[var(--success)]">
+            <CheckCircleIcon className="h-4 w-4" />
+            New in this release
           </div>
+          <h2 className="mt-4 text-2xl font-semibold text-[var(--text-primary)]">
+            Theme-aware design with a calmer motion system
+          </h2>
+          <p className="mt-3 text-sm text-[var(--text-secondary)] sm:text-base">
+            We reduced excessive animation, aligned colors with the theme tokens, and made the welcome experience easier
+            to scan. SeekEngine now feels crisp on both light and dark backgrounds.
+          </p>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full border-t border-border-light bg-surface-1/30 backdrop-blur-sm relative z-10 transition-colors duration-300 animate-slideInUp">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 mb-6 sm:mb-8">
-            <div className="text-center sm:text-left animate-slideInUp text-xs sm:text-sm md:text-base" style={{ animationDelay: '0.1s' }}>
-              <p className="text-text-primary font-semibold mb-1 sm:mb-2 transition-colors duration-300">A project by</p>
-              <p className="text-text-secondary transition-colors duration-300">
-                <a href="https://archduke.is-a.dev" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift break-words">
-                  Gaurav Yadav (Archduke)
-                </a>
-              </p>
-            </div>
-            <div className="text-center animate-slideInUp text-xs sm:text-sm md:text-base" style={{ animationDelay: '0.2s' }}>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-text-secondary transition-colors duration-300">
-                <a href="#" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Privacy</a>
-                <span className="transition-colors duration-300">•</span>
-                <a href="#" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Terms</a>
-                <span className="transition-colors duration-300">•</span>
-                <a href="https://github.com/archduke1337/SeekEngine/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 hover:animate-color-shift">Report</a>
-              </div>
-            </div>
-            <div className="text-center sm:text-right animate-slideInUp text-xs sm:text-sm md:text-base" style={{ animationDelay: '0.3s' }}>
-              <p className="text-text-secondary text-xs sm:text-sm transition-colors duration-300 leading-relaxed">
-                © 2025 SeekEngine<br />
-                <span className="text-xs">Next.js + Turbopack</span>
-              </p>
-            </div>
-          </div>
-          <div className="border-t border-border-light pt-6 sm:pt-8 text-center text-text-tertiary text-xs sm:text-sm transition-colors duration-300">
-            <p className="animate-slideInUp" style={{ animationDelay: '0.4s' }}>Made with ❤️ for better web discovery</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -67,7 +67,7 @@ function Search({ initialResults, canonicalUrl, totalResults }) {
     const noResults = !error && results?.items?.length === 0;
 
     return (
-        <div className="min-h-screen flex flex-col justify-between bg-[var(--primary-bg)]">
+        <div className="min-h-screen flex flex-col justify-between bg-[var(--bg-primary)]">
             <Head>
                 <title>{term ? `${term} - SeekEngine` : "SeekEngine"}</title>
                 <meta name="description" content={term ? `Search results for ${term}. Find websites, images, videos and news related to ${term}.` : "SeekEngine - Fast, modern search experience"} />

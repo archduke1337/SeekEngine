@@ -4,16 +4,26 @@ import { SkeletonLoader } from "./LoadingStates";
 function SearchResults({ results = {}, isLoading, term }) {
     const hasResults = results?.items && results.items.length > 0;
     const hasSearchInfo = results?.searchInformation;
+    const resultCount = results?.searchInformation?.totalResults || 0;
 
     if (isLoading) {
         return (
-            <div className="mx-auto w-full px-3 sm:pl-[5%] md:pl-[14%] lg:pl-52" role="status" aria-live="polite">
-                <span className="sr-only">Loading search results</span>
+            <div 
+                className="mx-auto w-full px-3 sm:pl-[5%] md:pl-[14%] lg:pl-52" 
+                role="status" 
+                aria-live="polite"
+                aria-busy="true"
+            >
+                <span className="sr-only">Loading search results for {term}</span>
                 <div className="animate-pulse mb-5">
                     <div className="h-4 bg-[var(--surface)] rounded w-64"></div>
                 </div>
                 {[...Array(5)].map((_, i) => (
-                    <SkeletonLoader key={i} type="search-result" />
+                    <SkeletonLoader 
+                        key={i} 
+                        type="search-result" 
+                        aria-hidden="true"
+                    />
                 ))}
             </div>
         );
@@ -21,11 +31,24 @@ function SearchResults({ results = {}, isLoading, term }) {
 
     if (!results) {
         return (
-            <div className="mx-auto w-full px-3 sm:pl-[5%] md:pl-[14%] lg:pl-52">
+            <div 
+                className="mx-auto w-full px-3 sm:pl-[5%] md:pl-[14%] lg:pl-52"
+                role="alert"
+                aria-live="assertive"
+            >
                 <div className="card text-center p-8">
-                    <p className="text-[var(--text-secondary)]">
-                        No results available. Please try your search again.
+                    <p className="text-[var(--text-secondary)]" tabIndex="0">
+                        No results found for "{term}". Please try different keywords or check your spelling.
                     </p>
+                    <div className="mt-4">
+                        <button 
+                            className="text-[var(--primary)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 rounded"
+                            onClick={() => window.history.back()}
+                            aria-label="Go back to previous page"
+                        >
+                            ← Go back
+                        </button>
+                    </div>
                 </div>
             </div>
         );

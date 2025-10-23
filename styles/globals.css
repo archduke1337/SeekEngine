@@ -147,9 +147,9 @@ h1, h2, h3, h4, h5, h6 {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* Tailwind Directives */
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Base Styles */
 .base-styles {
@@ -517,7 +517,6 @@ button {
     background: rgba(59, 130, 246, 0.1);
     color: var(--primary);
   }
-}
 
 /* ============================================
    THEME TRANSITION

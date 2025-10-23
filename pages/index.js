@@ -20,7 +20,7 @@ import { validateSearchTerm } from '../utils/validation';
 const themeOptions = [
   { value: 'light', label: 'Light', icon: SunIcon },
   { value: 'dark', label: 'Dark', icon: MoonIcon },
-  { value: 'system', label: 'System', icon: ComputerDesktopIcon },
+  { value: 'system', label: 'System', icon: DesktopComputerIcon },
 ];
 
 const features = [

@@ -140,10 +140,7 @@ export default function Home() {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
 
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-64"
-        style={{ background: 'linear-gradient(to bottom, var(--surface-2) 0%, transparent 65%)' }}
-      />
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[var(--surface-2)]/80 via-transparent to-transparent pointer-events-none" />
 
       <header className="relative border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-sm">
         <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">

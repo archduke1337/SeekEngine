@@ -12,6 +12,8 @@ import { motion, useScroll, useTransform, useMotionTemplate, AnimatePresence } f
 import SearchBar from '../components/SearchBar'
 import RiverFooter from '../components/RiverFooter'
 import { useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
+import { useEffect, useState as useReactState } from 'react'
 
 const Hero3D = dynamic(() => import('../components/Hero3D'), {
   ssr: false,
@@ -20,14 +22,22 @@ const Hero3D = dynamic(() => import('../components/Hero3D'), {
 
 export default function Home() {
   const router = useRouter()
+  const { theme, resolvedTheme } = useTheme()
   const { scrollY } = useScroll()
   const [isTyping, setIsTyping] = useState(false)
+  const [mounted, setMounted] = useReactState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   const blurValue = useTransform(scrollY, [0, 400], [0, 15])
   const opacityValue = useTransform(scrollY, [100, 400], [1, 0.15])
   const heroScale = useTransform(scrollY, [0, 500], [1, 1.3])
   const contentY = useTransform(scrollY, [0, 500], [0, -80])
   const backdropFilter = useMotionTemplate`blur(${blurValue}px)`
+
+  const isDark = mounted ? resolvedTheme === 'dark' : true
 
   return (
     <>
@@ -39,7 +49,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative h-screen flex flex-col items-center justify-center px-6">
           <motion.div style={{ scale: heroScale, opacity: opacityValue }} className="absolute inset-0 z-0">
-            <Hero3D isHighPower={isTyping} />
+            <Hero3D isHighPower={isTyping} isDark={isDark} />
           </motion.div>
 
           <motion.div 
@@ -52,7 +62,7 @@ export default function Home() {
           {/* Heading and Search */}
           <motion.div 
             style={{ y: contentY }}
-            className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-16 sm:gap-24"
+            className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-12 sm:gap-16"
           >
             <div className="text-center space-y-6 sm:space-y-8">
               <motion.div
@@ -61,7 +71,7 @@ export default function Home() {
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               >
                 <h1 className="sr-only">SeekEngine</h1>
-                <div className="h-48 sm:h-80" /> {/* Dynamic Spacer for 3D Hero Title */}
+                <div className="h-32 sm:h-56" /> {/* Reduced Spacer for 3D Hero Title */}
                 
                 <p className="text-base sm:text-2xl text-zinc-400 dark:text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight px-6 font-sans">
                   The future of discovery is not a list of links. <br className="hidden sm:block" />

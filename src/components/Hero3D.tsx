@@ -249,18 +249,19 @@ function SparkParticles({ count = 20, active = false }) {
   )
 }
 
-function IndustrialAtmosphere() {
+function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null!)
+  const color = isDark ? "#020406" : "#f1f1f1"
   
   return (
     <mesh ref={meshRef} position={[0, 0, -15]}>
       <planeGeometry args={[100, 100]} />
-      <meshBasicMaterial color="#020406" />
+      <meshBasicMaterial color={color} />
     </mesh>
   )
 }
 
-function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
+function IndustrialScene({ isHighPower, isDark }: { isHighPower: boolean, isDark: boolean }) {
   const [fill, setFill] = useState(0)
   const [heat, setHeat] = useState(0)
   const fontUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json"
@@ -301,11 +302,11 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
   return (
     <>
       <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={30} />
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" />
-      <spotLight position={[-10, 20, 10]} angle={0.2} penumbra={1} intensity={3} color="#ffcc99" />
+      <ambientLight intensity={0.6} />
+      <pointLight position={[10, 10, 10]} intensity={2.0} color="#ffffff" />
+      <spotLight position={[-10, 20, 10]} angle={0.2} penumbra={1} intensity={4} color="#ffcc99" />
       
-      <IndustrialAtmosphere />
+      <IndustrialAtmosphere isDark={isDark} />
       
       <PresentationControls
         global
@@ -366,13 +367,13 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
         </group>
       </PresentationControls>
 
-      <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2.5} far={4.5} />
+      <ContactShadows position={[0, -2.5, 0]} opacity={0.25} scale={40} blur={4} far={4.5} />
       
       {/* @ts-ignore - Prop mismatch in library types */}
       <EffectComposer multisampling={0}>
         <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.8} />
         <Noise opacity={0.05} />
-        <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        <Vignette eskil={false} offset={0.1} darkness={0.8} />
         {/* @ts-ignore - Library type mismatch in v2.x */}
         <ChromaticAberration offset={new THREE.Vector2(0.001, 0.001)} />
       </EffectComposer>
@@ -382,7 +383,7 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
   )
 }
 
-export default function Hero3D({ isHighPower = false }: { isHighPower?: boolean }) {
+export default function Hero3D({ isHighPower = false, isDark = true }: { isHighPower?: boolean, isDark?: boolean }) {
   return (
     <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
       <Canvas 
@@ -394,7 +395,7 @@ export default function Hero3D({ isHighPower = false }: { isHighPower?: boolean 
         }}
       >
         <Suspense fallback={null}>
-          <IndustrialScene isHighPower={isHighPower} />
+          <IndustrialScene isHighPower={isHighPower} isDark={isDark} />
         </Suspense>
       </Canvas>
     </div>

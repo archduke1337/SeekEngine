@@ -37,7 +37,7 @@ export default function Home() {
         <div className="fixed inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02] pointer-events-none" />
 
         {/* Hero Section */}
-        <section className="relative h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+        <section className="relative h-screen flex flex-col items-center justify-center px-6">
           <motion.div style={{ scale: heroScale, opacity: opacityValue }} className="absolute inset-0 z-0">
             <Hero3D isHighPower={isTyping} />
           </motion.div>
@@ -96,7 +96,7 @@ export default function Home() {
                 
                 <p className="text-base sm:text-2xl text-zinc-400 dark:text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight px-6 font-sans">
                   The future of discovery is not a list of links. <br className="hidden sm:block" />
-                  It is a <span className="text-black dark:text-white font-bold opacity-100">synthesis of human intent.</span>
+                  It is a <span className="text-black dark:text-white font-bold opacity-100">sync of human intent.</span>
                 </p>
               </motion.div>
             </div>
@@ -134,9 +134,7 @@ export default function Home() {
                 )}
               </AnimatePresence>
 
-              <div className="p-1 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-[2.8rem] border border-black/5 dark:border-white/5 shadow-2xl group transition-all duration-500 hover:shadow-black/5">
-                <SearchBar autoFocus onTyping={setIsTyping} />
-              </div>
+              <SearchBar autoFocus onTyping={setIsTyping} />
             </motion.div>
           </motion.div>
 

@@ -196,10 +196,10 @@ export default function SearchBar({
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden z-50 p-1.5 md:p-2"
+            className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2.2rem] md:rounded-[2.8rem] shadow-2xl z-50 p-2 md:p-3 pb-6 md:pb-8"
           >
-            <div className="px-4 md:px-5 py-2 md:py-3 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-1 md:mb-2">
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Predicted Intentions</span>
+            <div className="px-5 md:px-7 py-3 md:py-4 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-2 md:mb-3">
+              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.5em] text-slate-400">Intelligence Paths</span>
             </div>
             {suggestions.map((suggestion, index) => (
               <button
@@ -209,14 +209,14 @@ export default function SearchBar({
                   handleSearch(suggestion)
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full px-4 md:px-5 py-3 md:py-4 text-left text-sm flex items-center gap-3 md:gap-4 rounded-2xl md:rounded-3xl transition-all duration-300 ${
+                className={`w-full px-5 md:px-7 py-3.5 md:py-4.5 text-left text-sm flex items-center gap-4 md:gap-5 rounded-[1.5rem] md:rounded-[1.8rem] transition-all duration-300 ${
                   selectedIndex === index
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-xl ring-4 ring-black/5 dark:ring-white/5 scale-[1.01] md:scale-[1.02]'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
+                    ? 'bg-black/5 dark:bg-white/10 backdrop-blur-md text-black dark:text-white shadow-sm scale-[1.01] md:scale-[1.02]'
+                    : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
                 }`}
               >
-                <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full ${selectedIndex === index ? 'bg-red-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                <span className="truncate font-bold tracking-tight text-sm md:text-base">{suggestion}</span>
+                <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${selectedIndex === index ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'bg-slate-300 dark:bg-slate-700'} transition-all duration-500`} />
+                <span className="truncate font-bold tracking-tight text-sm md:text-lg">{suggestion}</span>
               </button>
             ))}
           </motion.div>

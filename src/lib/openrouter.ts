@@ -104,8 +104,15 @@ async function callOpenRouter(
 export async function getSearchSuggestions(query: string): Promise<string[]> {
   const messages = [
     {
+      role: 'system',
+      content: `You are SeekEngine's Intelligence Optimizer. 
+      Analyze the user's intent and output EXACTLY 5 high-value search paths.
+      Include a mix of: deep technical inquiry, comparative analysis, and practical application.
+      Output ONLY a JSON array of strings. No markdown. Format: ["A", "B"]`,
+    },
+    {
       role: 'user',
-      content: `Generate 5-7 concise search query suggestions for: "${query}". Return ONLY a JSON array of strings.`,
+      content: `Generate intelligence paths for: "${query}"`,
     },
   ]
 
@@ -113,14 +120,19 @@ export async function getSearchSuggestions(query: string): Promise<string[]> {
     const content = await callOpenRouter(messages, 200)
     if (!content) return generateFallbackSuggestions(query)
     
+    // Robust extraction for various model output styles
     const jsonMatch = content.match(/\[[\s\S]*?\]/)
-    if (!jsonMatch) return generateFallbackSuggestions(query)
+    const cleanJson = jsonMatch ? jsonMatch[0] : content.trim()
     
-    // Validate with ZOD
-    const suggestions = JSON.parse(jsonMatch[0])
-    const validated = suggestionsResponseSchema.safeParse({ suggestions })
-    
-    return validated.success ? validated.data.suggestions : generateFallbackSuggestions(query)
+    try {
+      const suggestions = JSON.parse(cleanJson.replace(/```json|```/g, ''))
+      const validated = suggestionsResponseSchema.safeParse({ suggestions })
+      
+      return validated.success ? validated.data.suggestions.slice(0, 5) : generateFallbackSuggestions(query)
+    } catch (parseError) {
+      console.warn('⚠️ Suggestion parse error:', parseError)
+      return generateFallbackSuggestions(query)
+    }
   } catch (error) {
     return generateFallbackSuggestions(query)
   }
@@ -128,11 +140,11 @@ export async function getSearchSuggestions(query: string): Promise<string[]> {
 
 function generateFallbackSuggestions(query: string): string[] {
   return [
-    `${query} meaning`,
-    `what is ${query}`,
-    `how to use ${query}`,
-    `${query} examples`,
-    `${query} latest news`
+    `${query} technical specification`,
+    `${query} comparative analysis`,
+    `latest developments in ${query}`,
+    `${query} implementation guide`,
+    `common pitfalls of ${query}`
   ]
 }
 

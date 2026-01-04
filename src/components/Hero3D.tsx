@@ -309,10 +309,10 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
   const fontUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json"
 
   // Responsive values
-  const textScale = isMobile ? 0.75 : 1.05
-  const seekPos: [number, number, number] = isMobile ? [0, 1.2, 0] : [-2.8, 0, 0]
-  const enginePos: [number, number, number] = isMobile ? [0, -1.2, 0] : [2.8, 0, 0]
-  const cameraZ = isMobile ? 18 : 12
+  const textScale = isMobile ? 0.70 : 1.05
+  const seekPos: [number, number, number] = isMobile ? [0, 1.8, 0] : [-2.8, 0, 0]
+  const enginePos: [number, number, number] = isMobile ? [0, -0.8, 0] : [2.8, 0, 0]
+  const cameraZ = isMobile ? 22 : 12
 
   useEffect(() => {
     // Stage 1: Industrial Initialization
@@ -350,9 +350,9 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
   return (
     <>
       <PerspectiveCamera makeDefault position={[0, 0, cameraZ]} fov={30} />
-      <ambientLight intensity={0.6} />
+      <ambientLight intensity={isDark ? 0.6 : 0.8} />
       <pointLight position={[10, 10, 10]} intensity={2.0} color="#ffffff" />
-      <spotLight position={[-10, 20, 10]} angle={0.2} penumbra={1} intensity={4} color="#ffcc99" />
+      <spotLight position={[-10, 20, 10]} angle={0.2} penumbra={1} intensity={isDark ? 4 : 2} color="#ffcc99" />
       
       <IndustrialAtmosphere isDark={isDark} />
       
@@ -364,7 +364,7 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
         polar={[-Math.PI / 15, Math.PI / 15]}
         azimuth={[-Math.PI / 8, Math.PI / 8]}
       >
-        <group scale={textScale} position={[0, 0.9, 0]}>
+        <group scale={textScale} position={[0, isMobile ? 0.4 : 0.9, 0]}>
           <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.3}>
             {/* SEEK - Diesel Container */}
             <Center position={seekPos}>
@@ -382,7 +382,11 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
                   attach="material"
                   vertexShader={DieselShader.vertexShader}
                   fragmentShader={DieselShader.fragmentShader}
-                  uniforms={DieselShader.uniforms}
+                  uniforms={{
+                    ...DieselShader.uniforms,
+                    uFill: { value: fill },
+                    uColor: { value: new THREE.Color(isDark ? "#ffffff" : "#111111") }
+                  }}
                   side={THREE.DoubleSide}
                 />
               </Text3D>
@@ -404,7 +408,11 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
                   attach="material"
                   vertexShader={MoltenShader.vertexShader}
                   fragmentShader={MoltenShader.fragmentShader}
-                  uniforms={MoltenShader.uniforms}
+                  uniforms={{
+                    ...MoltenShader.uniforms,
+                    uHeat: { value: heat },
+                    uBaseColor: { value: new THREE.Color(isDark ? "#1a1a1a" : "#333333") }
+                  }}
                   side={THREE.DoubleSide}
                 />
               </Text3D>
@@ -415,13 +423,13 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
         </group>
       </PresentationControls>
 
-      <ContactShadows position={[0, -2.5, 0]} opacity={0.25} scale={40} blur={4} far={4.5} />
+      <ContactShadows position={[0, -2.5, 0]} opacity={isDark ? 0.25 : 0.15} scale={40} blur={4} far={4.5} />
       
       {/* @ts-ignore - Prop mismatch in library types */}
       <EffectComposer multisampling={0}>
-        <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.8} />
-        <Noise opacity={0.05} />
-        <Vignette eskil={false} offset={0.1} darkness={0.8} />
+        <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={isDark ? 0.8 : 0.4} />
+        <Noise opacity={isDark ? 0.05 : 0.02} />
+        <Vignette eskil={false} offset={0.1} darkness={isDark ? 0.8 : 0.4} />
         {/* @ts-ignore - Library type mismatch in v2.x */}
         <ChromaticAberration offset={new THREE.Vector2(0.001, 0.001)} />
       </EffectComposer>

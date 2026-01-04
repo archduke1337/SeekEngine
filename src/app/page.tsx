@@ -109,10 +109,80 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 0.4, 0] }}
             transition={{ delay: 4, duration: 2, repeat: Infinity }}
-            className="absolute bottom-12 z-40"
+            className="absolute bottom-12 z-40 flex flex-col items-center gap-4 cursor-pointer"
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
           >
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-600">Initialize Exploration</span>
              <div className="w-[1px] h-14 bg-gradient-to-b from-black dark:from-white to-transparent" />
           </motion.div>
+        </section>
+
+        {/* Capabilities Section */}
+        <section className="relative py-32 px-6 flex flex-col items-center">
+            {/* Header */}
+            <div className="w-full max-w-5xl mb-24 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-8 border-b border-black/5 dark:border-white/5 pb-12">
+                <div className="space-y-4">
+                    <p className="text-[10px] uppercase tracking-[0.4em] font-black text-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]">Core Architecture</p>
+                    <h2 className="text-4xl sm:text-6xl font-black text-black dark:text-white tracking-tighter leading-[0.9]">
+                        Mechanical <br /> Efficiency.
+                    </h2>
+                </div>
+                <p className="text-zinc-500 dark:text-zinc-400 font-medium max-w-xs text-sm sm:text-lg leading-relaxed tracking-tight">
+                    Beyond traditional indexing. We operate at the intersection of neural resonance and raw mechanical speed.
+                </p>
+            </div>
+
+            {/* Capability Grid */}
+            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                {[
+                    { 
+                        title: "Neural Synthesis", 
+                        desc: "Real-time RAG architecture that transforms queries into multidimensional intelligence mappings.", 
+                        tag: "Resonance",
+                        delay: 0
+                    },
+                    { 
+                        title: "Global Indexing", 
+                        desc: "Distributed consensus-based search mapping that reaches across the edge to resolve context.", 
+                        tag: "Consensus",
+                        delay: 0.2
+                    },
+                    { 
+                        title: "Console Execution", 
+                        desc: "Direct system interactions through Console Mode. Move at the speed of command lines.", 
+                        tag: "Direct",
+                        delay: 0.4
+                    }
+                ].map((cap, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: cap.delay, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="group relative p-8 sm:p-10 rounded-[2.5rem] bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 shadow-xl overflow-hidden transition-all duration-700 hover:shadow-2xl hover:scale-[1.02]"
+                    >
+                        {/* Thermal Glow */}
+                        <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-500/5 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                        
+                        <div className="relative z-10 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-600 border border-black/10 dark:border-white/10 px-3 py-1 rounded-full">
+                                    {cap.tag}
+                                </span>
+                                <div className="w-2 h-2 rounded-full bg-zinc-200 dark:bg-zinc-800 group-hover:bg-red-500 transition-colors duration-500 shadow-[0_0_10px_red] shadow-transparent group-hover:shadow-red-500/50" />
+                            </div>
+                            <h3 className="text-2xl font-black text-black dark:text-white tracking-tight leading-none">{cap.title}</h3>
+                            <p className="text-zinc-500 dark:text-zinc-500 text-sm leading-relaxed tracking-tight">{cap.desc}</p>
+                            
+                            <div className="pt-4 flex items-center gap-2">
+                                <span className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 group-hover:w-16 group-hover:bg-red-500 transition-all duration-700" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-transparent group-hover:text-red-500 transition-all duration-700">Ready</span>
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
         </section>
 
 

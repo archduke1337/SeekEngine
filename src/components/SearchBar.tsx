@@ -47,6 +47,8 @@ export default function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const [isFocused, setIsFocused] = useState(false)
+
   // Sync isTyping state back to parent for 3D effects
   useEffect(() => {
     onTyping?.(query.length > 0)
@@ -87,16 +89,30 @@ export default function SearchBar({
     <div className="relative w-full" ref={suggestionsRef}>
       <motion.div 
         layout
-        className={`relative group backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-500 ${
-          isCommand 
-            ? 'bg-zinc-950/90 border-red-500/30' 
-            : 'bg-white/40 dark:bg-zinc-900/40 border-black/5 dark:border-white/5'
+        className={`relative group backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-700 ${
+          isFocused 
+            ? 'ring-4 ring-red-500/5 bg-white/60 dark:bg-zinc-900/60 border-red-500/20 shadow-red-500/10' 
+            : isCommand 
+              ? 'bg-zinc-950/90 border-red-500/30' 
+              : 'bg-white/40 dark:bg-zinc-900/40 border-black/5 dark:border-white/5 shadow-zinc-200/50 dark:shadow-none'
         }`}
       >
+        {/* Thermal Pulse (Bottom Line) */}
+        <AnimatePresence>
+          {isFocused && (
+            <motion.div 
+               initial={{ width: 0 }}
+               animate={{ width: '100%' }}
+               exit={{ width: 0 }}
+               className="absolute bottom-0 left-0 h-[2px] bg-red-500 z-20 shadow-[0_-2px_8px_red]"
+            />
+          )}
+        </AnimatePresence>
+
         {/* Leading Icon - AI Pulse */}
-        <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10">
+        <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10 transition-transform duration-500 group-focus-within:scale-110">
           <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
-            isLoading ? 'bg-red-500 animate-pulse' : isCommand ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-slate-300 dark:bg-slate-700'
+            isLoading ? 'bg-red-500 animate-pulse' : isCommand ? 'bg-red-500 shadow-[0_0_8px_red]' : (isFocused ? 'bg-red-400' : 'bg-slate-300 dark:bg-slate-700')
           } transition-colors duration-500`} />
         </div>
 
@@ -118,7 +134,11 @@ export default function SearchBar({
               setSelectedIndex(-1)
               setShowSuggestions(true)
             }}
-            onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+            onFocus={() => {
+                suggestions.length > 0 && setShowSuggestions(true)
+                setIsFocused(true)
+            }}
+            onBlur={() => setIsFocused(false)}
             onKeyDown={handleKeyDown}
             placeholder={isCommand ? "Console Mode: Enter command..." : "Search intelligence index..."}
             autoFocus={autoFocus}

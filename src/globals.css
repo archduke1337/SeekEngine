@@ -245,72 +245,121 @@ html.lenis body {
   }
 }
 
+@keyframes dieselLiquidFlow {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(10deg) brightness(1.2);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+}
+
+@keyframes moltenCore {
+  0% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    background-position: 100% 50%;
+    text-shadow: 0 0 30px rgba(251, 191, 36, 0.6),
+      0 0 60px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  }
+}
+
+@keyframes engineIdleVibration {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(0.5px, -0.5px) rotate(0.1deg);
+  }
+  50% {
+    transform: translate(-0.5px, 0.5px) rotate(-0.1deg);
+  }
+  75% {
+    transform: translate(0.5px, 0.5px) rotate(0.1deg);
+  }
+}
+
+@keyframes heatDistortion {
+  0%,
+  100% {
+    filter: blur(0px) brightness(1);
+    transform: scale(1);
+  }
+  50% {
+    filter: blur(1.5px) brightness(1.5);
+    transform: scale(1.02);
+  }
+}
+
 .hot-engine-text {
   position: relative;
   display: inline-block;
+  /* Molten Metal Gradient */
   background: linear-gradient(
     90deg,
-    #334155 0%,
-    #991b1b 25%,
-    #ef4444 45%,
-    #fbbf24 55%,
-    #fef3c7 65%,
-    #ef4444 75%,
-    #334155 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
-  animation: hotGradient 3s linear infinite, engineIdle 0.15s linear infinite;
-  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.3))
-    drop-shadow(0 0 2px rgba(251, 191, 36, 0.2));
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 0.2em 0.05em;
-  will-change: transform, background-position, filter;
-}
-
-.diesel-flowing-text {
-  position: relative;
-  display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #000000 0%,
-    #0f172a 15%,
-    #0ea5e9 30%,
-    /* Oily Cyan */ #a855f7 50%,
-    /* Oily Purple */ #10b981 70%,
-    /* Diesel Green/Oil */ #0f172a 85%,
-    #000000 100%
+    #18181b 0%,
+    /* Cold Iron */ #991b1b 30%,
+    /* Glowing Red */ #ef4444 45%,
+    /* Radiant Orange */ #fbbf24 55%,
+    /* White Hot Core */ #ffffff 60%,
+    /* Melting Point */ #ef4444 75%,
+    #18181b 100%
   );
   background-size: 300% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent !important;
-  animation: dieselLiquidFlow 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.15))
-    drop-shadow(0 0 2px rgba(168, 85, 247, 0.1));
 
-  &::before {
-    content: "Seek";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    color: rgba(0, 0, 0, 0.8);
-    filter: blur(8px);
-    opacity: 0.4;
-  }
+  /* Internal Vibration & Molten Animation */
+  animation: moltenCore 3s ease-in-out infinite,
+    engineIdleVibration 0.1s linear infinite;
+
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: filter, transform, background-position;
 }
 
-@keyframes dieselLiquidFlow {
-  0% {
-    background-position: 0% 50%;
+.diesel-flowing-text {
+  position: relative;
+  display: inline-block;
+  font-weight: 900;
+  /* Viscous Diesel Gradient */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    #0f172a 20%,
+    #0ea5e9 40%,
+    /* Fuel Surface */ #1e293b 60%,
+    #000000 100%
+  );
+  background-size: 100% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  animation: dieselContainerFlow 8s ease-in-out infinite;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.2));
+  will-change: background-position;
+}
+
+@keyframes dieselContainerFlow {
+  0%,
+  100% {
+    background-position: center 0%;
   }
   50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
+    background-position: center 100%;
   }
 }
 
@@ -324,29 +373,39 @@ html.lenis body {
 }
 
 .hot-engine-text.high-power {
-  animation: hotGradient 0.8s linear infinite,
-    engineOverdrive 0.05s linear infinite;
-  filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.6))
-    drop-shadow(0 0 40px rgba(251, 191, 36, 0.4));
-  scale: 1.04;
-  letter-spacing: -0.02em;
+  animation: moltenCore 0.5s linear infinite,
+    engineIdleVibration 0.04s linear infinite,
+    heatDistortion 0.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8))
+    drop-shadow(0 0 50px rgba(251, 191, 36, 0.5));
+  scale: 1.05;
 }
 
-/* Exhaust Heat Waves */
+/* Atmospheric Heat Distortion Overlay */
 .hot-engine-text.high-power::after {
-  content: "";
+  content: "Engine";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  z-index: -1;
   background: inherit;
   -webkit-background-clip: text;
   background-clip: text;
-  filter: blur(8px) brightness(2);
-  animation: exhaustHeat 0.3s ease-out infinite;
+  filter: blur(12px) opacity(0.6);
+  transform: scale(1.1);
+  animation: heatPulse 1.5s ease-out infinite;
   pointer-events: none;
   z-index: -1;
+}
+
+@keyframes heatPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
 }
 
 .hot-engine-text:hover {

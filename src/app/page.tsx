@@ -134,7 +134,7 @@ export default function Home() {
                 )}
               </AnimatePresence>
 
-              <div className={`p-1 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-[2.8rem] border border-black/5 dark:border-white/5 shadow-2xl group transition-all duration-500 hover:shadow-black/5 ${isTyping ? 'engine-overdrive-shake' : 'engine-idle-shake'}`}>
+              <div className="p-1 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-[2.8rem] border border-black/5 dark:border-white/5 shadow-2xl group transition-all duration-500 hover:shadow-black/5">
                 <SearchBar autoFocus onTyping={setIsTyping} />
               </div>
             </motion.div>

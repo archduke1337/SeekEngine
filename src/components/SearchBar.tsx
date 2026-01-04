@@ -6,9 +6,9 @@
  */
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { useDebounce } from '../hooks/useDebounce'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSearch } from '../hooks/useSearch'
 
 export default function SearchBar({ 
   autoFocus = false, 
@@ -17,28 +17,21 @@ export default function SearchBar({
   autoFocus?: boolean, 
   onTyping?: (isTyping: boolean) => void 
 }) {
-  const [query, setQuery] = useState('')
-  const [suggestions, setSuggestions] = useState<string[]>([])
-  const [prediction, setPrediction] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const { 
+    query, 
+    suggestions, 
+    prediction, 
+    isLoading, 
+    updateQuery, 
+    handleSearch,
+    setSuggestions,
+    setPrediction
+  } = useSearch()
+  
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const debouncedQuery = useDebounce(query, 300)
-  const router = useRouter()
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (debouncedQuery.trim().length < 2) {
-      setSuggestions([])
-      setPrediction('')
-      setShowSuggestions(false)
-      return
-    }
-
-    setIsLoading(true)
-    fetchSuggestions(debouncedQuery)
-  }, [debouncedQuery])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -54,42 +47,10 @@ export default function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  async function fetchSuggestions(q: string) {
-    try {
-      const response = await fetch(`/api/ai/suggest?q=${encodeURIComponent(q)}`)
-      const data = await response.json()
-      const newSuggestions = data.suggestions || []
-      setSuggestions(newSuggestions)
-      
-      if (newSuggestions && newSuggestions.length > 0) {
-        const matchingSuggestion = newSuggestions.find((s: any) => 
-          typeof s === 'string' && s.toLowerCase().startsWith(q.toLowerCase())
-        )
-        if (matchingSuggestion) {
-          setPrediction(matchingSuggestion)
-        } else {
-          setPrediction('')
-        }
-      }
-      
-      setShowSuggestions(true)
-      setSelectedIndex(-1)
-    } catch (error) {
-      console.error('Error fetching suggestions:', error)
-      setSuggestions([])
-      setPrediction('')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  function handleSearch(searchQuery: string) {
-    if (searchQuery.trim()) {
-      router.push(`/results?q=${encodeURIComponent(searchQuery)}`)
-      setShowSuggestions(false)
-      setPrediction('')
-    }
-  }
+  // Sync isTyping state back to parent for 3D effects
+  useEffect(() => {
+    onTyping?.(query.length > 0)
+  }, [query, onTyping])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
@@ -98,10 +59,10 @@ export default function SearchBar({
       } else {
         handleSearch(query)
       }
+      setShowSuggestions(false)
     } else if (e.key === 'Tab' && prediction && prediction !== query) {
       e.preventDefault()
-      setQuery(prediction)
-      setPrediction('')
+      updateQuery(prediction)
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
       setSelectedIndex(prev => 
@@ -112,7 +73,6 @@ export default function SearchBar({
       setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
     } else if (e.key === 'Escape') {
       setShowSuggestions(false)
-      setPrediction('')
     }
   }
 
@@ -120,20 +80,29 @@ export default function SearchBar({
     ? prediction.slice(query.length)
     : ''
 
+  // Slash command detection for UI feedback
+  const isCommand = query.startsWith('/')
+
   return (
     <div className="relative w-full" ref={suggestionsRef}>
       <motion.div 
         layout
-        className="relative group bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-black/10 focus-within:shadow-black/10"
+        className={`relative group backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-500 ${
+          isCommand 
+            ? 'bg-zinc-950/90 border-red-500/30' 
+            : 'bg-white/40 dark:bg-zinc-900/40 border-black/5 dark:border-white/5'
+        }`}
       >
         {/* Leading Icon - AI Pulse */}
         <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10">
-          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${isLoading ? 'bg-red-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-700'} transition-colors duration-500`} />
+          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
+            isLoading ? 'bg-red-500 animate-pulse' : isCommand ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-slate-300 dark:bg-slate-700'
+          } transition-colors duration-500`} />
         </div>
 
         {/* Search Input Layer */}
         <div className="relative">
-          {ghostText && (
+          {ghostText && !isCommand && (
             <div className="absolute inset-0 flex items-center pl-10 sm:pl-14 pr-16 sm:pr-20 py-4 sm:py-5 pointer-events-none overflow-hidden">
               <span className="text-sm sm:text-lg text-transparent leading-none whitespace-pre tracking-tight">{query}</span>
               <span className="text-sm sm:text-lg text-slate-300 dark:text-slate-600 leading-none whitespace-pre tracking-tight">{ghostText}</span>
@@ -145,16 +114,17 @@ export default function SearchBar({
             type="text"
             value={query}
             onChange={(e) => {
-              const val = e.target.value
-              setQuery(val)
+              updateQuery(e.target.value)
               setSelectedIndex(-1)
-              onTyping?.(val.length > 0)
+              setShowSuggestions(true)
             }}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
-            placeholder="Search intelligence index..."
+            placeholder={isCommand ? "Console Mode: Enter command..." : "Search intelligence index..."}
             autoFocus={autoFocus}
-            className="w-full pl-10 sm:pl-14 pr-16 sm:pr-20 py-4 sm:py-5 text-sm sm:text-lg bg-transparent border-none text-black dark:text-white placeholder-slate-400 focus:outline-none transition-all duration-300 tracking-tight font-medium"
+            className={`w-full pl-10 sm:pl-14 pr-16 sm:pr-20 py-4 sm:py-5 text-sm sm:text-lg bg-transparent border-none focus:outline-none transition-all duration-300 tracking-tight font-medium ${
+              isCommand ? 'text-red-500 font-mono' : 'text-black dark:text-white'
+            }`}
             aria-label="Search query"
           />
         </div>
@@ -162,7 +132,7 @@ export default function SearchBar({
         {/* Action Layer */}
         <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-3 z-10">
            <AnimatePresence>
-             {ghostText && (
+             {ghostText && !isCommand && (
                <motion.span 
                  initial={{ opacity: 0, scale: 0.9 }}
                  animate={{ opacity: 1, scale: 1 }}
@@ -178,7 +148,7 @@ export default function SearchBar({
              onClick={() => handleSearch(query)}
              className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all duration-500 ${
                query.trim() 
-               ? 'bg-black dark:bg-white text-white dark:text-black scale-100 opacity-100 shadow-lg' 
+               ? (isCommand ? 'bg-red-500 text-white' : 'bg-black dark:bg-white text-white dark:text-black') + ' scale-100 opacity-100 shadow-lg' 
                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 scale-90 opacity-0 pointer-events-none'
              }`}
            >
@@ -191,7 +161,7 @@ export default function SearchBar({
 
       {/* Suggestions Architecture */}
       <AnimatePresence>
-        {showSuggestions && suggestions.length > 0 && (
+        {showSuggestions && !isCommand && suggestions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -207,8 +177,9 @@ export default function SearchBar({
               <button
                 key={index}
                 onClick={() => {
-                  setQuery(suggestion)
+                  updateQuery(suggestion)
                   handleSearch(suggestion)
+                  setShowSuggestions(false)
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`w-full px-5 md:px-7 py-3.5 md:py-4.5 text-left text-sm flex items-center gap-4 md:gap-5 rounded-[1.5rem] md:rounded-[1.8rem] transition-all duration-300 ${

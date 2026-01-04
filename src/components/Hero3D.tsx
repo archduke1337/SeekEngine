@@ -210,8 +210,10 @@ const MoltenShader = {
 
 // --- SUB-COMPONENTS ---
 
-function SparkParticles({ count = 20, active = false }) {
-  const meshRef = useRef<THREE.Group>(null!)
+function SparkParticles({ count = 40, active = false }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null!)
+  const tempObject = useMemo(() => new THREE.Object3D(), [])
+  
   const particles = useMemo(() => {
     const temp = []
     for (let i = 0; i < count; i++) {
@@ -225,38 +227,78 @@ function SparkParticles({ count = 20, active = false }) {
   }, [count])
 
   useFrame((state, delta) => {
-    if (!meshRef.current || !meshRef.current.children || !particles) return
-    meshRef.current.children.forEach((child, i) => {
-      const p = particles[i]
-      if (!p || !child || !child.position || !child.scale) return
+    if (!meshRef.current) return
+    
+    particles.forEach((p, i) => {
       p.t += delta * p.speed
-      child.position.y = (p.t % 2) - 1 + (p.offset?.[1] || 0)
-      const scale = active ? (1 - (p.t % 1) * 0.5) : 0
-      child.scale.setScalar(Math.max(0.001, scale))
-      child.visible = active && scale > 0.01
+      const time = p.t % 2
+      const scale = active ? (1 - (time / 2)) * 0.5 : 0
+      
+      tempObject.position.set(
+        p.offset[0] * 2, 
+        (time - 1) + p.offset[1], 
+        p.offset[2]
+      )
+      tempObject.scale.setScalar(scale)
+      tempObject.updateMatrix()
+      meshRef.current.setMatrixAt(i, tempObject.matrix)
     })
+    
+    meshRef.current.instanceMatrix.needsUpdate = true
+    meshRef.current.visible = active
   })
 
   return (
-    <group ref={meshRef} position={[3, 0, 0]}>
-      {particles.map((_, i) => (
-        <mesh key={i}>
-          <boxGeometry args={[0.02, 0.02, 0.02]} />
-          <meshBasicMaterial color="#ffcc00" transparent opacity={0.6} />
-        </mesh>
-      ))}
-    </group>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} position={[3, 0, 0]}>
+      <boxGeometry args={[0.04, 0.04, 0.04]} />
+      <meshBasicMaterial color="#ffcc00" transparent opacity={0.8} />
+    </instancedMesh>
   )
 }
 
 function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null!)
-  const color = isDark ? "#020406" : "#f1f1f1"
+  const color = isDark ? new THREE.Color("#020406") : new THREE.Color("#f1f1f1")
+  
+  const atmosphereMaterial = useMemo(() => new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: color },
+      uOpacity: { value: 0.15 },
+      uTime: { value: 0 }
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColor;
+      uniform float uOpacity;
+      uniform float uTime;
+      varying vec2 vUv;
+      
+      float noise(vec2 p) {
+        return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+
+      void main() {
+        float n = noise(vUv * 100.0 + uTime * 0.01);
+        vec3 finalColor = uColor + (n * 0.02);
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `
+  }), [isDark])
+
+  useFrame((state) => {
+    atmosphereMaterial.uniforms.uTime.value = state.clock.elapsedTime
+  })
   
   return (
     <mesh ref={meshRef} position={[0, 0, -15]}>
       <planeGeometry args={[100, 100]} />
-      <meshBasicMaterial color={color} />
+      <primitive object={atmosphereMaterial} attach="material" />
     </mesh>
   )
 }

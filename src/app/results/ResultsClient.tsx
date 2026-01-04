@@ -92,15 +92,18 @@ export default function ResultsClient() {
     }
   }
 
+  const handleSearch = (searchQuery: string) => {
+    if (searchQuery.trim()) {
+      window.history.pushState({}, '', `/results?q=${encodeURIComponent(searchQuery)}`)
+      // Custom event or simple state reset would be better, but for now pushState + reload 
+      // is what was intended. Actually, let's use router.push which is cleaner.
+      window.location.href = `/results?q=${encodeURIComponent(searchQuery)}`
+    }
+  }
+
   function handleFollowUp() {
     if (followUpQuery.trim()) {
-      setFollowUpQuery('')
-      window.history.pushState(
-        null,
-        '',
-        `/results?q=${encodeURIComponent(followUpQuery)}`
-      )
-      window.location.reload()
+      handleSearch(followUpQuery)
     }
   }
 
@@ -246,8 +249,27 @@ export default function ResultsClient() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 opacity-40 italic">
-               No index mapping available for this context.
+            <div className="py-20 flex flex-col items-center text-center">
+               <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-full flex items-center justify-center mb-6">
+                 <svg className="w-8 h-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                 </svg>
+               </div>
+               <h3 className="text-xl font-bold text-black dark:text-white mb-2">No direct mapping found</h3>
+               <p className="text-zinc-500 text-sm max-w-sm mb-8 leading-relaxed">
+                 The index could not resolve this context. Our intelligence suggests exploring adjacent paths.
+               </p>
+               <div className="flex flex-wrap justify-center gap-3">
+                  {["Semantic Neural Mapping", "Quantum Optimization", "Recursive Discovery"].map((suggest) => (
+                    <button
+                      key={suggest}
+                      onClick={() => handleSearch(suggest)}
+                      className="px-5 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-black dark:hover:text-white transition-all shadow-sm"
+                    >
+                      {suggest}
+                    </button>
+                  ))}
+               </div>
             </div>
           )}
         </section>

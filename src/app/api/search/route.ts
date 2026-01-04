@@ -1,59 +1,41 @@
-/**
- * API Route: /api/search
- * Fetches web search results from Google Custom Search with validation
- */
+import { NextResponse } from 'next/server'
+import { getWebSearchResults } from '@/lib/google-search'
+import { getSerpResults } from '@/lib/serpapi'
+import { ENV } from '@/lib/env'
 
-import { getWebSearchResults } from '../../../lib/google-search'
-import { getSerpResults } from '../../../lib/serpapi'
-import { validateSearchQuery } from '../../../lib/validation'
-import { NextRequest, NextResponse } from 'next/server'
+export const runtime = 'edge'
 
-// Note: Can't use edge runtime here due to Google API requirements
-export const dynamic = 'force-dynamic'
-
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  
-  // Validate query
-  const validation = validateSearchQuery(searchParams)
-  if (!validation.valid) {
-    return NextResponse.json(
-      { error: validation.error },
-      { status: 400 }
-    )
+  const query = searchParams.get('q')
+
+  if (!query) {
+    return NextResponse.json({ error: 'Query is required' }, { status: 400 })
   }
 
-  const startIndex = Math.max(1, parseInt(searchParams.get('start') || '1', 10))
-
   try {
-    // Try SerpApi first for real-time results
-    let results = await getSerpResults(validation.query!)
-
-    // Fallback to Google Custom Search if SerpApi results are empty
-    if (!results || results.length === 0) {
-      console.log('🔄 Falling back to Google Custom Search')
-      const googleResults = await getWebSearchResults(validation.query!, startIndex)
-      results = googleResults.map(r => ({
-        title: r.title,
-        link: r.link,
-        snippet: r.snippet,
-        source: r.displayLink
-      }))
-    }
+    // Attempt SerpApi first
+    const serpResults = await getSerpResults(query)
     
-    return NextResponse.json(
-      { results },
-      {
-        headers: {
-          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
-        },
-      }
-    )
+    // Fallback to Google Custom Search
+    if (serpResults && serpResults.length > 0) {
+      return NextResponse.json({ results: serpResults })
+    }
+
+    const webResults = await getWebSearchResults(query)
+    
+    // Normalize web results to match SerpResult shape for the UI
+    const normalizedResults = webResults.map(r => ({
+      title: r.title,
+      link: r.link,
+      snippet: r.snippet,
+      source: r.source || r.displayLink || ''
+    }))
+
+    return NextResponse.json({ results: normalizedResults })
+    
   } catch (error) {
-    console.error('Error in /api/search:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch search results' },
-      { status: 500 }
-    )
+    console.error('Search API error:', error)
+    return NextResponse.json({ error: 'Search failed' }, { status: 500 })
   }
 }

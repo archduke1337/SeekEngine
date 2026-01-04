@@ -14,6 +14,7 @@ import RiverFooter from '../components/RiverFooter'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useEffect, useState as useReactState } from 'react'
+import { ThreeErrorBoundary } from '../components/ThreeErrorBoundary'
 
 const Hero3D = dynamic(() => import('../components/Hero3D'), {
   ssr: false,
@@ -55,7 +56,9 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative h-screen flex flex-col items-center justify-center px-6">
           <motion.div style={{ scale: heroScale, opacity: opacityValue }} className="absolute inset-0 z-0">
-            <Hero3D isHighPower={isTyping} isDark={isDark} isMobile={isMobile} />
+            <ThreeErrorBoundary>
+              <Hero3D isHighPower={isTyping} isDark={isDark} isMobile={isMobile} />
+            </ThreeErrorBoundary>
           </motion.div>
 
           <motion.div 

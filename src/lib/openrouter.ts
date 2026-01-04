@@ -14,24 +14,15 @@ const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
  */
 const FREE_MODELS = [
   'google/gemini-2.0-flash-exp:free',
-  'google/gemma-3-27b-it:free',
-  'google/gemma-3-12b-it:free',
-  'mistralai/mistral-small-24b-instruct-2501:free',
-  'mistralai/devstral-2-2512:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'qwen/qwen-2.5-72b-instruct:free',
-  'nvidia/nemotron-3-nano-30b-a3b:free',
-  'nvidia/llama-3.1-nemotron-nano-8b-v1:free',
-  'deepseek/deepseek-chat:free',
-  'deepseek/deepseek-v3:free',
-  'openai/gpt-oss-120b:free',
-  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
-  'allenai/olmo-3.1-32b-think:free',
   'xiaomi/mimo-v2-flash:free',
+  'deepseek/deepseek-chat:free',
+  'google/gemma-2-9b-it:free',
   'mistralai/mistral-7b-instruct:free',
   'microsoft/phi-3-mini-128k-instruct:free',
-  'google/gemma-2-9b-it:free'
+  'google/gemma-3-27b-it:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'qwen/qwen-2.5-72b-instruct:free',
+  'mistralai/mistral-small-24b-instruct-2501:free'
 ]
 
 /**
@@ -154,13 +145,11 @@ export async function generateAIAnswer(query: string, context?: any[]): Promise<
   const messages = [
     {
       role: 'system',
-      content: `You are SeekEngine AI. Provide a professional, concise markdown summary. 
-      ${contextText ? `Base your answer on these search results:\n${contextText}` : 'Provide a general summary.'}
-      Use headers, bullet points and bold text for clarity. Always cite sources as [1], [2], etc if context is provided.`,
+      content: `You are SeekEngine AI. Concise markdown. ${contextText ? `Source base:\n${contextText}` : ''} Cite as [1], [2].`,
     },
     {
       role: 'user',
-      content: `Respond to: "${query}"`,
+      content: query,
     },
   ]
 

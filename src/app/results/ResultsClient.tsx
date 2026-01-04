@@ -7,7 +7,7 @@ import SearchBar from '../../components/SearchBar'
 import { AnswerSkeleton, ResultCardSkeleton } from '../../components/Skeleton'
 import { SearchResult } from '../../lib/google-search'
 import TypewriterText from '../../components/TypewriterText'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ResultsClient() {
   const searchParams = useSearchParams()

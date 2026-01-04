@@ -60,7 +60,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               >
-                <h1 className="text-7xl sm:text-[10rem] font-black tracking-[-0.05em] text-black dark:text-white leading-none py-4 mb-2 select-none flex items-center justify-center gap-1 font-sans">
+                <h1 className="text-7xl sm:text-[10rem] font-black tracking-[-0.05em] text-black dark:text-white leading-tight py-4 mb-2 select-none flex items-center justify-center gap-1 font-sans">
                   <span className="tracking-[-0.07em] diesel-flowing-text">Seek</span>
                   <span className="relative inline-block">
                     <span className={`hot-engine-text italic font-medium transition-all duration-700 ${isTyping ? 'high-power' : ''}`}>Engine</span>

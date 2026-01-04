@@ -328,6 +328,8 @@ html.lenis body {
     engineIdleVibration 0.1s linear infinite;
 
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0.15em 0.25em; /* Increased horizontal padding for italic characters */
+  margin: -0.15em -0.25em;
   will-change: filter, transform, background-position;
 }
 
@@ -350,6 +352,7 @@ html.lenis body {
   color: transparent !important;
   animation: dieselContainerFlow 8s ease-in-out infinite;
   filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.2));
+  padding: 0.1em 0; /* Vertical padding for the 'e' in Seek */
   will-change: background-position;
 }
 

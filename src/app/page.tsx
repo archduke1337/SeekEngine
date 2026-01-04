@@ -133,25 +133,25 @@ export default function Home() {
             </div>
 
             {/* Capability Grid */}
-            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-32">
                 {[
                     { 
                         title: "Neural Synthesis", 
                         desc: "Real-time RAG architecture that transforms queries into multidimensional intelligence mappings.", 
                         tag: "Resonance",
-                        delay: 0
+                        status: "Active"
                     },
                     { 
                         title: "Global Indexing", 
                         desc: "Distributed consensus-based search mapping that reaches across the edge to resolve context.", 
                         tag: "Consensus",
-                        delay: 0.2
+                        status: "Syncing"
                     },
                     { 
                         title: "Console Execution", 
                         desc: "Direct system interactions through Console Mode. Move at the speed of command lines.", 
                         tag: "Direct",
-                        delay: 0.4
+                        status: "Awaiting"
                     }
                 ].map((cap, i) => (
                     <motion.div
@@ -159,7 +159,7 @@ export default function Home() {
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: cap.delay, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ delay: i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
                         className="group relative p-8 sm:p-10 rounded-[2.5rem] bg-white dark:bg-zinc-900/40 border border-black/5 dark:border-white/5 shadow-xl overflow-hidden transition-all duration-700 hover:shadow-2xl hover:scale-[1.02]"
                     >
                         {/* Thermal Glow */}
@@ -170,18 +170,89 @@ export default function Home() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-600 border border-black/10 dark:border-white/10 px-3 py-1 rounded-full">
                                     {cap.tag}
                                 </span>
-                                <div className="w-2 h-2 rounded-full bg-zinc-200 dark:bg-zinc-800 group-hover:bg-red-500 transition-colors duration-500 shadow-[0_0_10px_red] shadow-transparent group-hover:shadow-red-500/50" />
+                                <div className="flex items-center gap-2">
+                                     <span className="text-[8px] font-black uppercase tracking-tighter text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500">{cap.status}</span>
+                                     <div className="w-1.5 h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 group-hover:bg-red-500 transition-colors duration-500 shadow-[0_0_10px_red] shadow-transparent group-hover:shadow-red-500/50" />
+                                </div>
                             </div>
                             <h3 className="text-2xl font-black text-black dark:text-white tracking-tight leading-none">{cap.title}</h3>
                             <p className="text-zinc-500 dark:text-zinc-500 text-sm leading-relaxed tracking-tight">{cap.desc}</p>
                             
                             <div className="pt-4 flex items-center gap-2">
                                 <span className="w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800 group-hover:w-16 group-hover:bg-red-500 transition-all duration-700" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-transparent group-hover:text-red-500 transition-all duration-700">Ready</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-transparent group-hover:text-red-500 transition-all duration-700">Initialize</span>
                             </div>
                         </div>
                     </motion.div>
                 ))}
+            </div>
+
+            {/* Technical Node Status - Industrial HUD */}
+            <div className="w-full max-w-5xl bg-zinc-950 rounded-[3rem] p-8 sm:p-16 overflow-hidden relative border border-white/5">
+                {/* Background Grid */}
+                <div className="absolute inset-0 bg-grid-white/[0.03] pointer-events-none" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+                
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div className="space-y-10">
+                        <div className="space-y-4">
+                            <p className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-500">Live Infrastructure</p>
+                            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tighter leading-none">
+                                Neural <br /> Mapping Status.
+                            </h2>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-8">
+                            {[
+                                { label: "Index Rate", value: "1.4M paths/s" },
+                                { label: "Latency", value: "42ms" },
+                                { label: "Nodes", value: "812 Active" },
+                                { label: "Verified", value: "99.99%" }
+                            ].map((stat, i) => (
+                                <div key={i} className="space-y-1">
+                                    <p className="text-[9px] uppercase tracking-widest font-bold text-zinc-600">{stat.label}</p>
+                                    <p className="text-lg font-black text-white tracking-tight">{stat.value}</p>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="p-1 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-all">
+                             <div className="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">View Node Network</div>
+                             <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-red-500 transition-colors">
+                                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    {/* Visual Terminus */}
+                    <div className="relative h-[350px] bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 font-mono overflow-hidden group">
+                         <div className="flex items-center gap-2 mb-6 border-b border-white/10 pb-4">
+                            <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_red]" />
+                            <span className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">System Terminus // Edge_Route_42</span>
+                         </div>
+                         
+                         <div className="space-y-3 opacity-60 group-hover:opacity-100 transition-opacity duration-1000">
+                             {[
+                                ">>> INITIALIZING CONSENSUS_MESH",
+                                ">>> CONNECTING_TO_GLOBAL_WARP... SUCCESS",
+                                ">>> MAPPING_RECURSIVE_DISCOVERY_NODES [812/812]",
+                                ">>> LATENCY_RESISTANCE: OPTIMAL (42ms)",
+                                ">>> ANALYZING_HUMAN_INTENT_VECTORS...",
+                                ">>> SYNTHESIS_PROTOCOL: ACTIVE",
+                                ">>> STANDBY_FOR_QUERY_EMISSION..."
+                             ].map((line, i) => (
+                                <p key={i} className="text-[10px] text-red-500/80 leading-tight tracking-tighter">
+                                    <span className="text-zinc-700 mr-2">[{1000 + i}]</span> {line}
+                                </p>
+                             ))}
+                         </div>
+                         
+                         {/* Scanline Effect */}
+                         <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20" />
+                    </div>
+                </div>
             </div>
         </section>
 

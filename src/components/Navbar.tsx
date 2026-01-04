@@ -40,8 +40,10 @@ export default function Navbar() {
   }, [])
 
   const navLinks = [
-    { label: 'Intelligence', href: '/' },
-    { label: 'Manuscript', href: '/about' },
+    { label: 'Engine', href: '/' },
+    { label: 'About', href: '/about' },
+    { label: 'Repo', href: 'https://github.com/archduke1337/SeekEngine', external: true },
+    { label: 'Dev', href: 'https://archduke.is-a.dev', external: true },
   ]
 
   if (!mounted) return null
@@ -57,26 +59,18 @@ export default function Navbar() {
           opacity: visible ? 1 : 0 
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-[40px] border border-white/20 dark:border-white/5 rounded-full shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] pointer-events-auto transition-all duration-700 hover:shadow-[0_20px_60px_-12px_rgba(0,0,0,0.2)] group/nav"
+        className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-[40px] border border-white/20 dark:border-white/5 rounded-full shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] pointer-events-auto transition-all duration-700 hover:shadow-[0_20px_60px_-12px_rgba(0,0,0,0.2)]"
       >
-        {/* Branding Button */}
-        <Link
-          href="/"
-          className="px-4 sm:px-6 py-2 sm:py-2.5 bg-black dark:bg-white text-white dark:text-black rounded-full text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] hover:scale-[1.03] transition-all active:scale-95 shadow-lg group relative overflow-hidden"
-        >
-           <span className="relative z-10 group-hover:tracking-[0.35em] transition-all duration-500">SeekEngine</span>
-           <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        </Link>
-
         {/* Dynamic Nav Items */}
-        <div className="flex items-center relative gap-1 px-1">
+        <div className="flex items-center relative gap-0.5 sm:gap-1 px-1">
           {navLinks.map((link) => {
             const isActive = pathname === link.href
             return (
               <Link
                 key={link.label}
                 href={link.href}
-                className={`relative px-3 sm:px-5 py-2 sm:py-2.5 text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.1em] sm:tracking-[0.15em] rounded-full transition-all duration-500 ${
+                target={link.external ? "_blank" : undefined}
+                className={`relative px-3 sm:px-5 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] rounded-full transition-all duration-500 ${
                   isActive
                     ? 'text-black dark:text-white'
                     : 'text-zinc-500 hover:text-black dark:hover:text-white'
@@ -98,26 +92,30 @@ export default function Navbar() {
         {/* Separator */}
         <div className="w-[1px] h-3 sm:h-4 bg-zinc-200 dark:bg-white/10 mx-1.5 sm:mx-2" />
 
-        {/* Theme Toggle */}
+        {/* Theme Toggle - Optimized SF Style */}
         <button
           onClick={() => setTheme(isDark ? 'light' : 'dark')}
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-zinc-500 hover:text-black dark:hover:text-white rounded-full bg-white/0 hover:bg-zinc-950/5 dark:hover:bg-white/5 transition-all active:scale-90 duration-500 group/theme"
+          className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-zinc-500 hover:text-black dark:hover:text-white rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-90 duration-500 group overflow-hidden"
           aria-label="Toggle theme"
         >
-          <div className="relative w-4 h-4 overflow-hidden">
+          <div className="relative w-4 h-4 overflow-hidden pointer-events-none">
             <motion.div
-              animate={{ y: isDark ? 0 : -20 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col gap-5 items-center"
+              animate={{ y: isDark ? 0 : -25 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="flex flex-col gap-6 items-center"
             >
+              {/* Sun Icon */}
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
+              {/* Moon Icon */}
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             </motion.div>
           </div>
+          {/* Internal Glow Effect */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-tr from-red-500/5 to-transparent transition-opacity duration-500 pointer-events-none" />
         </button>
       </motion.nav>
     </div>

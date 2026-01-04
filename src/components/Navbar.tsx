@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 
 export default function Navbar() {
   const { theme, setTheme, resolvedTheme } = useTheme()
@@ -17,23 +17,22 @@ export default function Navbar() {
   const pathname = usePathname()
   const { scrollY } = useScroll()
 
-  // Visibility logic: hide on scroll down, show on scroll up
+  // Visibility logic: synchronized with momentum scroll
   const [visible, setVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setVisible(false)
-      } else {
-        setVisible(true)
-      }
-      setLastScrollY(currentScrollY)
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0
+    const diff = latest - previous
+    
+    // Only toggle if we've moved significantly to avoid jitter
+    if (Math.abs(diff) < 5) return
+
+    if (latest > previous && latest > 200) {
+      setVisible(false)
+    } else {
+      setVisible(true)
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  })
 
   useEffect(() => {
     setMounted(true)
@@ -59,7 +58,7 @@ export default function Navbar() {
           opacity: visible ? 1 : 0 
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-[40px] border border-white/20 dark:border-white/5 rounded-full shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] pointer-events-auto transition-all duration-700 hover:shadow-[0_20px_60px_-12px_rgba(0,0,0,0.2)]"
+        className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-full shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] pointer-events-auto transition-all duration-700 hover:shadow-[0_20px_60px_-12px_rgba(0,0,0,0.2)]"
       >
         {/* Dynamic Nav Items */}
         <div className="flex items-center relative gap-0.5 sm:gap-1 px-1">
@@ -95,20 +94,20 @@ export default function Navbar() {
         {/* Theme Toggle - Ultra Premium Shift */}
         <button
           onClick={() => setTheme(isDark ? 'light' : 'dark')}
-          className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-zinc-500 hover:text-black dark:hover:text-white rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-95 duration-700 group overflow-hidden"
+          className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-95 duration-700 group overflow-hidden"
           aria-label="Toggle theme"
         >
           <div className="relative w-5 h-5 overflow-hidden pointer-events-none">
             <motion.div
-              animate={{ y: isDark ? 0 : -30 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className="flex flex-col gap-8 items-center"
+              animate={{ y: isDark ? 0 : -48 }}
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              className="flex flex-col gap-7 items-center"
             >
-              {/* Sun Icon */}
+              {/* Sun Icon (Visible in Dark Mode) */}
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              {/* Moon Icon */}
+              {/* Moon Icon (Visible in Light Mode) */}
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
@@ -116,8 +115,8 @@ export default function Navbar() {
           </div>
           
           {/* Dynamic Radial Glow */}
-          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-lg ${
-            isDark ? 'bg-red-500/10' : 'bg-orange-400/10'
+          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-xl ${
+            isDark ? 'bg-orange-400/20' : 'bg-red-500/20'
           }`} />
         </button>
       </motion.nav>

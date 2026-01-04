@@ -2,11 +2,12 @@ import type { Metadata, Viewport } from 'next'
 import Navbar from '../components/Navbar'
 import Providers from '../components/Providers'
 import PageTransition from '../components/PageTransition'
+import LenisProvider from '../components/LenisProvider'
 import { Analytics } from '@vercel/analytics/react'
 import '../globals.css'
 
 export const metadata: Metadata = {
-  title: 'SeekEngine | Sensed Synthesis of Human Intent',
+  title: 'SeekEngine | Sync of Human Intent',
   description:
     'SeekEngine is an high-fidelity industrial AI search platform. Beyond traditional indexing, we operate at the intersection of neural resonance and raw mechanical speed.',
   keywords: ['AI Search', 'Neural Indexing', 'SeekEngine', 'RAG Intelligence', 'Industrial AI', 'Search Architecture', 'Future Search', 'Machine Learning Search'],
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'SeekEngine | Intelligent Search Interface',
+    title: 'SeekEngine | Sync of Human Intent',
     description: 'The future of discovery is not a list of links. It is a sensed synthesis of human intent.',
     url: 'https://seekengine.vercel.app',
     siteName: 'SeekEngine',
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SeekEngine | AI Industrial Search',
+    title: 'SeekEngine | Sync of Human Intent',
     description: 'High-fidelity AI search for the next generation of discovery.',
     creator: '@archduke1337',
     images: ['/og-image.png'],
@@ -77,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://openrouter.ai" />
         <link rel="preconnect" href="https://www.googleapis.com" />
@@ -111,9 +112,11 @@ export default function RootLayout({
       <body className="font-sans antialiased selection:bg-red-500/30 selection:text-red-900 dark:selection:text-red-100">
         <Providers>
           <Navbar />
-          <PageTransition>
-            {children}
-          </PageTransition>
+          <LenisProvider>
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </LenisProvider>
         </Providers>
         <Analytics />
       </body>

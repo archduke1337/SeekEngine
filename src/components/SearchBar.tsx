@@ -89,7 +89,7 @@ export default function SearchBar({
     <div className="relative w-full" ref={suggestionsRef}>
       <motion.div 
         layout
-        className={`relative group backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-700 ${
+        className={`relative group backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-700 ${
           isFocused 
             ? 'ring-4 ring-red-500/5 bg-white/60 dark:bg-zinc-900/60 border-red-500/20 shadow-red-500/10' 
             : isCommand 

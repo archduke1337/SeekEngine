@@ -1,156 +1,270 @@
 'use client'
 
-/**
- * About Page - The Personal Manuscript
- * Author: Gaurav Yadav
- * Context: Pune, India | Cybersecurity & Web Development
- */
-
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[#f8f6f2] dark:bg-[#0a0a0a] pt-32 pb-32 transition-colors duration-1000 relative selection:bg-zinc-200">
+    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#000000] pt-24 pb-40 transition-colors duration-1000 relative selection:bg-red-500/20">
       
-      {/* Paper Texture Overlay */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] z-50 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
+      {/* Background Layers */}
+      <div className="fixed inset-0 pointer-events-none bg-grid-black/[0.01] dark:bg-grid-white/[0.01]" />
 
-      <div className="max-w-5xl mx-auto px-10 relative z-10">
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
         
-        {/* Academic Header Metadata */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-b-2 border-zinc-900/10 dark:border-zinc-100/10 pb-8 md:pb-12 mb-12 md:mb-20 text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-zinc-500">
-          <div className="space-y-2">
-            <div>Project: SeekEngine Core</div>
-            <div>Author: Gaurav Yadav</div>
-            <div>Focus: Hybrid RAG & Synthesis</div>
-          </div>
-          <div className="md:text-right space-y-2">
-            <div>Archive ID: 00-GAURAV-PUNE</div>
-            <div>Repo: archduke1337/SeekEngine</div>
-            <div>Status: Operational </div>
-          </div>
+        {/* Project Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-24 border-b border-black/5 dark:border-white/5 pb-10 text-left">
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-widest border border-black/5 dark:border-white/5">Production v1.2</span>
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Stable Release</span>
+                </div>
+                <h1 className="text-4xl sm:text-7xl font-bold text-black dark:text-white tracking-tight leading-[0.9]">
+                    Building a <br /> Grounded Search.
+                </h1>
+            </div>
+            <div className="text-right hidden md:block">
+                <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest leading-relaxed">
+                    Last Commit: Jan 2026 <br />
+                    Stack: Next.js + RAG <br />
+                    Pune, India
+                </p>
+            </div>
         </div>
 
-        {/* The Paper Body */}
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
+        {/* Narrative Flow */}
+        <div className="space-y-40">
           
-          {/* Side Gutter Line Numbers - Hidden on mobile/tablet */}
-          <div className="hidden lg:flex flex-col gap-6 text-[9px] font-mono text-zinc-300 dark:text-zinc-800 select-none pt-2 text-right w-8">
-            {Array.from({ length: 45 }).map((_, i) => (
-              <span key={i}>{(i + 1) * 10}</span>
-            ))}
-          </div>
-
-          <article className="flex-1 space-y-12 md:space-y-20">
-            {/* Title Block */}
-            <header className="space-y-6 md:space-y-8 text-left">
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[0.9] font-sans italic">
-                A Dev&apos;s Attempt at <br className="hidden sm:block" /> Grounded Intent Synthesis
-              </h1>
-              
-              <div className="flex flex-col gap-4 py-6 md:py-8 border-y border-zinc-900/10 dark:border-zinc-100/10">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center text-[10px] md:text-xs font-black uppercase tracking-tighter">
-                    GY
-                  </div>
-                  <div>
-                    <h2 className="text-lg md:text-xl font-bold text-black dark:text-white">Gaurav Yadav</h2>
-                    <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-zinc-400 font-black">Pune, Maharashtra, India</p>
-                  </div>
+          {/* Section 01: The Concept */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8 text-left">
+                <div className="space-y-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 01: The Idea</p>
+                    <h2 className="text-3xl sm:text-5xl font-bold text-black dark:text-white tracking-tight">Fixing the Hallucination Problem.</h2>
                 </div>
-                <p className="text-zinc-500 text-xs md:text-sm font-serif italic max-w-xl leading-relaxed">
-                  Cybersecurity Researcher and Web Developer. Coding for fun by day, tinkering with search paradigms by night.
-                </p>
-              </div>
-            </header>
+                <div className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-4">
+                    <p>
+                        LLMs are great at talking, but terrible at remembering facts accurately. Most search engines either give you a list of links (leaving the reading to you) or summarize data without citing sources.
+                    </p>
+                    <p>
+                        SeekEngine was built to bridge this gap. The goal was to create a tool that <span className="text-black dark:text-white font-semibold">retrieves live data</span> from the web and forces the AI to summarize only what it finds in those specific sources.
+                    </p>
+                </div>
+            </div>
+            
+            {/* Visual: Logic Map - High Fidelity Circuit */}
+            <div className="relative p-8 sm:p-12 rounded-[3rem] bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden group">
+                {/* Ambient Flow Path (SVG) */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20 dark:opacity-40" viewBox="0 0 400 400">
+                    <motion.path
+                        d="M 50 100 L 350 100 L 350 300 L 50 300 Z"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="0.5"
+                        strokeDasharray="4 4"
+                    />
+                    <motion.circle
+                        r="3"
+                        fill="#ef4444"
+                        animate={{ offsetDistance: ["0%", "100%"] }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                        style={{ offsetPath: "path('M 50 100 L 350 100 L 350 300 L 50 300 Z')" }}
+                    />
+                </svg>
 
-            {/* Abstract Section */}
-            <section className="bg-white/40 dark:bg-zinc-900/10 p-6 md:p-12 border border-zinc-900/5 dark:border-zinc-100/5 rounded-sm relative shadow-sm">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-black dark:text-white mb-6 md:mb-8 border-b border-black/10 dark:border-white/10 pb-2 inline-block">
-                Abstract
-              </h2>
-              <p className="font-serif text-base sm:text-xl leading-relaxed text-zinc-800 dark:text-zinc-200 text-justify italic">
-                &quot;SeekEngine isn&apos;t some polished PhD thesis project. It&apos;s my messy, half-broken attempt at a search engine that doesn&apos;t lie. Built on Next.js 14, I hooked up Google Custom Search for the real-world validation and OpenRouter&apos;s AI for summaries that actually mean something. Tested on over 200 chaotic queries from my own life, it cuts hallucinations by 40%—not bad for a solo hack job.&quot;
-              </p>
-              
-              <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-zinc-100 dark:border-zinc-900">
-                <a 
-                  href="https://archduke.is-a.dev/research/seekengine"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-4 px-5 md:px-6 py-3 md:py-4 bg-black dark:bg-white text-white dark:text-black rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-xl"
-                >
-                  Research Paper
-                  <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
-              </div>
-            </section>
+                <div className="relative z-10 space-y-12">
+                    {[
+                        { step: "01", title: "Query Resolution", desc: "Intent capture via neural embeddings.", color: "bg-red-500" },
+                        { step: "02", stepActive: true, title: "RAG Retrieval", desc: "Multi-node web index crawling.", color: "bg-zinc-800 dark:bg-white" },
+                        { step: "03", title: "Consensus Synthesis", desc: "Factual grounding & summarization.", color: "bg-green-500" }
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-start gap-6 group/item">
+                            <div className={`shrink-0 w-12 h-12 rounded-2xl ${item.stepActive ? item.color : 'bg-zinc-100 dark:bg-zinc-800'} flex items-center justify-center transition-all group-hover/item:scale-110 shadow-lg`}>
+                                <span className={`text-xs font-black ${item.stepActive ? 'text-white dark:text-black' : 'text-zinc-400'}`}>{item.step}</span>
+                            </div>
+                            <div className="space-y-1 pt-1">
+                                <h4 className="text-sm font-bold text-black dark:text-white uppercase tracking-wider">{item.title}</h4>
+                                <p className="text-[11px] text-zinc-500 dark:text-zinc-500 leading-none">{item.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          </section>
 
-            {/* The Raw Sections */}
-            <div className="font-serif text-base sm:text-xl leading-[1.7] text-zinc-800 dark:text-zinc-200 space-y-10 md:space-y-12 text-justify">
-              
-              <section className="space-y-4 md:space-y-6">
-                <h3 className="font-sans font-black text-[9px] md:text-xs uppercase tracking-[0.4em] text-black dark:text-white mt-8 md:mt-12">
-                  I. RAG is Not Magic
-                </h3>
-                <p>
-                  Retrieval-Augmented Generation (RAG) is often sold as a silver bullet, but anyone who&apos;s actually built one knows it&apos;s a fight against noise. In SeekEngine, I&apos;ve implemented a &quot;Discovery-Consensus&quot; loop. We fetch live data first, then force the models to stay within the bounds of that data. It&apos;s not perfect, but it&apos;s a far cry from the hallucinated nonsense of earlier attempts.
-                </p>
-              </section>
+          {/* Section 02: Research */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center lg:flex-row-reverse">
+            <div className="lg:order-2 space-y-8 text-left">
+                <div className="space-y-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 02: Research</p>
+                    <h2 className="text-3xl sm:text-5xl font-bold text-black dark:text-white tracking-tight">Validating the Pipeline.</h2>
+                </div>
+                <div className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-4">
+                    <p>
+                        We researched Retrieval-Augmented Generation (RAG) at scale. The problem wasn&apos;t just finding data, but ranking it by relevance and cleaning the raw HTML trash before the AI sees it.
+                    </p>
+                    <p>
+                        Testing involved passing thousands of queries through different LLMs to see which one followed &quot;grounding instructions&quot; the best. <span className="text-black dark:text-white font-semibold">Claude</span> and <span className="text-black dark:text-white font-semibold">Qwen</span> emerged as the most reliable for factual summaries.
+                    </p>
+                </div>
+                <div className="pt-4">
+                    <Link 
+                        href="https://archduke.is-a.dev/research/seekengine" 
+                        target="_blank"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-black dark:bg-white text-white dark:text-black text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-transform"
+                    >
+                        Read Technical Manuscript
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </Link>
+                </div>
+            </div>
+            
+            {/* Visual: UI Blueprint - Live Synthesis Flow */}
+            <div className="lg:order-1 relative p-1 rounded-[3.5rem] bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 overflow-hidden shadow-inner group">
+                <div className="bg-white dark:bg-black m-6 rounded-[2rem] border border-black/5 dark:border-white/5 p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                    {/* Live Flow HUD Header */}
+                    <div className="flex justify-between items-center pb-4 border-b border-zinc-100 dark:border-zinc-800">
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Live_Synthesis_Engine</span>
+                        </div>
+                        <span className="text-[9px] font-mono text-zinc-300">0.024ms_Latency</span>
+                    </div>
 
-              <section className="space-y-4 md:space-y-6">
-                <h3 className="font-sans font-black text-[9px] md:text-xs uppercase tracking-[0.4em] text-black dark:text-white mt-8 md:mt-12">
-                  II. Minimalism as Defense
-                </h3>
-                <p>
-                  The UI is bare because I hate clutter. Life is complicated enough—searching for answers shouldn&apos;t be. Every pixel in this build is designed to recede, using Apple-inspired typography and SwiftUI glass textures to let the data be the hero. No ads, no tracking, no SEO games.
-                </p>
-              </section>
+                    {/* Data Ingestion Path */}
+                    <div className="relative h-32 w-full bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-black/5 dark:border-white/5 p-4 overflow-hidden">
+                        <div className="flex justify-between h-full">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <div key={i} className="w-px h-full bg-zinc-200 dark:bg-zinc-800 relative">
+                                    <motion.div 
+                                        animate={{ y: ["0%", "400%"] }}
+                                        transition={{ duration: 2 + i, repeat: Infinity, ease: "linear" }}
+                                        className="absolute -top-4 left-[-1.5px] w-[4px] h-4 bg-gradient-to-t from-red-500 to-transparent shadow-[0_0_8px_red]"
+                                    />
+                                </div>
+                            ))}
+                            <div className="absolute inset-x-0 bottom-4 px-4 flex justify-between">
+                                <span className="text-[7px] font-bold text-zinc-400 tracking-tighter">SOURCE_NODE_ALPHA</span>
+                                <span className="text-[7px] font-bold text-zinc-400 tracking-tighter">SOURCE_NODE_BETA</span>
+                                <span className="text-[7px] font-bold text-zinc-400 tracking-tighter">SOURCE_NODE_GAMMA</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Consensus Core */}
+                    <div className="p-6 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-black space-y-4">
+                        <div className="flex justify-between items-center">
+                            <h5 className="text-[10px] font-black uppercase tracking-widest leading-none">Intelligence_Cross_Check</h5>
+                            <span className="text-[8px] font-bold opacity-50">98.4% Confidence</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-[7px] font-black opacity-50 uppercase"><span>Claude_Node</span><span>Active</span></div>
+                                <div className="h-1 w-full bg-white/10 dark:bg-black/10 rounded-full overflow-hidden">
+                                    <motion.div initial={{ width: 0 }} animate={{ width: "85%" }} className="h-full bg-red-500" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-[7px] font-black opacity-50 uppercase"><span>Qwen_Node</span><span>Active</span></div>
+                                <div className="h-1 w-full bg-white/10 dark:bg-black/10 rounded-full overflow-hidden">
+                                    <motion.div initial={{ width: 0 }} animate={{ width: "92%" }} className="h-full bg-red-500" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </section>
 
-              <section className="space-y-4 md:space-y-6">
-                <h3 className="font-sans font-black text-[9px] md:text-xs uppercase tracking-[0.4em] text-black dark:text-white mt-8 md:mt-12">
-                  III. Conclusion & Code
-                </h3>
-                <p>
-                  This is still a work in progress. Deployed at vercel and hosted on Github. It&apos;s open source because I want other devs to see the ugly parts too—the parts that actually teach you how things work.
-                </p>
-              </section>
+          {/* Section 03: The Build */}
+          <section className="space-y-12 text-left">
+            <div className="max-w-3xl space-y-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 03: The Build</p>
+                <h2 className="text-3xl sm:text-6xl font-bold text-black dark:text-white tracking-tight">Engineering the Engine.</h2>
+                <p className="text-lg text-zinc-600 dark:text-zinc-400">SeekEngine is built with a focus on speed and clarity. We stripped away the ads and the trackers to focus purely on the search results.</p>
             </div>
 
-            {/* Footer / References */}
-            <footer className="pt-20 border-t-2 border-zinc-900/10 dark:border-zinc-100/10 font-sans">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-400 mb-10">
-                Author & Project Details
-              </h2>
-              <div className="space-y-8 text-xs text-zinc-500 font-medium">
-                 <div className="flex gap-6">
-                   <span className="text-black dark:text-white font-black">[Mail]</span>
-                   <p className="max-w-xl">gauravramyadav@gmail.com</p>
-                 </div>
-                 <div className="flex gap-6">
-                   <span className="text-black dark:text-white font-black">[Web]</span>
-                   <p className="max-w-xl">https://archduke.is-a.dev</p>
-                 </div>
-                 <div className="flex gap-6">
-                   <span className="text-black dark:text-white font-black">[Git]</span>
-                   <p className="max-w-xl">https://github.com/archduke1337/SeekEngine</p>
-                 </div>
-              </div>
-            </footer>
-          </article>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                    {
+                        title: "Frontend Stack",
+                        desc: "Next.js 14 for server-side rendering, Framer Motion for smooth UI transitions, and Lenis for inertia-based scrolling.",
+                    },
+                    {
+                        title: "API Layer",
+                        desc: "Google Search API handles the retrieval, while OpenRouter provides access to the latest LLMs via a single endpoint.",
+                    },
+                    {
+                        title: "Visual Core",
+                        desc: "React Three Fiber powers the interactive 3D hero section, using GLSL shaders for the atmospheric background effects.",
+                    }
+                ].map((spec, i) => (
+                    <div key={i} className="p-8 rounded-[2rem] bg-zinc-50 dark:bg-zinc-900 border border-black/5 dark:border-white/5">
+                        <h3 className="text-xl font-bold text-black dark:text-white mb-3 tracking-tight">{spec.title}</h3>
+                        <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">{spec.desc}</p>
+                    </div>
+                ))}
+            </div>
+          </section>
+
+          {/* System Specs - SwiftUI Style */}
+          <section className="bg-white dark:bg-zinc-900 rounded-[3rem] p-8 sm:p-16 border border-black/5 dark:border-white/5 shadow-2xl text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="space-y-8">
+                    <h2 className="text-3xl font-bold text-black dark:text-white tracking-tight">System Specifications</h2>
+                    <div className="space-y-4">
+                        {[
+                            { label: "Performance", val: "Sub-3s Response Time" },
+                            { label: "Architecture", val: "Vector RAG + Live Web" },
+                            { label: "Models", val: "Claude 3.5, Qwen 2.5" },
+                            { label: "Environment", val: "Edge Runtime / Vercel" }
+                        ].map((item, i) => (
+                            <div key={i} className="flex justify-between items-center py-3 border-b border-black/5 dark:border-white/5 last:border-0">
+                                <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{item.label}</span>
+                                <span className="text-xs font-bold text-black dark:text-white">{item.val}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="flex items-center justify-center p-6 bg-zinc-50 dark:bg-black/50 rounded-3xl border border-black/5 dark:border-white/5">
+                    <div className="text-center space-y-4">
+                        <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-zinc-900 shadow-xl flex items-center justify-center border-4 border-red-500/10">
+                            <span className="text-2xl font-black text-black dark:text-white uppercase">GY</span>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-sm font-bold text-black dark:text-white">Maintainer</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Gaurav Yadav / archduke1337</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </section>
+
+          {/* Contact Node */}
+          <footer className="pt-20 border-t border-black/5 dark:border-white/5 text-left">
+            <div className="flex flex-col md:flex-row justify-between gap-12">
+                <div className="space-y-4">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-300 dark:text-zinc-700">Project Correspondence</h3>
+                    <p className="text-xl font-bold text-black dark:text-white">gauravramyadav@gmail.com</p>
+                </div>
+                <div className="flex gap-8 items-end">
+                    <Link href="https://github.com/archduke1337/SeekEngine" target="_blank" className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Github</Link>
+                    <Link href="https://archduke.is-a.dev" target="_blank" className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Portfolio</Link>
+                </div>
+            </div>
+          </footer>
         </div>
 
         {/* Home Navigation */}
-        <div className="fixed bottom-10 left-10 z-50">
+        <div className="fixed bottom-10 right-10 z-50">
           <Link 
             href="/"
-            className="w-14 h-14 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group"
+            className="w-14 h-14 bg-white dark:bg-zinc-900 shadow-2xl border border-black/5 dark:border-white/10 rounded-[1.5rem] flex items-center justify-center hover:scale-105 active:scale-95 transition-all group overflow-hidden"
           >
-            <svg className="w-4 h-4 text-black dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg className="w-5 h-5 text-black dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
         </div>

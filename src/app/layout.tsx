@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'SeekEngine | Sensed Synthesis of Human Intent',
   description:
     'SeekEngine is an high-fidelity industrial AI search platform. Beyond traditional indexing, we operate at the intersection of neural resonance and raw mechanical speed.',
-  keywords: ['AI Search', 'Neural Indexing', 'SeekEngine', 'RAG Intelligence', 'Industrial AI', 'Search Architecture'],
+  keywords: ['AI Search', 'Neural Indexing', 'SeekEngine', 'RAG Intelligence', 'Industrial AI', 'Search Architecture', 'Future Search', 'Machine Learning Search'],
   authors: [{ name: 'SeekEngine Team', url: 'https://seekengine.vercel.app' }],
   metadataBase: new URL('https://seekengine.vercel.app'),
   alternates: {
@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     description: 'The future of discovery is not a list of links. It is a sensed synthesis of human intent.',
     url: 'https://seekengine.vercel.app',
     siteName: 'SeekEngine',
+    images: [
+      {
+        url: '/og-image.png', // Ensure this exists or I should generate an asset
+        width: 1200,
+        height: 630,
+        alt: 'SeekEngine - Industrial Intelligence Interface',
+      },
+    ],
     type: 'website',
     locale: 'en_US',
   },
@@ -27,20 +35,32 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SeekEngine | AI Industrial Search',
     description: 'High-fidelity AI search for the next generation of discovery.',
+    creator: '@archduke1337',
+    images: ['/og-image.png'],
+  },
+  verification: {
+    google: 'google-site-verification-placeholder',
+    yandex: 'yandex-verification-placeholder',
+    yahoo: 'yahoo-site-verification-placeholder',
+    other: {
+      'msvalidate.01': 'bing-verification-placeholder',
+      'facebook-domain-verification': 'facebook-verification-placeholder',
+    },
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
   },
 }
-
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -61,6 +81,32 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://openrouter.ai" />
         <link rel="preconnect" href="https://www.googleapis.com" />
+        {/* JSON-LD Structured Data for Search Engines */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "SeekEngine",
+              "url": "https://seekengine.vercel.app",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://seekengine.vercel.app/results?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              },
+              "description": "High-fidelity industrial AI search platform.",
+              "publisher": {
+                "@type": "Organization",
+                "name": "SeekEngine",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://seekengine.vercel.app/logo.png"
+                }
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-sans antialiased selection:bg-red-500/30 selection:text-red-900 dark:selection:text-red-100">
         <Providers>

@@ -92,30 +92,33 @@ export default function Navbar() {
         {/* Separator */}
         <div className="w-[1px] h-3 sm:h-4 bg-zinc-200 dark:bg-white/10 mx-1.5 sm:mx-2" />
 
-        {/* Theme Toggle - Optimized SF Style */}
+        {/* Theme Toggle - Ultra Premium Shift */}
         <button
           onClick={() => setTheme(isDark ? 'light' : 'dark')}
-          className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-zinc-500 hover:text-black dark:hover:text-white rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-90 duration-500 group overflow-hidden"
+          className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-zinc-500 hover:text-black dark:hover:text-white rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-95 duration-700 group overflow-hidden"
           aria-label="Toggle theme"
         >
-          <div className="relative w-4 h-4 overflow-hidden pointer-events-none">
+          <div className="relative w-5 h-5 overflow-hidden pointer-events-none">
             <motion.div
-              animate={{ y: isDark ? 0 : -25 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="flex flex-col gap-6 items-center"
+              animate={{ y: isDark ? 0 : -30 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="flex flex-col gap-8 items-center"
             >
               {/* Sun Icon */}
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
               {/* Moon Icon */}
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             </motion.div>
           </div>
-          {/* Internal Glow Effect */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-tr from-red-500/5 to-transparent transition-opacity duration-500 pointer-events-none" />
+          
+          {/* Dynamic Radial Glow */}
+          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-lg ${
+            isDark ? 'bg-red-500/10' : 'bg-orange-400/10'
+          }`} />
         </button>
       </motion.nav>
     </div>

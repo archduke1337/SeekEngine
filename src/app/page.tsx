@@ -133,7 +133,7 @@ export default function Home() {
             </div>
 
             {/* Capability Grid */}
-            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-32">
+            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-40">
                 {[
                     { 
                         title: "Neural Synthesis", 
@@ -185,6 +185,55 @@ export default function Home() {
                         </div>
                     </motion.div>
                 ))}
+            </div>
+
+            {/* How It Works - Visual Architecture Diagram */}
+            <div className="w-full max-w-5xl mb-40">
+                <div className="text-center mb-20 space-y-4">
+                    <p className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-400">Intelligent Flow</p>
+                    <h2 className="text-3xl sm:text-5xl font-black text-black dark:text-white tracking-tighter">Workflow Visualization.</h2>
+                </div>
+
+                <div className="relative grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
+                    {[
+                        { step: "01", name: "Intent", detail: "Query Capture", icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" },
+                        { step: "02", name: "Synthesis", detail: "RAG Core", icon: "M13 10V3L4 14h7v7l9-11h-7z" },
+                        { step: "03", name: "Index", detail: "Global Mapping", icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 11V9" },
+                        { step: "04", name: "Result", detail: "Consensus", icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" }
+                    ].map((item, i) => (
+                        <div key={i} className="relative group">
+                            {/* Animated Connecting Path (Desktop only) */}
+                            {i < 3 && (
+                                <div className="hidden md:block absolute top-1/2 left-[calc(100%-1rem)] w-[calc(100%-2rem)] h-[1px] bg-zinc-200 dark:bg-zinc-800 z-0">
+                                    <motion.div 
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: "100%" }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: i * 0.4 + 0.5, duration: 1 }}
+                                        className="h-full bg-red-500 shadow-[0_0_8px_red]"
+                                    />
+                                </div>
+                            )}
+                            
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.2, duration: 0.8 }}
+                                className="relative z-10 flex flex-col items-center p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-lg group-hover:border-red-500/30 transition-all duration-500"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mb-6 group-hover:bg-red-500 transition-colors duration-500 group-hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+                                    <svg className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                                    </svg>
+                                </div>
+                                <span className="text-[10px] font-black text-red-500 mb-1">{item.step}</span>
+                                <h3 className="text-xl font-black text-black dark:text-white tracking-tight mb-2">{item.name}</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{item.detail}</p>
+                            </motion.div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Technical Node Status - Industrial HUD */}
@@ -256,6 +305,43 @@ export default function Home() {
             </div>
         </section>
 
+        {/* System Philosophy Section */}
+        <section className="relative py-40 px-6 flex flex-col items-center bg-zinc-950/40 border-t border-black/5 dark:border-white/5">
+             <div className="w-full max-w-2xl text-center space-y-10 relative z-10">
+                 <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="inline-block px-4 py-1.5 rounded-full border border-red-500/20 bg-red-500/5 text-[9px] font-black uppercase tracking-[0.3em] text-red-500"
+                 >
+                    Technical Manifesto
+                 </motion.div>
+                 
+                 <h2 className="text-4xl sm:text-6xl font-black text-black dark:text-white tracking-tighter leading-none">
+                    Intelligence <br /> as a Utility.
+                 </h2>
+                 
+                 <p className="text-zinc-500 dark:text-zinc-400 text-lg sm:text-2xl font-medium tracking-tight leading-relaxed max-w-xl mx-auto italic">
+                    "We do not seek to provide data. We seek to provide clarity. SeekEngine is the protocol through which human intent finds its most efficient physical representation."
+                 </p>
+                 
+                 <div className="pt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+                     <button 
+                        onClick={() => router.push('/about')}
+                        className="px-8 py-4 rounded-2xl bg-black dark:bg-white text-white dark:text-black text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                     >
+                        Read the Manuscript
+                     </button>
+                     <div className="flex items-center gap-3 px-6 py-4 rounded-2xl border border-black/5 dark:border-white/10 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        System Ready
+                     </div>
+                 </div>
+             </div>
+             
+             {/* Subsurface Grit Layer */}
+             <div className="absolute inset-0 bg-grid-black/[0.01] dark:bg-grid-white/[0.01] pointer-events-none" />
+        </section>
 
         <RiverFooter />
       </main>

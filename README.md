@@ -1,93 +1,92 @@
-# SeekEngine 🔎  
-An open-source, responsive, and customizable search engine powered by the **Google Custom Search API**.  
+# SeekEngine
 
-SeekEngine is built with **Next.js** and designed to provide a clean, minimal interface for searching the web. It’s lightweight, fast, and easily deployable on Vercel.  
+An AI-enhanced search engine with a minimalist design and dark/light mode support.
 
-🔗 **Live Demo**: [seekengine.vercel.app](https://seekengine.vercel.app)  
+## Setup
 
----
-
-## ✨ Features
-- ⚡ **Powered by Google Custom Search API**  
-- 🎨 **Responsive UI** – works on desktop & mobile  
-- ⚙️ **Customizable** – easy to configure and style  
-- 🚀 **Deployed on Vercel** – quick and reliable hosting  
-- 🔍 **Fast Results** – minimal overhead, instant rendering  
-
----
-
-## 🛠 Tech Stack
-- [Next.js](https://nextjs.org/) – Frontend framework  
-- [Google Custom Search API](https://developers.google.com/custom-search) – Search results provider  
-- [Vercel](https://vercel.com/) – Hosting & deployment  
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v16 or later)  
-- npm or yarn package manager  
-- A [Google Custom Search API key](https://developers.google.com/custom-search/v1/overview)  
-- A [Custom Search Engine ID (CX)](https://programmablesearchengine.google.com/)  
-
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/archduke1337/SeekEngine.git
-   cd SeekEngine
-     ```
-
-2. Install dependencies:
+### 1. Install Dependencies
 
 ```bash
 npm install
- or
-yarn install
-   ```
-
-
-3. Configure your .env.local file with Google API credentials:
 ```
-NEXT_PUBLIC_GOOGLE_API_KEY=your-google-api-key
-NEXT_PUBLIC_GOOGLE_CX=your-custom-search-engine-id
-  ```
-4. Run the development server:
-  ```
+
+### 2. Configure Environment Variables
+
+Create a `.env.local` file in the root directory with the following:
+
+```env
+NEXT_PUBLIC_APP_NAME=SeekEngine
+
+# Google Custom Search
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_CX=your_google_search_engine_id_here
+
+# OpenRouter AI API
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
+
+### 3. Get API Keys
+
+**Google Custom Search:**
+1. Visit [Google Cloud Console](https://console.cloud.google.com)
+2. Create a new project
+3. Enable the Custom Search API
+4. Create API credentials (API Key)
+5. Set up a Custom Search Engine at [cse.google.com](https://cse.google.com)
+6. Copy your CX (Search Engine ID)
+
+**OpenRouter:**
+1. Visit [OpenRouter](https://openrouter.ai)
+2. Sign up for a free account
+3. Go to Keys section and create an API key
+
+### 4. Run the Development Server
+
+```bash
 npm run dev
-or
-yarn dev
-  ```
-5. Open your browser at http://localhost:3000 🎉
+```
 
-*☁ Deployment*
-  ```
-Deploy instantly with Vercel:
-Fork this repo
-Import it into your Vercel dashboard
-Add the required environment variables (NEXT_PUBLIC_GOOGLE_API_KEY, NEXT_PUBLIC_GOOGLE_CX)
-Deploy 🚀
-  ```
+Visit `http://localhost:3000` in your browser.
 
-*🤝 Contributing*
-  ```
-Contributions are welcome!
-Fork the project
-Create a new branch (git checkout -b feature/awesome-feature)
-Commit your changes (git commit -m 'Add awesome feature')
-Push to your branch (git push origin feature/awesome-feature)
-Open a Pull Request
-  ```
- **📜 License**
+### 5. Build for Production
 
-This project is licensed under the MIT [LICENSE](LICENSE) – see the LICENSE file for details.
+```bash
+npm run build
+npm start
+```
 
+## Features
 
+- 🎨 Ultra-minimalist design with dark/light mode
+- 🔍 Real-time AI-powered search suggestions
+- 📊 AI-generated summaries with traditional web results
+- ⚡ Server-side API integration for security
+- 📱 Mobile-first responsive design
+- ♿ Accessible (ARIA labels, keyboard navigation)
 
+## Project Structure
 
-
-**🙏 Acknowledgments**
-
-Google Custom Search API
-Next.js
-The open-source community 🚀
+```
+src/
+├── app/
+│   ├── layout.tsx          # Root layout with theme provider
+│   ├── page.tsx            # Homepage
+│   ├── results/
+│   │   └── page.tsx        # Results page
+│   └── api/
+│       └── ai/
+│           ├── suggest.ts  # AI suggestions endpoint
+│           └── answer.ts   # AI answer endpoint
+├── components/
+│   ├── ThemeToggle.tsx     # Theme switcher
+│   ├── SearchBar.tsx       # Search input with suggestions
+│   ├── ResultCard.tsx      # Individual result display
+│   └── Skeleton.tsx        # Loading skeleton
+├── hooks/
+│   ├── useDebounce.ts      # Debounce hook
+│   └── useSearch.ts        # Search logic hook
+├── lib/
+│   ├── google-search.ts    # Google Custom Search integration
+│   └── openrouter.ts       # OpenRouter AI integration
+└── globals.css             # Global styles
+```

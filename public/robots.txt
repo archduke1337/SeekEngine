@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://seekengine.vercel.app
-
-# Sitemaps
-Sitemap: https://seekengine.vercel.app/sitemap.xml

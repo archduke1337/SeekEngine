@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://seekengine.vercel.app/sitemap.xml
-sitemap: https://a421981.sitemaphosting7.com/4517657/sitemap_4517657.xml
-

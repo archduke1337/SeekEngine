@@ -35,7 +35,7 @@ export default function Home() {
     const handleResize = () => setWindowWidth(window.innerWidth)
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [setMounted, setWindowWidth])
   
   const blurValue = useTransform(scrollY, [0, 400], [0, 15])
   const opacityValue = useTransform(scrollY, [100, 400], [1, 0.15])
@@ -322,7 +322,7 @@ export default function Home() {
                  </h2>
                  
                  <p className="text-zinc-500 dark:text-zinc-400 text-lg sm:text-2xl font-medium tracking-tight leading-relaxed max-w-xl mx-auto italic">
-                    "We do not seek to provide data. We seek to provide clarity. SeekEngine is the protocol through which human intent finds its most efficient physical representation."
+                    &quot;We do not seek to provide data. We seek to provide clarity. SeekEngine is the protocol through which human intent finds its most efficient physical representation.&quot;
                  </p>
                  
                  <div className="pt-10 flex flex-col sm:flex-row items-center justify-center gap-6">

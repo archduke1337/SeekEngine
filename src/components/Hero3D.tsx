@@ -289,7 +289,7 @@ function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
         gl_FragColor = vec4(finalColor, 1.0);
       }
     `
-  }), [isDark])
+  }), [isDark, color])
 
   useFrame((state) => {
     atmosphereMaterial.uniforms.uTime.value = state.clock.elapsedTime

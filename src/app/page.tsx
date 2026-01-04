@@ -54,14 +54,14 @@ export default function Home() {
             style={{ y: contentY }}
             className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-24"
           >
-            <div className="text-center space-y-12">
+            <div className="text-center space-y-8">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               >
-                <h1 className="text-[16vw] sm:text-[12rem] font-black tracking-[-0.05em] text-black dark:text-white leading-tight py-4 mb-4 select-none font-sans flex items-center justify-center gap-1">
-                  <span>Seek</span>
+                <h1 className="text-[14vw] sm:text-[10rem] font-black tracking-[-0.05em] text-black dark:text-white leading-none py-4 mb-2 select-none flex items-center justify-center gap-1 font-sans">
+                  <span className="tracking-[-0.07em]">Seek</span>
                   <span className="relative inline-block">
                     <span className={`hot-engine-text italic font-medium transition-all duration-700 ${isTyping ? 'high-power' : ''}`}>Engine</span>
                     
@@ -94,11 +94,9 @@ export default function Home() {
                   </span>
                 </h1>
                 
-                <p className="text-xl sm:text-4xl text-zinc-500 dark:text-zinc-500 font-bold max-w-3xl mx-auto leading-[1.1] tracking-[-0.02em] px-4">
-                  The future of search is not links. <br className="hidden sm:block" />
-                  <span className="text-black dark:text-white opacity-90 underline decoration-zinc-100 dark:decoration-zinc-800 underline-offset-4">
-                    It is understanding.
-                  </span>
+                <p className="text-lg sm:text-2xl text-zinc-400 dark:text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight px-4 font-sans">
+                  The future of discovery is not a list of links. <br className="hidden sm:block" />
+                  It is a <span className="text-black dark:text-white font-bold opacity-100">synthesis of human intent.</span>
                 </p>
               </motion.div>
             </div>

@@ -129,7 +129,7 @@ export default function ResultsClient() {
         {/* Dynamic Query Header */}
         <div className="mb-12 animate-fade-in-up flex items-end justify-between border-b border-black/5 dark:border-white/5 pb-8">
           <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-400">Synthesis Engine Output</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-400">Engine Output</p>
             <h1 className="text-4xl sm:text-5xl font-black text-black dark:text-white tracking-tighter">
               {query}
             </h1>
@@ -153,7 +153,7 @@ export default function ResultsClient() {
                 <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
                     Engine Output
                 </h2>
-                <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold italic">Synthesized in Real-Time</p>
+                <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold italic">Seek in Real-Time</p>
               </div>
               
               <div className="ml-auto">
@@ -214,7 +214,7 @@ export default function ResultsClient() {
           <div className="flex items-center justify-between mb-8 border-b border-black/5 dark:border-white/5 pb-4">
              <div className="flex items-center gap-3">
                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">
-                Verified Global Index
+                 Global Index
               </h2>
              </div>
             <span className="text-[10px] font-bold text-slate-400 bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full uppercase tracking-widest">

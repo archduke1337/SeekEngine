@@ -3,8 +3,6 @@
  * Handles traditional web search results
  */
 
-import axios from 'axios'
-
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
 const GOOGLE_CX = process.env.GOOGLE_CX
 const GOOGLE_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1'
@@ -32,21 +30,27 @@ export async function getWebSearchResults(
   }
 
   try {
-    const response = await axios.get(GOOGLE_SEARCH_URL, {
-      params: {
-        q: query,
-        key: GOOGLE_API_KEY,
-        cx: GOOGLE_CX,
-        start: startIndex,
-        num: 10,
-      },
-    })
+    const url = new URL(GOOGLE_SEARCH_URL)
+    url.searchParams.append('q', query)
+    url.searchParams.append('key', GOOGLE_API_KEY)
+    url.searchParams.append('cx', GOOGLE_CX)
+    url.searchParams.append('start', startIndex.toString())
+    url.searchParams.append('num', '10')
 
-    if (!response.data.items) {
+    const response = await fetch(url.toString())
+    
+    if (!response.ok) {
+      console.error(`❌ Google Search Error: ${response.status}`)
       return []
     }
 
-    return response.data.items.map((item: any) => ({
+    const data = await response.json()
+
+    if (!data.items) {
+      return []
+    }
+
+    return data.items.map((item: any) => ({
       title: item.title,
       link: item.link,
       snippet: item.snippet,

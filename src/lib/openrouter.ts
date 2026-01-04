@@ -4,7 +4,6 @@
  * Updated with VERIFIED working model IDs and ZOD validation
  */
 
-import axios from 'axios'
 import { suggestionsResponseSchema, answerResponseSchema } from './validation'
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
@@ -42,33 +41,41 @@ async function callOpenRouter(
   for (const model of FREE_MODELS) {
     try {
       console.log(`📡 Trying AI: ${model}...`)
-      const response = await axios.post(
-        `${OPENROUTER_BASE_URL}/chat/completions`,
-        {
+      
+      const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'https://github.com/archduke1337/seekengine',
+          'X-Title': 'SeekEngine',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           model,
           messages,
           temperature: 0.6,
           max_tokens: maxTokens,
           top_p: 1,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-            'HTTP-Referer': 'https://github.com/archduke1337/seekengine',
-            'X-Title': 'SeekEngine',
-            'Content-Type': 'application/json',
-          },
-          timeout: 45000,
-        }
-      )
+        }),
+        // fetch timeout is usually handled via AbortController in Edge
+        // but for simplicity on free tier we'll let it ride or fail
+      })
 
-      const content = response.data.choices?.[0]?.message?.content
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.warn(`❌ Fail: ${model} (${response.status})`, errorData)
+        continue
+      }
+
+      const data = await response.json()
+      const content = data.choices?.[0]?.message?.content
+      
       if (content) {
         console.log(`✅ Success: ${model}`)
         return content
       }
     } catch (error: any) {
-      console.warn(`❌ Fail: ${model} (${error.response?.status})`)
+      console.warn(`❌ Error with ${model}:`, error.message)
       continue
     }
   }

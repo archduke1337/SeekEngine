@@ -8,6 +8,7 @@ import { validateSearchQuery } from '../../../lib/validation'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Note: Can't use edge runtime here due to Google API requirements
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

@@ -10,28 +10,21 @@ import { suggestionsResponseSchema, answerResponseSchema } from './validation'
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
-if (!OPENROUTER_API_KEY) {
-  throw new Error('OPENROUTER_API_KEY is not set in environment variables')
-}
-
 /**
  * Verified Free Models from OpenRouter (Jan 2026)
  */
 const FREE_MODELS = [
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-3-27b-it:free',
-  'deepseek/deepseek-r1-0528:free',
+  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free',
   'google/gemini-2.0-flash-exp:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
+  'openai/gpt-oss-120b:free',
+  'allenai/olmo-3.1-32b-think:free',
+  'xiaomi/mimo-v2-flash:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
+  'mistralai/devstral-2512:free',
   'qwen/qwen3-coder:free',
   'google/gemma-3-12b-it:free',
-  'meta-llama/llama-3.2-3b-instruct:free',
-  'google/gemma-3-4b-it:free',
-  'qwen/qwen3-4b:free',
   'mistralai/mistral-7b-instruct:free',
-  'allenai/olmo-3.1-32b-think:free',
-  'nvidia/nemotron-3-nano-30b-a3b:free',
-  'meta-llama/llama-3.1-405b-instruct:free',
 ]
 
 /**
@@ -41,6 +34,10 @@ async function callOpenRouter(
   messages: { role: string; content: string }[],
   maxTokens: number = 800
 ): Promise<string | null> {
+  if (!OPENROUTER_API_KEY) {
+    console.warn('⚠️ OPENROUTER_API_KEY is missing. AI features disabled.')
+    return null
+  }
   
   for (const model of FREE_MODELS) {
     try {

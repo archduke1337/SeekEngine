@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Enable edge runtime for faster cold starts
 export const runtime = 'edge'
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

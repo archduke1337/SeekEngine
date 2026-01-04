@@ -158,7 +158,7 @@ export default function ResultsClient() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
-                  Neural Intelligence Summary
+                    Engine Output
                 </h2>
                 <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold italic">Synthesized in Real-Time</p>
               </div>

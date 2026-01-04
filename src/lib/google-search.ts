@@ -9,10 +9,6 @@ const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
 const GOOGLE_CX = process.env.GOOGLE_CX
 const GOOGLE_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1'
 
-if (!GOOGLE_API_KEY || !GOOGLE_CX) {
-  throw new Error('GOOGLE_API_KEY or GOOGLE_CX is not set in environment variables')
-}
-
 export interface SearchResult {
   title: string
   link: string
@@ -30,6 +26,11 @@ export async function getWebSearchResults(
   query: string,
   startIndex: number = 1
 ): Promise<SearchResult[]> {
+  if (!GOOGLE_API_KEY || !GOOGLE_CX) {
+    console.warn('⚠️ Google API Key or CX is missing. Search will be empty.')
+    return []
+  }
+
   try {
     const response = await axios.get(GOOGLE_SEARCH_URL, {
       params: {

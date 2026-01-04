@@ -52,15 +52,15 @@ export default function Home() {
           {/* Heading and Search */}
           <motion.div 
             style={{ y: contentY }}
-            className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-24"
+            className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-16 sm:gap-24"
           >
-            <div className="text-center space-y-8">
+            <div className="text-center space-y-6 sm:space-y-8">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               >
-                <h1 className="text-[14vw] sm:text-[10rem] font-black tracking-[-0.05em] text-black dark:text-white leading-none py-4 mb-2 select-none flex items-center justify-center gap-1 font-sans">
+                <h1 className="text-7xl sm:text-[10rem] font-black tracking-[-0.05em] text-black dark:text-white leading-none py-4 mb-2 select-none flex items-center justify-center gap-1 font-sans">
                   <span className="tracking-[-0.07em]">Seek</span>
                   <span className="relative inline-block">
                     <span className={`hot-engine-text italic font-medium transition-all duration-700 ${isTyping ? 'high-power' : ''}`}>Engine</span>
@@ -75,9 +75,9 @@ export default function Home() {
                                 initial={{ opacity: 0, y: 10, scale: 0.5 }}
                                 animate={{ 
                                   opacity: [0, 0.4, 0], 
-                                  y: [-10, -80], 
-                                  scale: [1, 2.5], 
-                                  x: [0, (i % 2 === 0 ? 15 : -15)] 
+                                  y: [-10, -50], 
+                                  scale: [1, 2.0], 
+                                  x: [0, (i % 2 === 0 ? 10 : -10)] 
                                 }}
                                 transition={{ 
                                   duration: 1, 
@@ -85,7 +85,7 @@ export default function Home() {
                                   delay: i * 0.15,
                                   ease: "easeOut" 
                                 }}
-                                className="absolute w-12 h-12 bg-zinc-400/20 dark:bg-white/10 rounded-full blur-[15px]"
+                                className="absolute w-8 h-8 sm:w-12 sm:h-12 bg-zinc-400/20 dark:bg-white/10 rounded-full blur-[10px] sm:blur-[15px]"
                               />
                             ))}
                          </div>
@@ -94,7 +94,7 @@ export default function Home() {
                   </span>
                 </h1>
                 
-                <p className="text-lg sm:text-2xl text-zinc-400 dark:text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight px-4 font-sans">
+                <p className="text-base sm:text-2xl text-zinc-400 dark:text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight px-6 font-sans">
                   The future of discovery is not a list of links. <br className="hidden sm:block" />
                   It is a <span className="text-black dark:text-white font-bold opacity-100">synthesis of human intent.</span>
                 </p>
@@ -105,21 +105,21 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-2xl px-4 relative"
+              className="w-full max-w-2xl px-6 relative"
             >
-              {/* Exhaust Smoke Particles */}
+              {/* Exhaust Smoke Particles for Search Bar */}
               <AnimatePresence>
                 {isTyping && (
-                  <div className="absolute -top-20 inset-x-0 flex justify-center pointer-events-none">
-                    {[1, 2, 3, 4, 5].map((i) => (
+                  <div className="absolute -top-16 inset-x-0 flex justify-center pointer-events-none">
+                    {[1, 2, 3].map((i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 20, scale: 0.5, filter: 'blur(10px)' }}
                         animate={{ 
                           opacity: [0, 0.2, 0], 
-                          y: [-20, -100 - (i * 20)], 
-                          scale: [1, 2], 
-                          x: [0, (i % 2 === 0 ? 20 : -20)] 
+                          y: [-20, -60 - (i * 10)], 
+                          scale: [1, 1.5], 
+                          x: [0, (i % 2 === 0 ? 15 : -15)] 
                         }}
                         transition={{ 
                           duration: 1.5, 
@@ -127,7 +127,7 @@ export default function Home() {
                           delay: i * 0.2,
                           ease: "easeOut" 
                         }}
-                        className="absolute w-20 h-20 bg-zinc-400/20 dark:bg-white/10 rounded-full blur-[20px]"
+                        className="absolute w-12 h-12 sm:w-20 sm:h-20 bg-zinc-400/20 dark:bg-white/10 rounded-full blur-[15px] sm:blur-[20px]"
                       />
                     ))}
                   </div>

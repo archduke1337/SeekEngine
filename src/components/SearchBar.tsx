@@ -124,19 +124,19 @@ export default function SearchBar({
     <div className="relative w-full" ref={suggestionsRef}>
       <motion.div 
         layout
-        className="relative group bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-black/10 focus-within:shadow-black/10"
+        className="relative group bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl rounded-[2rem] sm:rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-black/10 focus-within:shadow-black/10"
       >
         {/* Leading Icon - AI Pulse */}
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-10">
-          <div className={`w-2 h-2 rounded-full ${isLoading ? 'bg-red-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-700'} transition-colors duration-500`} />
+        <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10">
+          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${isLoading ? 'bg-red-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-700'} transition-colors duration-500`} />
         </div>
 
         {/* Search Input Layer */}
         <div className="relative">
           {ghostText && (
-            <div className="absolute inset-0 flex items-center pl-14 pr-20 py-5 pointer-events-none">
-              <span className="text-lg text-transparent leading-none whitespace-pre tracking-tight">{query}</span>
-              <span className="text-lg text-slate-300 dark:text-slate-600 leading-none whitespace-pre tracking-tight">{ghostText}</span>
+            <div className="absolute inset-0 flex items-center pl-10 sm:pl-14 pr-16 sm:pr-20 py-4 sm:py-5 pointer-events-none overflow-hidden">
+              <span className="text-sm sm:text-lg text-transparent leading-none whitespace-pre tracking-tight">{query}</span>
+              <span className="text-sm sm:text-lg text-slate-300 dark:text-slate-600 leading-none whitespace-pre tracking-tight">{ghostText}</span>
             </div>
           )}
           
@@ -154,20 +154,20 @@ export default function SearchBar({
             onKeyDown={handleKeyDown}
             placeholder="Search intelligence index..."
             autoFocus={autoFocus}
-            className="w-full pl-14 pr-20 py-5 text-lg bg-transparent border-none text-black dark:text-white placeholder-slate-400 focus:outline-none transition-all duration-300 tracking-tight font-medium"
+            className="w-full pl-10 sm:pl-14 pr-16 sm:pr-20 py-4 sm:py-5 text-sm sm:text-lg bg-transparent border-none text-black dark:text-white placeholder-slate-400 focus:outline-none transition-all duration-300 tracking-tight font-medium"
             aria-label="Search query"
           />
         </div>
 
         {/* Action Layer */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10">
+        <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-3 z-10">
            <AnimatePresence>
              {ghostText && (
                <motion.span 
                  initial={{ opacity: 0, scale: 0.9 }}
                  animate={{ opacity: 1, scale: 1 }}
                  exit={{ opacity: 0, scale: 0.9 }}
-                 className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full"
+                 className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-slate-400 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full"
                >
                  Tab
                </motion.span>
@@ -176,13 +176,13 @@ export default function SearchBar({
 
            <button
              onClick={() => handleSearch(query)}
-             className={`w-10 h-10 flex items-center justify-center rounded-2xl transition-all duration-500 ${
+             className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all duration-500 ${
                query.trim() 
                ? 'bg-black dark:bg-white text-white dark:text-black scale-100 opacity-100 shadow-lg' 
                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 scale-90 opacity-0 pointer-events-none'
              }`}
            >
-             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
              </svg>
            </button>
@@ -196,10 +196,10 @@ export default function SearchBar({
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="absolute top-full left-0 right-0 mt-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2.5rem] shadow-2xl overflow-hidden z-50 p-2"
+            className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden z-50 p-1.5 md:p-2"
           >
-            <div className="px-5 py-3 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Predicted Intentions</span>
+            <div className="px-4 md:px-5 py-2 md:py-3 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-1 md:mb-2">
+              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Predicted Intentions</span>
             </div>
             {suggestions.map((suggestion, index) => (
               <button
@@ -209,17 +209,14 @@ export default function SearchBar({
                   handleSearch(suggestion)
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
-                className={`w-full px-5 py-4 text-left text-sm flex items-center gap-4 rounded-3xl transition-all duration-300 ${
+                className={`w-full px-4 md:px-5 py-3 md:py-4 text-left text-sm flex items-center gap-3 md:gap-4 rounded-2xl md:rounded-3xl transition-all duration-300 ${
                   selectedIndex === index
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-xl ring-4 ring-black/5 dark:ring-white/5 scale-[1.02]'
+                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-xl ring-4 ring-black/5 dark:ring-white/5 scale-[1.01] md:scale-[1.02]'
                     : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${selectedIndex === index ? 'bg-red-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                <span className="truncate font-bold tracking-tight text-base">{suggestion}</span>
-                {index === 0 && selectedIndex !== index && (
-                  <span className="ml-auto text-[10px] font-black opacity-30">AUTOCOMPLETE</span>
-                )}
+                <div className={`w-1 h-1 md:w-1.5 md:h-1.5 rounded-full ${selectedIndex === index ? 'bg-red-400' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                <span className="truncate font-bold tracking-tight text-sm md:text-base">{suggestion}</span>
               </button>
             ))}
           </motion.div>

@@ -127,28 +127,28 @@ export default function ResultsClient() {
 
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         {/* Dynamic Query Header */}
-        <div className="mb-12 animate-fade-in-up flex items-end justify-between border-b border-black/5 dark:border-white/5 pb-8">
+        <div className="mb-8 md:mb-12 animate-fade-in-up flex flex-col sm:flex-row sm:items-end justify-between border-b border-black/5 dark:border-white/5 pb-6 md:pb-8 gap-6 sm:gap-4">
           <div className="space-y-1">
             <p className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-400">Engine Output</p>
-            <h1 className="text-4xl sm:text-5xl font-black text-black dark:text-white tracking-tighter">
+            <h1 className="text-3xl sm:text-5xl font-black text-black dark:text-white tracking-tighter line-clamp-2">
               {query}
             </h1>
           </div>
           <button 
             onClick={shareResults}
-            className="group flex items-center gap-3 px-6 py-3 rounded-full bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl border border-black/5 dark:border-white/5 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-black dark:hover:text-white transition-all active:scale-95 shadow-sm"
+            className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 rounded-full bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl border border-black/5 dark:border-white/5 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-black dark:hover:text-white transition-all active:scale-95 shadow-sm"
           >
             Share Insight
           </button>
         </div>
 
-        {/* AI Answer - SwiftUI Glass Architecture */}
-        <section className="mb-16 animate-fade-in-up animate-delay-100">
-          <div className="p-10 rounded-[3rem] bg-white/40 dark:bg-zinc-900/40 backdrop-blur-[40px] border border-white dark:border-zinc-800 shadow-2xl relative overflow-hidden group">
-            {/* Ambient Background Glow for Card */}
+        {/* Synthesis Hub - RAG Summary */}
+        <section className="mb-12 md:mb-16 animate-fade-in-up animate-delay-100">
+          <div className="relative group p-6 md:p-10 rounded-[2.5rem] bg-white dark:bg-zinc-900/40 backdrop-blur-3xl border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden transition-all duration-700">
+            {/* Ambient Background */}
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-slate-100 dark:bg-slate-800 rounded-full blur-[80px] opacity-0 group-hover:opacity-40 transition-opacity duration-1000" />
 
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
               <div>
                 <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
                     Engine Output
@@ -156,10 +156,10 @@ export default function ResultsClient() {
                 <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold italic">Seek in Real-Time</p>
               </div>
               
-              <div className="ml-auto">
-                <button
+              <div className="sm:ml-auto">
+                <button 
                   onClick={copyToClipboard}
-                  className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black dark:hover:text-white flex items-center gap-2 transition-colors border border-black/5 dark:border-white/5 rounded-full"
+                  className="w-full sm:w-auto px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black dark:hover:text-white flex items-center justify-center gap-2 transition-colors border border-black/5 dark:border-white/5 rounded-full"
                 >
                   {copied ? 'Copied' : 'Extract Content'}
                 </button>
@@ -174,54 +174,58 @@ export default function ResultsClient() {
                   {aiError}
                 </div>
               ) : aiAnswer ? (
-                <div className="text-lg lg:text-xl text-zinc-800 dark:text-zinc-200 leading-relaxed font-serif">
+                <div className="text-base md:text-xl text-zinc-800 dark:text-zinc-200 leading-relaxed font-serif">
                    <TypewriterText text={aiAnswer} speed={12} />
                 </div>
               ) : (
-                <p className="text-zinc-500 dark:text-zinc-400 italic">No intelligence synthesis available for this query.</p>
+                <div className="text-zinc-400 italic">Iterating consensus...</div>
               )}
             </div>
 
-            {/* Premium Follow-up Console */}
-            {aiAnswer && (
-              <div className="mt-12 pt-10 border-t border-black/5 dark:border-white/5">
-                <div className="relative group/input">
-                  <input
-                    type="text"
-                    value={followUpQuery}
-                    onChange={(e) => setFollowUpQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleFollowUp()
-                    }}
-                    placeholder="Deepen the inquiry..."
-                    className="w-full px-8 py-5 text-base border-none ring-1 ring-black/5 dark:ring-white/5 rounded-[2rem] bg-white/50 dark:bg-zinc-800/50 text-black dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all duration-500 shadow-inner group-focus-within/input:shadow-2xl"
-                  />
-                  <button
-                    onClick={handleFollowUp}
-                    disabled={!followUpQuery.trim()}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-black dark:bg-white text-white dark:text-black text-[11px] font-black uppercase tracking-widest rounded-full hover:scale-105 transition-all shadow-xl active:scale-95 disabled:opacity-30 flex items-center gap-2"
-                  >
-                    Transmit
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Follow-up Console */}
+            <AnimatePresence>
+              {!aiLoading && aiAnswer && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-10 pt-8 border-t border-black/5 dark:border-white/5"
+                >
+                  <div className="relative">
+                    <input 
+                      type="text"
+                      value={followUpQuery}
+                      onChange={(e) => setFollowUpQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleFollowUp()}
+                      placeholder="Ask a clarifying follow-up..."
+                      className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 pl-6 pr-32 text-sm focus:ring-2 ring-black/10 dark:ring-white/10 transition-all outline-none"
+                    />
+                    <button 
+                      onClick={handleFollowUp}
+                      disabled={!followUpQuery.trim()}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 px-4 sm:px-6 py-2.5 bg-black dark:bg-white text-white dark:text-black text-[9px] sm:text-[11px] font-black uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-xl active:scale-95 disabled:opacity-30"
+                    >
+                      Transmit
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </section>
 
-        {/* Distributed Web Index */}
+        {/* Global Web Index */}
         <section className="animate-fade-in-up animate-delay-200 pb-20">
-          <div className="flex items-center justify-between mb-8 border-b border-black/5 dark:border-white/5 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 border-b border-black/5 dark:border-white/5 pb-4 gap-4">
              <div className="flex items-center gap-3">
                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">
-                 Global Index
+                Verified Global Index
               </h2>
              </div>
-            <span className="text-[10px] font-bold text-slate-400 bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full uppercase tracking-widest">
-              {results.length} Nodes Found
-            </span>
+             <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
+               {results.length} Nodes Resolved
+             </div>
           </div>
-
+          
           {resultsLoading ? (
             <div className="space-y-6">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -229,9 +233,16 @@ export default function ResultsClient() {
               ))}
             </div>
           ) : results.length > 0 ? (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-6 md:gap-8">
               {results.map((result, index) => (
-                <ResultCard key={index} result={result} />
+                <motion.div
+                  key={result.link}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <ResultCard result={result} />
+                </motion.div>
               ))}
             </div>
           ) : (

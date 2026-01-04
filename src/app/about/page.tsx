@@ -26,9 +26,8 @@ export default function AboutPage() {
             <div>Focus: Hybrid RAG & Synthesis</div>
           </div>
           <div className="md:text-right space-y-2">
-            <div>Archive ID: 00-GAURAV-PUNE</div>
             <div>Repo: archduke1337/SeekEngine</div>
-            <div>Status: Operational Build</div>
+            <div>Status: Operational </div>
           </div>
         </div>
 
@@ -46,7 +45,7 @@ export default function AboutPage() {
             {/* Title Block */}
             <header className="space-y-8 text-left">
               <h1 className="text-4xl sm:text-7xl font-bold text-black dark:text-white tracking-tight leading-[0.9] font-sans italic">
-                A Solo Dev's Attempt at <br /> Grounded Intent Synthesis
+                A Dev's Attempt at <br /> Grounded Intent Synthesis
               </h1>
               
               <div className="flex flex-col gap-4 py-8 border-y border-zinc-900/10 dark:border-zinc-100/10">
@@ -60,7 +59,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <p className="text-zinc-500 text-sm font-serif italic max-w-xl">
-                  Cybersecurity Researcher and Web Developer. Coding for clients by day, tinkering with search paradigms by night.
+                  Cybersecurity Researcher and Web Developer. Coding for fun by day, tinkering with search paradigms by night.
                 </p>
               </div>
             </header>
@@ -81,7 +80,7 @@ export default function AboutPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-4 px-6 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:scale-105 active:scale-95 transition-all shadow-xl"
                 >
-                  Download Research Paper
+                  Research Paper
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>

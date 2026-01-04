@@ -110,23 +110,23 @@ function LiquidSphere({ position, size, colorA, colorB, speed, isHighPower }: {
   const materialRef = useRef<THREE.ShaderMaterial>(null!)
 
   useFrame((state) => {
-    const powerMultiplier = isHighPower ? 4.0 : 1.0
+    const powerMultiplier = isHighPower ? 2.5 : 1.0
     const t = state.clock.getElapsedTime() * speed * powerMultiplier
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = t
       materialRef.current.uniforms.uOpacity.value = THREE.MathUtils.lerp(
         materialRef.current.uniforms.uOpacity.value,
-        isHighPower ? 0.8 : 0.6,
-        0.1
+        isHighPower ? 0.75 : 0.6,
+        0.05
       )
     }
     
-    // Mouse parallax effect
+    // Smooth Mouse parallax effect
     if (meshRef.current) {
-      const x = (state.mouse.x * state.viewport.width) / 10
-      const y = (state.mouse.y * state.viewport.height) / 10
-      meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, position[0] + x, 0.05)
-      meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, position[1] + y, 0.05)
+      const x = (state.mouse.x * state.viewport.width) / 12
+      const y = (state.mouse.y * state.viewport.height) / 12
+      meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, position[0] + x, 0.03)
+      meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, position[1] + y, 0.03)
     }
   })
 
@@ -139,12 +139,12 @@ function LiquidSphere({ position, size, colorA, colorB, speed, isHighPower }: {
 
   return (
     <Float 
-      speed={isHighPower ? 6 : 2} 
-      rotationIntensity={isHighPower ? 3 : 1.5} 
-      floatIntensity={isHighPower ? 4 : 2}
+      speed={isHighPower ? 4 : 1.5} 
+      rotationIntensity={isHighPower ? 2 : 1} 
+      floatIntensity={isHighPower ? 3 : 1.5}
     >
       <mesh ref={meshRef} position={position}>
-        <sphereGeometry args={[size, 128, 128]} />
+        <sphereGeometry args={[size, 48, 48]} />
         <shaderMaterial
           ref={materialRef}
           vertexShader={vertexShader}

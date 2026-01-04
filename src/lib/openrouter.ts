@@ -13,21 +13,18 @@ const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
  * Verified Free Models from OpenRouter (Jan 2026)
  */
 const FREE_MODELS = [
-  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
   'google/gemini-2.0-flash-exp:free',
-  'openai/gpt-oss-120b:free',
-  'allenai/olmo-3.1-32b-think:free',
-  'xiaomi/mimo-v2-flash:free',
-  'nvidia/nemotron-3-nano-30b-a3b:free',
-  'mistralai/devstral-2512:free',
+  'deepseek/deepseek-r1:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
   'qwen/qwen3-coder:free',
-  'google/gemma-3-12b-it:free',
-  'mistralai/mistral-7b-instruct:free',
+  'mistralai/mistral-7b-instruct:free'
 ]
 
 /**
  * Helper to call OpenRouter with model fallbacks
+ * Optimized with AbortController to prevent Vercel 504 Timeouts
  */
 async function callOpenRouter(
   messages: { role: string; content: string }[],
@@ -38,10 +35,22 @@ async function callOpenRouter(
     return null
   }
   
+  const startTime = Date.now()
+  const GLOBAL_TIMEOUT = 8500 // 8.5 seconds total limit for Vercel
+
   for (const model of FREE_MODELS) {
+    // Check if we approach global timeout
+    if (Date.now() - startTime > GLOBAL_TIMEOUT) {
+      console.warn('⚠️ Global timeout reached. Aborting AI chain.')
+      return null
+    }
+
     try {
       console.log(`📡 Trying AI: ${model}...`)
       
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 4500) // 4.5s per model
+
       const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -57,13 +66,13 @@ async function callOpenRouter(
           max_tokens: maxTokens,
           top_p: 1,
         }),
-        // fetch timeout is usually handled via AbortController in Edge
-        // but for simplicity on free tier we'll let it ride or fail
+        signal: controller.signal
       })
 
+      clearTimeout(timeoutId)
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.warn(`❌ Fail: ${model} (${response.status})`, errorData)
+        console.warn(`❌ Fail: ${model} (${response.status})`)
         continue
       }
 
@@ -75,7 +84,11 @@ async function callOpenRouter(
         return content
       }
     } catch (error: any) {
-      console.warn(`❌ Error with ${model}:`, error.message)
+      if (error.name === 'AbortError') {
+        console.warn(`⏱️ Timeout: ${model}`)
+      } else {
+        console.warn(`❌ Error with ${model}:`, error.message)
+      }
       continue
     }
   }

@@ -261,10 +261,16 @@ function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
   )
 }
 
-function IndustrialScene({ isHighPower, isDark }: { isHighPower: boolean, isDark: boolean }) {
+function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boolean, isDark: boolean, isMobile: boolean }) {
   const [fill, setFill] = useState(0)
   const [heat, setHeat] = useState(0)
   const fontUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json"
+
+  // Responsive values
+  const textScale = isMobile ? 0.75 : 1.05
+  const seekPos: [number, number, number] = isMobile ? [0, 1.2, 0] : [-2.8, 0, 0]
+  const enginePos: [number, number, number] = isMobile ? [0, -1.2, 0] : [2.8, 0, 0]
+  const cameraZ = isMobile ? 18 : 12
 
   useEffect(() => {
     // Stage 1: Industrial Initialization
@@ -301,7 +307,7 @@ function IndustrialScene({ isHighPower, isDark }: { isHighPower: boolean, isDark
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={30} />
+      <PerspectiveCamera makeDefault position={[0, 0, cameraZ]} fov={30} />
       <ambientLight intensity={0.6} />
       <pointLight position={[10, 10, 10]} intensity={2.0} color="#ffffff" />
       <spotLight position={[-10, 20, 10]} angle={0.2} penumbra={1} intensity={4} color="#ffcc99" />
@@ -316,10 +322,10 @@ function IndustrialScene({ isHighPower, isDark }: { isHighPower: boolean, isDark
         polar={[-Math.PI / 15, Math.PI / 15]}
         azimuth={[-Math.PI / 8, Math.PI / 8]}
       >
-        <group scale={1.05} position={[0, 0.9, 0]}>
+        <group scale={textScale} position={[0, 0.9, 0]}>
           <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.3}>
             {/* SEEK - Diesel Container */}
-            <Center position={[-2.8, 0, 0]}>
+            <Center position={seekPos}>
               <Text3D
                 font={fontUrl}
                 size={1.4}
@@ -341,7 +347,7 @@ function IndustrialScene({ isHighPower, isDark }: { isHighPower: boolean, isDark
             </Center>
 
             {/* ENGINE - Molten Forging */}
-            <Center position={[2.8, 0, 0]}>
+            <Center position={enginePos}>
               <Text3D
                 font={fontUrl}
                 size={1.4}
@@ -383,7 +389,7 @@ function IndustrialScene({ isHighPower, isDark }: { isHighPower: boolean, isDark
   )
 }
 
-export default function Hero3D({ isHighPower = false, isDark = true }: { isHighPower?: boolean, isDark?: boolean }) {
+export default function Hero3D({ isHighPower = false, isDark = true, isMobile = false }: { isHighPower?: boolean, isDark?: boolean, isMobile?: boolean }) {
   return (
     <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
       <Canvas 
@@ -395,7 +401,7 @@ export default function Hero3D({ isHighPower = false, isDark = true }: { isHighP
         }}
       >
         <Suspense fallback={null}>
-          <IndustrialScene isHighPower={isHighPower} isDark={isDark} />
+          <IndustrialScene isHighPower={isHighPower} isDark={isDark} isMobile={isMobile} />
         </Suspense>
       </Canvas>
     </div>

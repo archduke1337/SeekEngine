@@ -61,9 +61,9 @@ export default function SearchBar({
       const newSuggestions = data.suggestions || []
       setSuggestions(newSuggestions)
       
-      if (newSuggestions.length > 0) {
-        const matchingSuggestion = newSuggestions.find((s: string) => 
-          s.toLowerCase().startsWith(q.toLowerCase())
+      if (newSuggestions && newSuggestions.length > 0) {
+        const matchingSuggestion = newSuggestions.find((s: any) => 
+          typeof s === 'string' && s.toLowerCase().startsWith(q.toLowerCase())
         )
         if (matchingSuggestion) {
           setPrediction(matchingSuggestion)
@@ -199,7 +199,9 @@ export default function SearchBar({
             className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2.2rem] md:rounded-[2.8rem] shadow-2xl z-50 p-2 md:p-3 pb-6 md:pb-8"
           >
             <div className="px-5 md:px-7 py-3 md:py-4 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-2 md:mb-3">
-              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.5em] text-slate-400">Intelligence Paths</span>
+              <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
+                {(suggestions && suggestions.length) || 0} Paths Found
+              </div>
             </div>
             {suggestions.map((suggestion, index) => (
               <button

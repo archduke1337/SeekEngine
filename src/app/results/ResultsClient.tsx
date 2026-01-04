@@ -222,7 +222,7 @@ export default function ResultsClient() {
               </h2>
              </div>
              <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
-               {results.length} Nodes Resolved
+               {(results?.length) || 0} Nodes Resolved
              </div>
           </div>
           

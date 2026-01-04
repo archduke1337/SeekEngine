@@ -111,7 +111,7 @@ const DieselShader = {
     void main() {
       vec3 normal = normalize(vNormal);
       vec3 viewDir = normalize(vViewPosition);
-      float fresnel = pow(1.0 - dot(normal, viewDir), 2.5);
+      float fresnel = pow(max(0.0, 1.0 - dot(normal, viewDir)), 2.5);
       
       // Dynamic fluid level (Y axis)
       float level = (vWorldPosition.y + 1.0) * 0.5; // Roughly 0 to 1
@@ -181,7 +181,7 @@ const MoltenShader = {
 
     void main() {
       vec3 normal = normalize(vNormal);
-      float fresnel = pow(1.0 - dot(normal, vec3(0,0,1)), 3.0);
+      float fresnel = pow(max(0.0, 1.0 - dot(normal, vec3(0,0,1))), 3.0);
       
       // Dark forged iron (cool)
       vec3 ironColor = vec3(0.06, 0.07, 0.09) * (0.8 + fresnel * 0.4);
@@ -191,8 +191,9 @@ const MoltenShader = {
       vec3 brightMolten = vec3(1.0, 0.5, 0.0); // Bright orange
       vec3 whiteHot = vec3(1.0, 0.95, 0.8); // Incandescent
       
-      vec3 moltenColor = mix(dullGlow, brightMolten, pow(uHeat, 1.5));
-      moltenColor = mix(moltenColor, whiteHot, pow(uHeat, 4.0) * (1.0 - fresnel));
+      float h = max(0.0, uHeat);
+      vec3 moltenColor = mix(dullGlow, brightMolten, pow(h, 1.5));
+      moltenColor = mix(moltenColor, whiteHot, pow(h, 4.0) * (1.0 - fresnel));
       
       // Convection pulse
       float convection = 0.9 + 0.1 * sin(uTime * 4.0 + vPosition.y * 10.0);
@@ -224,13 +225,15 @@ function SparkParticles({ count = 20, active = false }) {
   }, [count])
 
   useFrame((state, delta) => {
-    if (!meshRef.current) return
+    if (!meshRef.current || !meshRef.current.children || !particles) return
     meshRef.current.children.forEach((child, i) => {
       const p = particles[i]
+      if (!p || !child || !child.position || !child.scale) return
       p.t += delta * p.speed
-      child.position.y = (p.t % 2) - 1 + p.offset[1]
-      child.scale.setScalar(active ? (1 - (p.t % 1) * 0.5) : 0)
-      child.visible = active
+      child.position.y = (p.t % 2) - 1 + (p.offset?.[1] || 0)
+      const scale = active ? (1 - (p.t % 1) * 0.5) : 0
+      child.scale.setScalar(Math.max(0.001, scale))
+      child.visible = active && scale > 0.01
     })
   })
 
@@ -248,21 +251,11 @@ function SparkParticles({ count = 20, active = false }) {
 
 function IndustrialAtmosphere() {
   const meshRef = useRef<THREE.Mesh>(null!)
-  useFrame((state) => {
-    if (meshRef.current) {
-      (meshRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = state.clock.getElapsedTime()
-    }
-  })
-
+  
   return (
     <mesh ref={meshRef} position={[0, 0, -15]}>
       <planeGeometry args={[100, 100]} />
-      <shaderMaterial
-        vertexShader={BackgroundShader.vertexShader}
-        fragmentShader={BackgroundShader.fragmentShader}
-        uniforms={BackgroundShader.uniforms}
-        depthWrite={false}
-      />
+      <meshBasicMaterial color="#020406" />
     </mesh>
   )
 }
@@ -278,24 +271,31 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
     tl.to({}, { duration: 0.5 })
       .to({}, { 
         duration: 4, 
-        onUpdate: function() { setFill(this.progress()) },
+        onUpdate: () => setFill(tl.progress()),
         ease: "power2.inOut"
       })
       .to({}, { 
         duration: 3, 
-        onUpdate: function() { setHeat(this.progress() * 0.65) },
+        onUpdate: function() { 
+          // Safely get progress from timeline
+          setHeat(tl.progress() * 0.65) 
+        },
         ease: "sine.inOut"
       }, "-=2.5")
+    
+    return () => { tl.kill() }
   }, [])
 
   useEffect(() => {
-    gsap.to({}, { 
+    const tween = gsap.to({}, { 
         duration: 1.5, 
-        onUpdate: function() { 
+        onUpdate: () => { 
             const target = isHighPower ? 1.0 : 0.65
-            setHeat(cur => THREE.MathUtils.lerp(cur, target, this.progress()))
+            const p = tween.progress()
+            setHeat(cur => THREE.MathUtils.lerp(cur, target, p))
         } 
     })
+    return () => { tween.kill() }
   }, [isHighPower])
 
   return (
@@ -326,7 +326,7 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
                 bevelEnabled
                 bevelThickness={0.06}
                 bevelSize={0.04}
-                curveSegments={24}
+                curveSegments={8}
               >
                 Seek
                 <shaderMaterial
@@ -348,7 +348,7 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
                 bevelEnabled
                 bevelThickness={0.06}
                 bevelSize={0.04}
-                curveSegments={24}
+                curveSegments={8}
               >
                 Engine
                 <shaderMaterial
@@ -368,10 +368,12 @@ function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
 
       <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2.5} far={4.5} />
       
+      {/* @ts-ignore - Prop mismatch in library types */}
       <EffectComposer multisampling={0}>
         <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.8} />
         <Noise opacity={0.05} />
         <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        {/* @ts-ignore - Library type mismatch in v2.x */}
         <ChromaticAberration offset={new THREE.Vector2(0.001, 0.001)} />
       </EffectComposer>
       

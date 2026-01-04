@@ -21,7 +21,7 @@ export default function TypewriterText({ text, speed = 20, className = '' }: Typ
   const [isComplete, setIsComplete] = useState(false)
 
   useEffect(() => {
-    if (currentIndex < text.length) {
+    if (text && currentIndex < text.length) {
       const timeout = setTimeout(() => {
         setDisplayedText(prev => prev + text[currentIndex])
         setCurrentIndex(prev => prev + 1)

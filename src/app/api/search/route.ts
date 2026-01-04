@@ -4,6 +4,7 @@
  */
 
 import { getWebSearchResults } from '../../../lib/google-search'
+import { getSerpResults } from '../../../lib/serpapi'
 import { validateSearchQuery } from '../../../lib/validation'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -25,7 +26,20 @@ export async function GET(request: NextRequest) {
   const startIndex = Math.max(1, parseInt(searchParams.get('start') || '1', 10))
 
   try {
-    const results = await getWebSearchResults(validation.query!, startIndex)
+    // Try SerpApi first for real-time results
+    let results = await getSerpResults(validation.query!)
+
+    // Fallback to Google Custom Search if SerpApi results are empty
+    if (!results || results.length === 0) {
+      console.log('🔄 Falling back to Google Custom Search')
+      const googleResults = await getWebSearchResults(validation.query!, startIndex)
+      results = googleResults.map(r => ({
+        title: r.title,
+        link: r.link,
+        snippet: r.snippet,
+        source: r.displayLink
+      }))
+    }
     
     return NextResponse.json(
       { results },

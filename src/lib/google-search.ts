@@ -12,6 +12,7 @@ export interface SearchResult {
   link: string
   snippet: string
   displayLink: string
+  source?: string
 }
 
 /**

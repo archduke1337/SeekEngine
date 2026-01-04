@@ -14,12 +14,24 @@ const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
  */
 const FREE_MODELS = [
   'google/gemini-2.0-flash-exp:free',
-  'deepseek/deepseek-r1:free',
+  'google/gemma-3-27b-it:free',
+  'google/gemma-3-12b-it:free',
+  'mistralai/mistral-small-24b-instruct-2501:free',
+  'mistralai/devstral-2-2512:free',
   'meta-llama/llama-3.3-70b-instruct:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'qwen/qwen-2.5-72b-instruct:free',
+  'nvidia/nemotron-3-nano-30b-a3b:free',
+  'nvidia/llama-3.1-nemotron-nano-8b-v1:free',
+  'deepseek/deepseek-chat:free',
+  'deepseek/deepseek-v3:free',
+  'openai/gpt-oss-120b:free',
   'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
-  'qwen/qwen3-coder:free',
-  'mistralai/mistral-7b-instruct:free'
+  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'allenai/olmo-3.1-32b-think:free',
+  'xiaomi/mimo-v2-flash:free',
+  'mistralai/mistral-7b-instruct:free',
+  'microsoft/phi-3-mini-128k-instruct:free',
+  'google/gemma-2-9b-it:free'
 ]
 
 /**
@@ -134,13 +146,17 @@ function generateFallbackSuggestions(query: string): string[] {
 }
 
 /**
- * Generate AI-powered answer/summary
+ * Generate AI-powered answer/summary using real-time search context
  */
-export async function generateAIAnswer(query: string): Promise<string> {
+export async function generateAIAnswer(query: string, context?: any[]): Promise<string> {
+  const contextText = context?.map((r, i) => `[${i+1}] "${r.title}": ${r.snippet}`).join('\n') || ''
+  
   const messages = [
     {
       role: 'system',
-      content: 'You are SeekEngine AI. Provide a professional, concise markdown summary. Use headers and bold text for clarity.',
+      content: `You are SeekEngine AI. Provide a professional, concise markdown summary. 
+      ${contextText ? `Base your answer on these search results:\n${contextText}` : 'Provide a general summary.'}
+      Use headers, bullet points and bold text for clarity. Always cite sources as [1], [2], etc if context is provided.`,
     },
     {
       role: 'user',
@@ -155,6 +171,6 @@ export async function generateAIAnswer(query: string): Promise<string> {
     const validated = answerResponseSchema.safeParse({ answer: content || '' })
     return validated.success ? validated.data.answer : 'AI summary unavailable.'
   } catch (error) {
-    return 'An error occurred.'
+    return 'An error occurred during synthesis.'
   }
 }

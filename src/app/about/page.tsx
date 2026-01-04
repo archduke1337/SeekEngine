@@ -46,7 +46,7 @@ export default function AboutPage() {
             {/* Title Block */}
             <header className="space-y-6 md:space-y-8 text-left">
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[0.9] font-sans italic">
-                A Dev's Attempt at <br className="hidden sm:block" /> Grounded Intent Synthesis
+                A Dev&apos;s Attempt at <br className="hidden sm:block" /> Grounded Intent Synthesis
               </h1>
               
               <div className="flex flex-col gap-4 py-6 md:py-8 border-y border-zinc-900/10 dark:border-zinc-100/10">
@@ -71,7 +71,7 @@ export default function AboutPage() {
                 Abstract
               </h2>
               <p className="font-serif text-base sm:text-xl leading-relaxed text-zinc-800 dark:text-zinc-200 text-justify italic">
-                "SeekEngine isn't some polished PhD thesis project. It's my messy, half-broken attempt at a search engine that doesn't lie. Built on Next.js 14, I hooked up Google Custom Search for the real-world validation and OpenRouter's AI for summaries that actually mean something. Tested on over 200 chaotic queries from my own life, it cuts hallucinations by 40%—not bad for a solo hack job."
+                &quot;SeekEngine isn&apos;t some polished PhD thesis project. It&apos;s my messy, half-broken attempt at a search engine that doesn&apos;t lie. Built on Next.js 14, I hooked up Google Custom Search for the real-world validation and OpenRouter&apos;s AI for summaries that actually mean something. Tested on over 200 chaotic queries from my own life, it cuts hallucinations by 40%—not bad for a solo hack job.&quot;
               </p>
               
               <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-zinc-100 dark:border-zinc-900">
@@ -97,7 +97,7 @@ export default function AboutPage() {
                   I. RAG is Not Magic
                 </h3>
                 <p>
-                  Retrieval-Augmented Generation (RAG) is often sold as a silver bullet, but anyone who's actually built one knows it's a fight against noise. In SeekEngine, I've implemented a "Discovery-Consensus" loop. We fetch live data first, then force the models to stay within the bounds of that data. It's not perfect, but it's a far cry from the hallucinated nonsense of earlier attempts.
+                  Retrieval-Augmented Generation (RAG) is often sold as a silver bullet, but anyone who&apos;s actually built one knows it&apos;s a fight against noise. In SeekEngine, I&apos;ve implemented a &quot;Discovery-Consensus&quot; loop. We fetch live data first, then force the models to stay within the bounds of that data. It&apos;s not perfect, but it&apos;s a far cry from the hallucinated nonsense of earlier attempts.
                 </p>
               </section>
 
@@ -106,7 +106,7 @@ export default function AboutPage() {
                   II. Minimalism as Defense
                 </h3>
                 <p>
-                  The UI is bare because I hate clutter. Life is complicated enough—searching for answers shouldn't be. Every pixel in this build is designed to recede, using Apple-inspired typography and SwiftUI glass textures to let the data be the hero. No ads, no tracking, no SEO games.
+                  The UI is bare because I hate clutter. Life is complicated enough—searching for answers shouldn&apos;t be. Every pixel in this build is designed to recede, using Apple-inspired typography and SwiftUI glass textures to let the data be the hero. No ads, no tracking, no SEO games.
                 </p>
               </section>
 
@@ -115,7 +115,7 @@ export default function AboutPage() {
                   III. Conclusion & Code
                 </h3>
                 <p>
-                  This is still a work in progress. Deployed at vercel and hosted on Github. It's open source because I want other devs to see the ugly parts too—the parts that actually teach you how things work.
+                  This is still a work in progress. Deployed at vercel and hosted on Github. It&apos;s open source because I want other devs to see the ugly parts too—the parts that actually teach you how things work.
                 </p>
               </section>
             </div>

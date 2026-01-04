@@ -1,202 +1,400 @@
 'use client'
 
-import React, { useRef, useMemo } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Float, MeshDistortMaterial, Sphere } from '@react-three/drei'
+import React, { useRef, useMemo, Suspense, useEffect, useState } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { 
+  Text3D, 
+  Center, 
+  PerspectiveCamera, 
+  Float, 
+  Environment,
+  PresentationControls,
+  Instances,
+  Instance,
+  ContactShadows
+} from '@react-three/drei'
+import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import gsap from 'gsap'
 
 /**
- * Premium 3D Hero - Noisy Gradient Shaders
- * Features: Interactive liquid spheres with Perlin noise distortion
- * Aesthetic: Apple-inspired monochrome glass with subtle color shifts
+ * SeekEngine High-Performance 3D Hero
+ * Final High-Fidelity Implementation
  */
 
-const vertexShader = `
-  varying vec2 vUv;
-  varying float vDistortion;
-  varying vec3 vNormal;
-  uniform float uTime;
+// --- SHADERS ---
 
-  // Simplex Noise 3D
-  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
-  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-
-  float snoise(vec3 v) {
-    const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
-    const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-    vec3 i  = floor(v + dot(v, C.yyy) );
-    vec3 x0 =   v - i + dot(i, C.xxx) ;
-    vec3 g = step(x0.yzx, x0.xyz);
-    vec3 l = 1.0 - g;
-    vec3 i1 = min( g.xyz, l.zxy );
-    vec3 i2 = max( g.xyz, l.zxy );
-    vec3 x1 = x0 - i1 + C.xxx;
-    vec3 x2 = x0 - i2 + C.yyy;
-    vec3 x3 = x0 - D.yyy;
-    i = mod289(i);
-    vec4 p = permute( permute( permute(
-               i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-             + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
-             + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-    float n_ = 0.142857142857;
-    vec3  ns = n_ * D.wyz - D.xzx;
-    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-    vec4 x_ = floor(j * ns.z);
-    vec4 y_ = floor(j - 7.0 * x_ );
-    vec4 x = x_ *ns.x + ns.yyyy;
-    vec4 y = y_ *ns.x + ns.yyyy;
-    vec4 h = 1.0 - abs(x) - abs(y);
-    vec4 b0 = vec4( x.xy, y.xy );
-    vec4 b1 = vec4( x.zw, y.zw );
-    vec4 s0 = floor(b0)*2.0 + 1.0;
-    vec4 s1 = floor(b1)*2.0 + 1.0;
-    vec4 sh = -step(h, vec4(0.0));
-    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
-    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
-    vec3 p0 = vec3(a0.xy,h.x);
-    vec3 p1 = vec3(a0.zw,h.y);
-    vec3 p2 = vec3(a1.xy,h.z);
-    vec3 p3 = vec3(a1.zw,h.w);
-    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-    m = m * m;
-    return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
-                                  dot(p2,x2), dot(p3,x3) ) );
-  }
-
-  void main() {
-    vUv = uv;
-    vNormal = normal;
-    float noise = snoise(position * 0.5 + uTime * 0.2);
-    vDistortion = noise;
-    vec3 pos = position + normal * noise * 0.25;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-  }
-`
-
-const fragmentShader = `
-  varying vec2 vUv;
-  varying float vDistortion;
-  varying vec3 vNormal;
-  uniform float uTime;
-  uniform vec3 uColorA;
-  uniform vec3 uColorB;
-  uniform float uOpacity;
-
-  void main() {
-    float intensity = (vDistortion + 1.2) / 2.4; 
-    vec3 color = mix(uColorA, uColorB, intensity);
-    
-    // Subtler, more premium rim lighting
-    float rim = 1.0 - max(dot(vNormal, vec3(0.0, 0.0, 1.0)), 0.0);
-    color += pow(rim, 4.0) * 0.3;
-
-    gl_FragColor = vec4(color, uOpacity);
-  }
-`
-
-function LiquidSphere({ position, size, colorA, colorB, speed, isHighPower }: { 
-    position: [number, number, number], 
-    size: number, 
-    colorA: string, 
-    colorB: string, 
-    speed: number,
-    isHighPower?: boolean
-}) {
-  const meshRef = useRef<THREE.Mesh>(null!)
-  const materialRef = useRef<THREE.ShaderMaterial>(null!)
-
-  useFrame((state) => {
-    const powerMultiplier = isHighPower ? 2.5 : 1.0
-    const t = state.clock.getElapsedTime() * speed * powerMultiplier
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = t
-      materialRef.current.uniforms.uOpacity.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.uOpacity.value,
-        isHighPower ? 0.75 : 0.6,
-        0.05
-      )
+const BackgroundShader = {
+  uniforms: {
+    uTime: { value: 0 },
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position, 1.0);
     }
-    
-    // Smooth Mouse parallax effect
+  `,
+  fragmentShader: `
+    varying vec2 vUv;
+    uniform float uTime;
+
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+    float noise(vec2 p) {
+      vec2 i = floor(p); vec2 f = fract(p);
+      f = f*f*(3.0-2.0*f);
+      return mix(mix(hash(i + vec2(0,0)), hash(i + vec2(1,0)), f.x),
+                 mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
+    }
+
+    void main() {
+      vec2 p = vUv - 0.5;
+      float d = length(p);
+      
+      float n = noise(vUv * 3.0 + uTime * 0.1);
+      
+      vec3 colorA = vec3(0.01, 0.015, 0.02); // Deep obsidian
+      vec3 colorB = vec3(0.06, 0.03, 0.01); // Dark industrial amber
+      vec3 colorC = vec3(0.04, 0.01, 0.01); // Deep oil crimson
+      
+      vec3 color = mix(colorA, colorB, n * 0.5 + 0.5);
+      color = mix(color, colorC, sin(uTime * 0.2) * 0.5 + 0.5);
+      
+      // Add industrial grain
+      color += (hash(vUv + uTime) - 0.5) * 0.02;
+      
+      // Vignette
+      color *= smoothstep(1.0, 0.3, d);
+      
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `
+}
+
+const DieselShader = {
+  uniforms: {
+    uTime: { value: 0 },
+    uFill: { value: 0 },
+    uColorFluid: { value: new THREE.Color('#050301') },
+    uColorSurface: { value: new THREE.Color('#ff9900') },
+  },
+  vertexShader: `
+    varying vec3 vNormal;
+    varying vec3 vWorldPosition;
+    varying vec3 vViewPosition;
+    uniform float uTime;
+    uniform float uFill;
+
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vec4 worldPos = modelMatrix * vec4(position, 1.0);
+      vWorldPosition = worldPos.xyz;
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      vViewPosition = -mvPosition.xyz;
+      
+      // Internal fluid sloshing distortion
+      float slosh = sin(position.x * 3.0 + uTime * 0.5) * 0.015 * uFill;
+      vec3 pos = position + normal * slosh;
+      
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vNormal;
+    varying vec3 vWorldPosition;
+    varying vec3 vViewPosition;
+    uniform float uTime;
+    uniform float uFill;
+    uniform vec3 uColorFluid;
+    uniform vec3 uColorSurface;
+
+    void main() {
+      vec3 normal = normalize(vNormal);
+      vec3 viewDir = normalize(vViewPosition);
+      float fresnel = pow(1.0 - dot(normal, viewDir), 2.5);
+      
+      // Dynamic fluid level (Y axis)
+      float level = (vWorldPosition.y + 1.0) * 0.5; // Roughly 0 to 1
+      float wave = sin(vWorldPosition.x * 2.0 + uTime) * 0.05 * uFill;
+      float fluidMask = step(level, uFill + wave);
+      
+      // Container Material
+      vec3 containerColor = vec3(0.12, 0.14, 0.18) * (0.8 + fresnel * 0.4);
+      
+      // Thick Diesel Fluid (Viscous & Oily)
+      vec3 fluidColor = mix(uColorFluid, uColorSurface * 0.2, fresnel);
+      fluidColor += sin(vViewPosition.z * 15.0 + uTime) * 0.01; // Viscosity refractive ripples
+      
+      vec3 color = mix(containerColor, fluidColor, fluidMask);
+      
+      // Surface Tension Glow
+      float surface = smoothstep(uFill + wave - 0.08, uFill + wave, level) * fluidMask;
+      color += surface * uColorSurface * 0.5;
+      
+      // Specular Highlight
+      float spec = pow(max(dot(reflect(-viewDir, normal), vec3(0,1,0)), 0.0), 32.0);
+      color += spec * 0.1;
+      
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `
+}
+
+const MoltenShader = {
+  uniforms: {
+    uTime: { value: 0 },
+    uHeat: { value: 0 },
+  },
+  vertexShader: `
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    uniform float uTime;
+    uniform float uHeat;
+
+    float hash(float n) { return fract(sin(n) * 43758.5453); }
+    float noise(vec3 x) {
+      vec3 p = floor(x); vec3 f = fract(x);
+      f = f*f*(3.0-2.0*f);
+      float n = p.x + p.y*57.0 + 113.0*p.z;
+      return mix(mix(mix(hash(n+0.0), hash(n+1.0),f.x), mix(hash(n+57.0), hash(n+58.0),f.x),f.y),
+                 mix(mix(hash(n+113.0),hash(n+114.0),f.x), mix(hash(n+170.0),hash(n+171.0),f.x),f.y),f.z);
+    }
+
+    void main() {
+      vNormal = normalize(normalMatrix * normal);
+      vPosition = position;
+      
+      // Heavy mechanical vibration
+      float vib = noise(position * 20.0 + uTime * 40.0) * 0.008 * uHeat;
+      // Thermal softening distortion
+      float softening = noise(vec3(position.xy * 2.0, uTime * 0.2)) * 0.04 * uHeat;
+      
+      vec3 pos = position + normal * (vib + softening);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    uniform float uHeat;
+    uniform float uTime;
+
+    void main() {
+      vec3 normal = normalize(vNormal);
+      float fresnel = pow(1.0 - dot(normal, vec3(0,0,1)), 3.0);
+      
+      // Dark forged iron (cool)
+      vec3 ironColor = vec3(0.06, 0.07, 0.09) * (0.8 + fresnel * 0.4);
+      
+      // Heating phases
+      vec3 dullGlow = vec3(0.8, 0.1, 0.0); // Deep red
+      vec3 brightMolten = vec3(1.0, 0.5, 0.0); // Bright orange
+      vec3 whiteHot = vec3(1.0, 0.95, 0.8); // Incandescent
+      
+      vec3 moltenColor = mix(dullGlow, brightMolten, pow(uHeat, 1.5));
+      moltenColor = mix(moltenColor, whiteHot, pow(uHeat, 4.0) * (1.0 - fresnel));
+      
+      // Convection pulse
+      float convection = 0.9 + 0.1 * sin(uTime * 4.0 + vPosition.y * 10.0);
+      
+      vec3 finalColor = mix(ironColor, moltenColor * convection, uHeat);
+      
+      // Thermal bloom leakage
+      finalColor += uHeat * fresnel * moltenColor * 0.5;
+      
+      gl_FragColor = vec4(finalColor, 1.0);
+    }
+  `
+}
+
+// --- SUB-COMPONENTS ---
+
+function SparkParticles({ count = 20, active = false }) {
+  const meshRef = useRef<THREE.Group>(null!)
+  const particles = useMemo(() => {
+    const temp = []
+    for (let i = 0; i < count; i++) {
+        temp.push({ 
+            t: Math.random() * 10, 
+            speed: 0.5 + Math.random(), 
+            offset: [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5] 
+        })
+    }
+    return temp
+  }, [count])
+
+  useFrame((state, delta) => {
+    if (!meshRef.current) return
+    meshRef.current.children.forEach((child, i) => {
+      const p = particles[i]
+      p.t += delta * p.speed
+      child.position.y = (p.t % 2) - 1 + p.offset[1]
+      child.scale.setScalar(active ? (1 - (p.t % 1) * 0.5) : 0)
+      child.visible = active
+    })
+  })
+
+  return (
+    <group ref={meshRef} position={[3, 0, 0]}>
+      {particles.map((_, i) => (
+        <mesh key={i}>
+          <boxGeometry args={[0.02, 0.02, 0.02]} />
+          <meshBasicMaterial color="#ffcc00" transparent opacity={0.6} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+function IndustrialAtmosphere() {
+  const meshRef = useRef<THREE.Mesh>(null!)
+  useFrame((state) => {
     if (meshRef.current) {
-      const x = (state.mouse.x * state.viewport.width) / 12
-      const y = (state.mouse.y * state.viewport.height) / 12
-      meshRef.current.position.x = THREE.MathUtils.lerp(meshRef.current.position.x, position[0] + x, 0.03)
-      meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, position[1] + y, 0.03)
+      (meshRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = state.clock.getElapsedTime()
     }
   })
 
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uColorA: { value: new THREE.Color(colorA) },
-    uColorB: { value: new THREE.Color(colorB) },
-    uOpacity: { value: 0.6 }
-  }), [colorA, colorB])
+  return (
+    <mesh ref={meshRef} position={[0, 0, -15]}>
+      <planeGeometry args={[100, 100]} />
+      <shaderMaterial
+        vertexShader={BackgroundShader.vertexShader}
+        fragmentShader={BackgroundShader.fragmentShader}
+        uniforms={BackgroundShader.uniforms}
+        depthWrite={false}
+      />
+    </mesh>
+  )
+}
+
+function IndustrialScene({ isHighPower }: { isHighPower: boolean }) {
+  const [fill, setFill] = useState(0)
+  const [heat, setHeat] = useState(0)
+  const fontUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json"
+
+  useEffect(() => {
+    // Stage 1: Industrial Initialization
+    const tl = gsap.timeline()
+    tl.to({}, { duration: 0.5 })
+      .to({}, { 
+        duration: 4, 
+        onUpdate: function() { setFill(this.progress()) },
+        ease: "power2.inOut"
+      })
+      .to({}, { 
+        duration: 3, 
+        onUpdate: function() { setHeat(this.progress() * 0.65) },
+        ease: "sine.inOut"
+      }, "-=2.5")
+  }, [])
+
+  useEffect(() => {
+    gsap.to({}, { 
+        duration: 1.5, 
+        onUpdate: function() { 
+            const target = isHighPower ? 1.0 : 0.65
+            setHeat(cur => THREE.MathUtils.lerp(cur, target, this.progress()))
+        } 
+    })
+  }, [isHighPower])
 
   return (
-    <Float 
-      speed={isHighPower ? 4 : 1.5} 
-      rotationIntensity={isHighPower ? 2 : 1} 
-      floatIntensity={isHighPower ? 3 : 1.5}
-    >
-      <mesh ref={meshRef} position={position}>
-        <sphereGeometry args={[size, 48, 48]} />
-        <shaderMaterial
-          ref={materialRef}
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-          uniforms={uniforms}
-          transparent
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-    </Float>
+    <>
+      <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={30} />
+      <ambientLight intensity={0.4} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" />
+      <spotLight position={[-10, 20, 10]} angle={0.2} penumbra={1} intensity={3} color="#ffcc99" />
+      
+      <IndustrialAtmosphere />
+      
+      <PresentationControls
+        global
+        config={{ mass: 2, tension: 400 }}
+        snap={{ mass: 4, tension: 1200 }}
+        rotation={[0, 0, 0]}
+        polar={[-Math.PI / 15, Math.PI / 15]}
+        azimuth={[-Math.PI / 8, Math.PI / 8]}
+      >
+        <group scale={1.05} position={[0, 0.9, 0]}>
+          <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.3}>
+            {/* SEEK - Diesel Container */}
+            <Center position={[-2.8, 0, 0]}>
+              <Text3D
+                font={fontUrl}
+                size={1.4}
+                height={0.5}
+                bevelEnabled
+                bevelThickness={0.06}
+                bevelSize={0.04}
+                curveSegments={24}
+              >
+                Seek
+                <shaderMaterial
+                  attach="material"
+                  vertexShader={DieselShader.vertexShader}
+                  fragmentShader={DieselShader.fragmentShader}
+                  uniforms={DieselShader.uniforms}
+                  side={THREE.DoubleSide}
+                />
+              </Text3D>
+            </Center>
+
+            {/* ENGINE - Molten Forging */}
+            <Center position={[2.8, 0, 0]}>
+              <Text3D
+                font={fontUrl}
+                size={1.4}
+                height={0.5}
+                bevelEnabled
+                bevelThickness={0.06}
+                bevelSize={0.04}
+                curveSegments={24}
+              >
+                Engine
+                <shaderMaterial
+                  attach="material"
+                  vertexShader={MoltenShader.vertexShader}
+                  fragmentShader={MoltenShader.fragmentShader}
+                  uniforms={MoltenShader.uniforms}
+                  side={THREE.DoubleSide}
+                />
+              </Text3D>
+            </Center>
+            
+            <SparkParticles active={isHighPower || heat > 0.8} />
+          </Float>
+        </group>
+      </PresentationControls>
+
+      <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={20} blur={2.5} far={4.5} />
+      
+      <EffectComposer multisampling={0}>
+        <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={0.8} />
+        <Noise opacity={0.05} />
+        <Vignette eskil={false} offset={0.1} darkness={1.1} />
+        <ChromaticAberration offset={new THREE.Vector2(0.001, 0.001)} />
+      </EffectComposer>
+      
+      <Environment preset="night" />
+    </>
   )
 }
 
 export default function Hero3D({ isHighPower = false }: { isHighPower?: boolean }) {
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
-        <ambientLight intensity={1.5} />
-        <pointLight position={[10, 10, 10]} intensity={2} />
-        
-        <LiquidSphere 
-          position={[-3, 2, -2]} 
-          size={2.0} 
-          colorA="#1e293b" // slate-800
-          colorB="#020617" // slate-950
-          speed={0.25}
-          isHighPower={isHighPower}
-        />
-        
-        <LiquidSphere 
-          position={[4, -2, -1]} 
-          size={2.4} 
-          colorA="#475569" // slate-600
-          colorB="#0f172a" // slate-900
-          speed={0.35}
-          isHighPower={isHighPower}
-        />
-
-        <LiquidSphere 
-          position={[0, 0, -5]} 
-          size={4.0} 
-          colorA="#f8fafc" // slate-50
-          colorB="#94a3b8" // slate-400
-          speed={0.15}
-          isHighPower={isHighPower}
-        />
+    <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
+      <Canvas 
+        dpr={[1, 1.5]} 
+        gl={{ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+        }}
+      >
+        <Suspense fallback={null}>
+          <IndustrialScene isHighPower={isHighPower} />
+        </Suspense>
       </Canvas>
-      
-      {/* Premium Apple Liquid Glass Overlay */}
-      <div className="absolute inset-0 bg-white/5 dark:bg-black/5 backdrop-blur-[140px] pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-white/20 via-transparent to-white/10 dark:from-black/20 dark:via-transparent dark:to-black/10 pointer-events-none" />
     </div>
   )
 }

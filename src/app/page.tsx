@@ -60,43 +60,12 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               >
-                <h1 className="text-7xl sm:text-[10rem] font-black tracking-[-0.05em] text-black dark:text-white leading-tight py-4 mb-2 select-none flex items-center justify-center gap-1 font-sans">
-                  <span className="tracking-[-0.07em] diesel-flowing-text">Seek</span>
-                  <span className="relative inline-block">
-                    <span className={`hot-engine-text italic font-medium transition-all duration-700 ${isTyping ? 'high-power' : ''}`}>Engine</span>
-                    
-                    {/* Visual Exhaust on text */}
-                    <AnimatePresence>
-                      {isTyping && (
-                         <div className="absolute -top-12 inset-x-0 flex justify-center pointer-events-none">
-                            {[1, 2, 3].map((i) => (
-                              <motion.div
-                                key={`text-smoke-${i}`}
-                                initial={{ opacity: 0, y: 10, scale: 0.5 }}
-                                animate={{ 
-                                  opacity: [0, 0.4, 0], 
-                                  y: [-10, -50], 
-                                  scale: [1, 2.0], 
-                                  x: [0, (i % 2 === 0 ? 10 : -10)] 
-                                }}
-                                transition={{ 
-                                  duration: 1, 
-                                  repeat: Infinity, 
-                                  delay: i * 0.15,
-                                  ease: "easeOut" 
-                                }}
-                                className="absolute w-8 h-8 sm:w-12 sm:h-12 bg-zinc-400/20 dark:bg-white/10 rounded-full blur-[10px] sm:blur-[15px]"
-                              />
-                            ))}
-                         </div>
-                      )}
-                    </AnimatePresence>
-                  </span>
-                </h1>
+                <h1 className="sr-only">SeekEngine</h1>
+                <div className="h-48 sm:h-80" /> {/* Dynamic Spacer for 3D Hero Title */}
                 
                 <p className="text-base sm:text-2xl text-zinc-400 dark:text-zinc-500 font-medium max-w-2xl mx-auto leading-relaxed tracking-tight px-6 font-sans">
                   The future of discovery is not a list of links. <br className="hidden sm:block" />
-                  It is a <span className="text-black dark:text-white font-bold opacity-100">sync of human intent.</span>
+                  It is a <span className="text-black dark:text-white font-bold opacity-100">sensed synthesis of human intent.</span>
                 </p>
               </motion.div>
             </div>
@@ -107,32 +76,7 @@ export default function Home() {
               transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               className="w-full max-w-2xl px-6 relative"
             >
-              {/* Exhaust Smoke Particles for Search Bar */}
-              <AnimatePresence>
-                {isTyping && (
-                  <div className="absolute -top-16 inset-x-0 flex justify-center pointer-events-none">
-                    {[1, 2, 3].map((i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 20, scale: 0.5, filter: 'blur(10px)' }}
-                        animate={{ 
-                          opacity: [0, 0.2, 0], 
-                          y: [-20, -60 - (i * 10)], 
-                          scale: [1, 1.5], 
-                          x: [0, (i % 2 === 0 ? 15 : -15)] 
-                        }}
-                        transition={{ 
-                          duration: 1.5, 
-                          repeat: Infinity, 
-                          delay: i * 0.2,
-                          ease: "easeOut" 
-                        }}
-                        className="absolute w-12 h-12 sm:w-20 sm:h-20 bg-zinc-400/20 dark:bg-white/10 rounded-full blur-[15px] sm:blur-[20px]"
-                      />
-                    ))}
-                  </div>
-                )}
-              </AnimatePresence>
+              <div className="h-0 sr-only">Search Particles</div>
 
               <SearchBar autoFocus onTyping={setIsTyping} />
             </motion.div>

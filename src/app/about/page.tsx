@@ -66,9 +66,11 @@ export default function AboutPage() {
                     <motion.circle
                         r="3"
                         fill="#ef4444"
-                        animate={{ offsetDistance: ["0%", "100%"] }}
-                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                        style={{ offsetPath: "path('M 50 100 L 350 100 L 350 300 L 50 300 Z')" }}
+                        {...({
+                            animate: { offsetDistance: ["0%", "100%"] },
+                            transition: { duration: 10, repeat: Infinity, ease: "linear" },
+                            style: { offsetPath: "path('M 50 100 L 350 100 L 350 300 L 50 300 Z')" }
+                        } as any)}
                     />
                 </svg>
 

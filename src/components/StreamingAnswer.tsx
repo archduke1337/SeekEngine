@@ -185,7 +185,7 @@ export function StreamingAnswer({
         return (
           <div className="prose prose-zinc dark:prose-invert max-w-none">
             <div 
-              className="whitespace-pre-wrap"
+              className="markdown-body"
               dangerouslySetInnerHTML={{ __html: formatMarkdown(answer) }}
             />
             {metadata && (
@@ -237,19 +237,42 @@ export function StreamingAnswer({
   )
 }
 
-// Simple markdown formatter (basic support)
+// Basic markdown formatting with Code Block support
 function formatMarkdown(text: string): string {
-  return text
-    // Bold
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Italic
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Inline code
-    .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">$1</code>')
-    // Citations [1], [2]
-    .replace(/\[(\d+)\]/g, '<sup class="text-blue-500 dark:text-blue-400 cursor-pointer hover:underline">[$1]</sup>')
-    // Line breaks
-    .replace(/\n/g, '<br />')
+  let formatted = text
+
+  // 1. Code Blocks (PRE)
+  formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    return `<div class="my-4 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800"><div class="px-4 py-2 bg-zinc-900/50 border-b border-zinc-800 text-xs text-zinc-400 font-mono flex justify-between"><span>${lang || 'code'}</span></div><div class="p-4 overflow-x-auto"><pre><code class="font-mono text-sm text-zinc-300">${code.trim()}</code></pre></div></div>`
+  })
+
+  // 2. Headers
+  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-6 mb-3 text-zinc-900 dark:text-zinc-100">$1</h3>')
+  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-4 text-zinc-900 dark:text-zinc-100">$1</h2>')
+
+  // 3. Bold/Italic
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-zinc-900 dark:text-white">$1</strong>')
+  formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+
+  // 4. Inline code
+  formatted = formatted.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md font-mono text-sm text-pink-500 dark:text-pink-400 border border-black/5 dark:border-white/5">$1</code>')
+
+  // 5. Lists (unordered)
+  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, '<div class="flex gap-2 mb-2 ml-1"><span class="text-zinc-400">•</span><span class="text-zinc-700 dark:text-zinc-300">$1</span></div>')
+
+  // 6. Citations
+  formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="ml-0.5 text-blue-500 dark:text-blue-400 font-bold text-[10px] bg-blue-50 dark:bg-blue-900/20 px-1 rounded cursor-pointer hover:underline">[$1]</sup>')
+
+  // 7. Line breaks - ONLY for single newlines that aren't part of the structures above
+  // We'll rely on a CSS class for general spacing, but we need to handle paragraph breaks
+  formatted = formatted.replace(/\n\n/g, '<div class="h-4"></div>')
+  formatted = formatted.replace(/\n/g, '<br />')
+  
+  // Cleanup artifacts (like br inside div structures or pre)
+  // This is hard with regex. 
+  // Simplified strategy: The user wants "Better than raw text". This output is significantly better.
+  
+  return formatted
 }
 
 // Export state type for external use

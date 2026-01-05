@@ -9,7 +9,8 @@ import {
   Float, 
   Environment,
   PresentationControls,
-  ContactShadows
+  ContactShadows,
+  useFont
 } from '@react-three/drei'
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing'
 import * as THREE from 'three'
@@ -19,6 +20,10 @@ import gsap from 'gsap'
  * SeekEngine High-Performance 3D Hero
  * Production-Grade Refactor: WebGL Optimizations & GPU discipline.
  */
+
+// Font preload at module level to ensure cache is warm
+const FONT_URL = "/fonts/helvetiker_bold.typeface.json"
+useFont.preload(FONT_URL)
 
 // --- SHADERS ---
 
@@ -252,8 +257,8 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
   const fillRef = useRef(0)
   const heatRef = useRef(0)
   
-  // Use public local fonts for production reliability
-  const fontUrl = "/fonts/helvetiker_bold.typeface.json"
+  // Use preloaded font URL for production reliability
+  const fontUrl = FONT_URL
 
   // Memoize uniforms to prevent GC churn and breakage of GPU caching
   const dieselUniforms = useMemo(() => ({
@@ -388,11 +393,20 @@ function TextObjects({
     heatRef,
     isHighPower 
 }: any) {
+    // Preload font using useFont hook for production reliability
+    const font = useFont(fontUrl)
+    
+    // Guard: Don't render until font is ready
+    if (!font) {
+      console.warn('[Hero3D] Font not yet loaded, waiting...')
+      return null
+    }
+
     return (
         <>
             <Center position={seekPos}>
                 <Text3D
-                    font={fontUrl}
+                    font={font as any}
                     size={1.4}
                     height={0.5}
                     bevelEnabled
@@ -413,7 +427,7 @@ function TextObjects({
 
             <Center position={enginePos}>
                 <Text3D
-                    font={fontUrl}
+                    font={font as any}
                     size={1.4}
                     height={0.5}
                     bevelEnabled

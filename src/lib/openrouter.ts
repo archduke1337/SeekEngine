@@ -630,8 +630,9 @@ export async function* streamOpenRouter(
       
       
       // STRICT TTFT CHECK: Tier-aware timeouts
-      // 600ms for fast tier (aggressive), 1000ms for others
-      const limit = tier === 'fast' ? 600 : 1000
+      // STRICT TTFT CHECK: Tier-aware timeouts
+      // Relaxed significantly (15s global) to fix instability
+      const limit = tier === 'fast' ? 2000 : 5000
       const ttftTimeout = new Promise<never>((_, reject) => 
         setTimeout(() => reject(new Error('TTFT_TIMEOUT')), limit)
       )

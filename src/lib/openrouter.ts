@@ -612,9 +612,12 @@ export async function* streamOpenRouter(
       const decoder = new TextDecoder()
       let buffer = ''
       
-      // STRICT TTFT CHECK: 1000ms (Softened from 800ms for stability)
+      
+      // STRICT TTFT CHECK: Tier-aware timeouts
+      // 600ms for fast tier (aggressive), 1000ms for others
+      const limit = tier === 'fast' ? 600 : 1000
       const ttftTimeout = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('TTFT_TIMEOUT')), 1000)
+        setTimeout(() => reject(new Error('TTFT_TIMEOUT')), limit)
       )
 
       const readFirstChunk = async () => {
@@ -632,6 +635,9 @@ export async function* streamOpenRouter(
             if (!trimmed.startsWith('data: ')) continue
 
             try {
+              // OPTIMIZATION: Scan for content before expensive JSON.parse
+              if (!trimmed.includes('"content":')) continue
+
               const json = JSON.parse(trimmed.slice(6))
               const delta = json.choices?.[0]?.delta?.content
               if (delta) {
@@ -711,6 +717,8 @@ export async function* streamOpenRouter(
       let buffer = winner.remainingBuffer
       let fullContent = winner.firstToken || ''
 
+      let uiBuffer = ''
+
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
@@ -725,14 +733,30 @@ export async function* streamOpenRouter(
           if (!trimmed.startsWith('data: ')) continue
 
           try {
+            // OPTIMIZATION: Scan for content before parsing
+            if (!trimmed.includes('"content":')) continue
+
             const json = JSON.parse(trimmed.slice(6))
             const delta = json.choices?.[0]?.delta?.content
+            
             if (delta) {
               fullContent += delta
-              yield { type: 'token', content: delta }
+              uiBuffer += delta
+
+              // OPTIMIZATION: Buffered emission
+              // Only yield if buffer is substantial or ends in whitespace/punctuation
+              if (uiBuffer.length > 20 || /[\s\p{P}]$/u.test(uiBuffer)) {
+                yield { type: 'token', content: uiBuffer }
+                uiBuffer = ''
+              }
             }
           } catch { }
         }
+      }
+
+      // Flush remaining buffer
+      if (uiBuffer) {
+        yield { type: 'token', content: uiBuffer }
       }
 
       // Success - emit done and exit
@@ -769,6 +793,8 @@ export async function* streamOpenRouter(
 // Returns a ReadableStream for SSE responses
 // ─────────────────────────────────────────────────────────────────────────────
 
+const BASE_SYSTEM_PROMPT = "You are SeekEngine AI. Concise markdown. Cite sources as [n]."
+
 export function createStreamingAnswerResponse(
   query: string,
   context?: { title: string; snippet: string }[],
@@ -784,9 +810,9 @@ export function createStreamingAnswerResponse(
   const messages: ChatMessage[] = [
     {
       role: 'system',
-      content: `You are SeekEngine AI. Concise markdown. ${
-        contextText ? `Source base:\n${contextText}` : ''
-      } Cite as [1], [2].`,
+      content: contextText 
+        ? `${BASE_SYSTEM_PROMPT}\n\nSource base:\n${contextText}` 
+        : BASE_SYSTEM_PROMPT,
     },
     {
       role: 'user',

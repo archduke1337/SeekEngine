@@ -550,7 +550,15 @@ export async function* streamOpenRouter(
   console.log('🔑 Streaming API Key validated')
 
   const policy = TASK_POLICIES[task]
-  const models = await getModelsForTask(task)
+  const allModels = await getModelsForTask(task)
+  // Filter out models with too many failures
+  const models = allModels.filter(m => (modelFailures.get(m) || 0) < MAX_MODEL_FAILURES)
+  
+  if (models.length === 0) {
+    yield { type: 'error', error: 'No healthy models available' }
+    return
+  }
+  
   const startTime = Date.now()
   let attempts = 0
 
@@ -596,6 +604,7 @@ export async function* streamOpenRouter(
       )
 
       if (!response.ok || !response.body) {
+         modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
          throw new Error(`HTTP ${response.status}`)
       }
 
@@ -649,6 +658,9 @@ export async function* streamOpenRouter(
       }
 
     } catch (err) {
+      // Update failure count
+      modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
+      
       if ((err as Error).message === 'TTFT_TIMEOUT') {
         console.warn(`⏳ TTFT Timeout for ${model}`)
       }

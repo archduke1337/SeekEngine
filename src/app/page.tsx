@@ -77,7 +77,7 @@ export default function Home() {
             style={{ 
               scale: heroScale, 
               opacity: opacityValue
-            }} 
+            } as any} 
             className="absolute inset-0 z-0 will-change-transform will-change-opacity"
           >
             {mounted && !prefersReducedMotion ? (
@@ -90,7 +90,7 @@ export default function Home() {
           </motion.div>
 
           <motion.div 
-            style={{ opacity: veilOpacity }}
+            style={{ opacity: veilOpacity } as any}
             className="absolute inset-0 pointer-events-none z-10 bg-white dark:bg-black"
           />
 
@@ -98,7 +98,7 @@ export default function Home() {
 
           {/* Heading and Search */}
           <motion.div 
-            style={{ y: contentY }}
+            style={{ y: contentY } as any}
             className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-10 sm:gap-16 will-change-transform"
           >
             <div className="text-center space-y-8 sm:space-y-12">

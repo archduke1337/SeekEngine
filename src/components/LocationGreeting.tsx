@@ -10,25 +10,41 @@ import { motion } from 'framer-motion'
  */
 
 export default function LocationGreeting() {
-  const [location, setLocation] = useState<string>('')
+  const [location, setLocation] = useState<string>('your world')
   const [timeOfDay, setTimeOfDay] = useState<string>('')
 
   useEffect(() => {
-    // Determine time of day
-    const hour = new Date().getHours()
-    if (hour < 12) setTimeOfDay('morning')
-    else if (hour < 18) setTimeOfDay('afternoon')
-    else setTimeOfDay('evening')
+    // Perceptual Correctness: Maintain accurate time-of-day logic
+    const updateTime = () => {
+      const hour = new Date().getHours()
+      if (hour < 12) setTimeOfDay('morning')
+      else if (hour < 18) setTimeOfDay('afternoon')
+      else setTimeOfDay('evening')
+    }
 
-    // Fetch IP-based location
-    fetch('https://ipapi.co/json/')
+    updateTime()
+    const timeInterval = setInterval(updateTime, 60_000)
+
+    // Privacy & Reliability Hardening: Best-effort IP lookup with timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 1200)
+
+    fetch('https://ipapi.co/json/', { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
+        clearTimeout(timeoutId)
         if (data.city) setLocation(data.city)
         else if (data.region) setLocation(data.region)
-        else setLocation('your world')
       })
-      .catch(() => setLocation('your world'))
+      .catch(() => {
+        // Silent failure defaults to 'your world' initialized above
+      })
+
+    return () => {
+      clearInterval(timeInterval)
+      clearTimeout(timeoutId)
+      controller.abort()
+    }
   }, [])
 
   if (!timeOfDay) return null
@@ -36,11 +52,16 @@ export default function LocationGreeting() {
   return (
     <motion.div 
       className="flex flex-col items-center gap-2"
+      aria-live="polite"
+      aria-atomic="true"
     >
       <motion.span 
         initial={{ opacity: 0, letterSpacing: '0.4em' }}
         animate={{ opacity: 1, letterSpacing: '0.8em' }}
-        transition={{ duration: 2, ease: "easeOut" }}
+        transition={{ 
+          opacity: { duration: 1.2 },
+          letterSpacing: { duration: 2, ease: [0.16, 1, 0.3, 1] } 
+        }}
         className="text-[11px] text-black dark:text-white font-black uppercase"
       >
         Good {timeOfDay}

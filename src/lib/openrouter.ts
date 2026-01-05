@@ -421,16 +421,21 @@ async function callOpenRouter(
   console.log('🔑 API Key validated')
 
   const policy = TASK_POLICIES[task]
-  const models = await getModelsForTask(task)
+  const allModels = await getModelsForTask(task)
+  
+  // Filter out models with too many failures
+  let models = allModels.filter(m => (modelFailures.get(m) || 0) < MAX_MODEL_FAILURES)
+  
+  if (models.length === 0) {
+    console.warn(`⚠️ All models failed for ${task}. Resetting failures.`)
+    modelFailures.clear()
+    models = allModels
+  }
 
   const startTime = Date.now()
   let attempts = 0
 
   for (const model of models) {
-    if ((modelFailures.get(model) || 0) >= MAX_MODEL_FAILURES) {
-      continue
-    }
-    
     attempts++
 
     if (Date.now() - startTime > policy.globalTimeout) {
@@ -493,6 +498,10 @@ async function callOpenRouter(
 
       if (content) {
         logTelemetry({ task, model, tier, latency, success: true, tokens })
+        
+        // LOG THE GENERATED RESPONSE (Sample)
+        console.log(`📝 [GENERATED] ${model} (${tier}): "${content.slice(0, 100).replace(/\n/g, ' ')}..."`)
+
         return {
           content,
           model,
@@ -777,6 +786,9 @@ export async function* streamOpenRouter(
       // Update telemetry
       logTelemetry({ task, model: winner.model, tier: winner.tier, latency: winner.latency, success: true })
       
+      // LOG THE GENERATED RESPONSE (Sample)
+      console.log(`📝 [GENERATED] ${winner.model} (${winner.tier}): "${fullContent.slice(0, 100).replace(/\n/g, ' ')}..."`)
+
       yield {
         type: 'done',
         content: fullContent,

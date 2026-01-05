@@ -173,7 +173,7 @@ export function StreamingAnswer({
         
       case 'streaming':
         return (
-          <div className="prose prose-zinc dark:prose-invert max-w-none">
+          <div className="w-full max-w-none">
             <div className="whitespace-pre-wrap">
               {answer}
               <StreamingCursor />
@@ -183,10 +183,10 @@ export function StreamingAnswer({
         
       case 'done':
         return (
-          <div className="prose prose-zinc dark:prose-invert max-w-none">
+          <div className="w-full max-w-none">
             <div 
               className=""
-              dangerouslySetInnerHTML={{ __html: formatMarkdown(answer) }}
+              dangerouslySetInnerHTML={{ __html: formatMarkdown(answer) || '<p class="text-zinc-400 italic">No content generated.</p>' }}
             />
             {metadata && (
               <ModelBadge 

@@ -38,7 +38,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Engine', href: '/' },
-    { label: 'About', href: '/about' },
+    { label: 'Project', href: '/about' },
   ]
 
   if (!mounted) {

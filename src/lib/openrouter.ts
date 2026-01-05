@@ -552,10 +552,16 @@ export async function* streamOpenRouter(
   const policy = TASK_POLICIES[task]
   const allModels = await getModelsForTask(task)
   // Filter out models with too many failures
-  const models = allModels.filter(m => (modelFailures.get(m) || 0) < MAX_MODEL_FAILURES)
+  let models = allModels.filter(m => (modelFailures.get(m) || 0) < MAX_MODEL_FAILURES)
   
   if (models.length === 0) {
-    yield { type: 'error', error: 'No healthy models available' }
+    console.warn('⚠️ All models marked as failed. Resetting failures and retrying.')
+    modelFailures.clear()
+    models = allModels
+  }
+  
+  if (models.length === 0) {
+    yield { type: 'error', error: 'No models available' }
     return
   }
   

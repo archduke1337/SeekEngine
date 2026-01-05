@@ -501,7 +501,209 @@ async function callOpenRouter(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣3️⃣ HARDENED JSON EXTRACTION UTILITY
+// 1️⃣3️⃣ STREAMING AI CALLER (SSE-Compatible)
+// Yields tokens as they arrive for perceived instant responses
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface StreamEvent {
+  type: 'token' | 'thinking' | 'done' | 'error' | 'model_selected'
+  content?: string
+  model?: string
+  modelHuman?: string
+  tier?: ModelTier
+  latencyMs?: number
+  attempts?: number
+  error?: string
+}
+
+export async function* streamOpenRouter(
+  messages: ChatMessage[],
+  task: AITask = AITask.ANSWER
+): AsyncGenerator<StreamEvent> {
+  if (!OPENROUTER_API_KEY) {
+    yield { type: 'error', error: 'OPENROUTER_API_KEY missing' }
+    return
+  }
+
+  const policy = TASK_POLICIES[task]
+  const models = await getModelsForTask(task)
+  const startTime = Date.now()
+  let attempts = 0
+
+  // Emit thinking state
+  yield { type: 'thinking', content: 'Connecting to AI...' }
+
+  for (const model of models) {
+    if ((modelFailures.get(model) || 0) >= MAX_MODEL_FAILURES) {
+      continue
+    }
+
+    if (Date.now() - startTime > policy.globalTimeout) {
+      yield { type: 'error', error: 'Global timeout reached' }
+      return
+    }
+
+    attempts++
+    const modelStartTime = Date.now()
+    const tier = classifyModel(model.replace(/:free$/, ''))
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), policy.maxLatency)
+
+    try {
+      // Emit model selection
+      yield { 
+        type: 'model_selected', 
+        model, 
+        modelHuman: humanizeModel(model),
+        tier,
+        attempts 
+      }
+
+      const response = await fetch(
+        `${OPENROUTER_BASE_URL}/chat/completions`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://github.com/archduke1337/seekengine',
+            'X-Title': 'SeekEngine',
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature: policy.temperature,
+            max_tokens: policy.maxTokens,
+            top_p: 1,
+            stream: true, // Enable streaming
+          }),
+          signal: controller.signal,
+        }
+      )
+
+      clearTimeout(timeoutId)
+
+      if ([429, 500, 502, 503].includes(response.status)) {
+        await new Promise(r => setTimeout(r, 300))
+        continue
+      }
+
+      if (!response.ok || !response.body) {
+        modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
+        continue
+      }
+
+      // Stream the response
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let fullContent = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (!trimmed || trimmed === 'data: [DONE]') continue
+          if (!trimmed.startsWith('data: ')) continue
+
+          try {
+            const json = JSON.parse(trimmed.slice(6))
+            const delta = json.choices?.[0]?.delta?.content
+            if (delta) {
+              fullContent += delta
+              yield { type: 'token', content: delta }
+            }
+          } catch {
+            // Ignore parse errors for partial chunks
+          }
+        }
+      }
+
+      // Emit completion with metadata
+      const latency = Date.now() - modelStartTime
+      logTelemetry({ task, model, tier, latency, success: true })
+
+      yield {
+        type: 'done',
+        content: fullContent,
+        model,
+        modelHuman: humanizeModel(model),
+        tier,
+        latencyMs: latency,
+        attempts,
+      }
+      return
+
+    } catch (err: unknown) {
+      clearTimeout(timeoutId)
+      const error = err as Error
+      
+      if (error.name === 'AbortError') {
+        // Timeout, try next model
+        continue
+      } else {
+        modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
+      }
+    }
+  }
+
+  yield { type: 'error', error: 'All models failed' }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1️⃣4️⃣ STREAMING ANSWER GENERATOR (For API Routes)
+// Returns a ReadableStream for SSE responses
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function createStreamingAnswerResponse(
+  query: string,
+  context?: { title: string; snippet: string }[]
+): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder()
+
+  const contextText =
+    context
+      ?.map((r, i) => `[${i + 1}] "${r.title}": ${r.snippet}`)
+      .join('\n') || ''
+
+  const messages: ChatMessage[] = [
+    {
+      role: 'system',
+      content: `You are SeekEngine AI. Concise markdown. ${
+        contextText ? `Source base:\n${contextText}` : ''
+      } Cite as [1], [2].`,
+    },
+    {
+      role: 'user',
+      content: query,
+    },
+  ]
+
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const event of streamOpenRouter(messages, AITask.ANSWER)) {
+          const data = `data: ${JSON.stringify(event)}\n\n`
+          controller.enqueue(encoder.encode(data))
+        }
+        controller.close()
+      } catch (error) {
+        const errorEvent = { type: 'error', error: (error as Error).message }
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorEvent)}\n\n`))
+        controller.close()
+      }
+    },
+  })
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1️⃣5️⃣ HARDENED JSON EXTRACTION UTILITY
 // ─────────────────────────────────────────────────────────────────────────────
 
 function extractJsonArray(text: string): string | null {

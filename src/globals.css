@@ -168,6 +168,31 @@ html.lenis body {
   animation: shimmer 1.5s infinite;
 }
 
+/* Streaming gradient loading bar */
+@keyframes streamingGradient {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-streaming-gradient {
+  animation: streamingGradient 2s infinite linear;
+}
+
+/* Pulse animation delays for thinking dots */
+.delay-0 {
+  animation-delay: 0ms;
+}
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+
 /* Content visibility for performance */
 .content-auto {
   content-visibility: auto;

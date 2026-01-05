@@ -107,17 +107,21 @@ export default function Home() {
           >
             <div className="text-center space-y-8 sm:space-y-12">
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                {...({
+                  initial: { opacity: 0, y: 40 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+                } as any)}
               >
                 <h1 className="sr-only">SeekEngine — Intent-First Grounded Intelligence Search</h1>
                 <div className="h-32 sm:h-56" /> {/* Reduced Spacer for 3D Hero Title */}
                 
                 <motion.p 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  {...({
+                    initial: { opacity: 0, scale: 0.95 },
+                    animate: { opacity: 1, scale: 1 },
+                    transition: { delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }
+                  } as any)}
                   className="text-lg sm:text-3xl text-zinc-500 dark:text-zinc-400 font-medium max-w-3xl mx-auto leading-relaxed tracking-tighter px-6 font-sans italic"
                 >
                   The future of discovery is not a list of links. <br className="hidden sm:block" />
@@ -127,9 +131,11 @@ export default function Home() {
             </div>
 
             <motion.div 
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              {...({
+                initial: { opacity: 0, y: 20, scale: 0.98 },
+                animate: { opacity: 1, y: 0, scale: 1 },
+                transition: { delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }
+              } as any)}
               className="w-full max-w-2xl px-6 relative"
               role="search"
             >
@@ -142,9 +148,11 @@ export default function Home() {
 
             {/* Live Synthesis Feed */}
             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ delay: 1.2, duration: 1.5 }}
+               {...({
+                 initial: { opacity: 0 },
+                 animate: { opacity: 1 },
+                 transition: { delay: 1.2, duration: 1.5 }
+               } as any)}
                className="w-full"
             >
             </motion.div>

@@ -646,7 +646,8 @@ export async function* streamOpenRouter(
           const lines = buffer.split('\n')
           buffer = lines.pop() || ''
 
-          for (const line of lines) {
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i]
             const trimmed = line.trim()
             if (!trimmed || trimmed === 'data: [DONE]') continue
             if (!trimmed.startsWith('data: ')) continue
@@ -658,6 +659,12 @@ export async function* streamOpenRouter(
               const json = JSON.parse(trimmed.slice(6))
               const delta = json.choices?.[0]?.delta?.content
               if (delta) {
+                 // CRITICAL FIX: Reconstruct buffer with unprocessed lines
+                 // If we return now, we must save lines[i+1...end]
+                 const remainingLines = lines.slice(i + 1)
+                 if (remainingLines.length > 0) {
+                   buffer = remainingLines.join('\n') + (buffer ? '\n' + buffer : '')
+                 }
                  return delta // Found first token!
               }
             } catch { }

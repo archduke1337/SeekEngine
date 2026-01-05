@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 export default function Hero() {
-  const [query, setQuery] = useState('')
-  const [isFocused, setIsFocused] = useState(false)
   const { scrollY } = useScroll()
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -19,7 +17,7 @@ export default function Hero() {
   const isDark = mounted ? resolvedTheme === 'dark' : true
 
   return (
-    <section className="h-screen flex flex-col items-center justify-center relative overflow-hidden">
+    <section className="w-full flex flex-col items-center justify-center relative overflow-visible pointer-events-none py-12">
       
       {/* 
          HERO TYPOGRAPHY - APPLE STYLE
@@ -27,7 +25,7 @@ export default function Hero() {
       */}
       <motion.div 
          style={{ y: y1 }}
-         className="relative z-10 text-center px-4"
+         className="relative z-10 text-center px-4 pointer-events-auto"
       >
         <div className="relative">
           {/* 
@@ -65,7 +63,7 @@ export default function Hero() {
       {/* SUBTEXT / TAGLINE */}
       <motion.div 
         style={{ opacity }}
-        className="mt-8 md:mt-12 text-center space-y-3 z-20 relative max-w-2xl px-6"
+        className="mt-8 md:mt-12 text-center space-y-3 z-20 relative max-w-2xl px-6 pointer-events-auto"
       >
         <h2 
           className="text-xl md:text-2xl font-normal transition-colors duration-300"
@@ -88,68 +86,6 @@ export default function Hero() {
           It is a <span className="border-b-2" style={{ borderColor: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)' }}>sensed synthesis of human intent.</span>
         </h2>
       </motion.div>
-
-      {/* SEARCH BAR - Spotlight Style */}
-      <div className="absolute bottom-12 md:bottom-24 w-full max-w-[600px] px-6 z-30">
-        <div 
-          className={`
-             relative group transition-all duration-300 ease-out
-             ${isFocused ? 'scale-[1.02]' : 'scale-100'}
-          `}
-        >
-          {/* Glass Container */}
-          <div 
-            className="rounded-full flex items-center p-2 shadow-2xl backdrop-blur-2xl border transition-colors duration-300"
-            style={{
-               background: isDark ? 'rgba(28, 28, 30, 0.7)' : 'rgba(255, 255, 255, 0.8)',
-               borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-               boxShadow: isDark ? '0 20px 40px -10px rgba(0,0,0,0.5)' : '0 20px 40px -10px rgba(0,0,0,0.1)'
-            }}
-          >
-            
-            {/* Search Icon */}
-            <div className="pl-4 pr-3 text-secondary">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={isDark ? "rgba(235,235,245,0.6)" : "rgba(60,60,67,0.6)"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-               </svg>
-            </div>
-
-            <input 
-              type="text" 
-              placeholder="Search intelligence index..."
-              className={`w-full bg-transparent border-none text-[19px] h-12 focus:ring-0 outline-none placeholder:font-normal ${
-                isDark ? 'placeholder:text-[rgba(235,235,245,0.3)]' : 'placeholder:text-[rgba(60,60,67,0.3)]'
-              }`}
-              style={{
-                 fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
-                 color: isDark ? '#FFFFFF' : '#000000',
-              }}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              spellCheck={false}
-            />
-
-            {/* Action Button */}
-            <div className="pr-2">
-               <button 
-                 className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200"
-                 style={{ 
-                    background: isDark ? '#3A3A3C' : '#E5E5EA',
-                    opacity: query ? 1 : 0
-                 }}
-               >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isDark ? "#FFF" : "#000"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                     <line x1="5" y1="12" x2="19" y2="12"></line>
-                     <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-               </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </section>
   )

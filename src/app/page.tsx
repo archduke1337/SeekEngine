@@ -6,11 +6,12 @@
  */
 
 import Hero from '../components/Hero'
+import SearchBar from '../components/SearchBar'
 import RiverFooter from '../components/RiverFooter'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#050505] text-black dark:text-white overflow-x-hidden selection:bg-black/10 dark:selection:bg-white/20 selection:text-black dark:selection:text-white transition-colors duration-500">
+    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#050505] text-black dark:text-white overflow-x-hidden selection:bg-black/10 dark:selection:bg-white/20 selection:text-black dark:selection:text-white transition-colors duration-500 relative">
       
       {/* NOISE TEXTURE OVERLAY - Adjusted for Light Mode visibility */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-50 mix-blend-overlay dark:mix-blend-overlay"
@@ -19,8 +20,15 @@ export default function Home() {
         }}
       />
 
-      {/* MAIN CONTENT */}
-      <Hero />
+      {/* MAIN CONTENT WRAPPER - Centered Vertically */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen pb-20">
+        <Hero />
+        
+        {/* SEARCH INTERFACE - Positioned naturally below Hero */}
+        <div className="w-full max-w-[640px] px-6 mt-12">
+          <SearchBar />
+        </div>
+      </div>
 
       {/* FOOTER */}
       <RiverFooter />

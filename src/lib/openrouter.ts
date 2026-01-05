@@ -296,7 +296,12 @@ function logTelemetry(event: TelemetryEvent): void {
 function isFree(model: OpenRouterModel): boolean {
   const pricing = model.pricing
   if (!pricing) return false
-  return pricing.prompt === 0 && pricing.completion === 0
+  
+  // Handle both number and string '0'
+  const prompt = Number(pricing.prompt)
+  const completion = Number(pricing.completion)
+  
+  return prompt === 0 && completion === 0
 }
 
 function supportsText(model: OpenRouterModel): boolean {
@@ -407,10 +412,13 @@ async function callOpenRouter(
   messages: ChatMessage[],
   task: AITask = AITask.ANSWER
 ): Promise<AIResult | null> {
-  if (!OPENROUTER_API_KEY) {
-    console.warn('⚠️ OPENROUTER_API_KEY missing')
+  // Check key at runtime (Edge compatible)
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!apiKey) {
+    console.warn('⚠️ OPENROUTER_API_KEY missing - check .env.local')
     return null
   }
+  console.log('🔑 API Key validated')
 
   const policy = TASK_POLICIES[task]
   const models = await getModelsForTask(task)

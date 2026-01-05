@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#000000] pt-24 pb-40 transition-colors duration-1000 relative selection:bg-lime-400/20">
+    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#000000] pt-24 pb-40 transition-colors duration-1000 relative selection:bg-[#39ff14]/30">
       
       {/* Background Layers */}
       <div className="fixed inset-0 pointer-events-none bg-grid-black/[0.01] dark:bg-grid-white/[0.01]" />

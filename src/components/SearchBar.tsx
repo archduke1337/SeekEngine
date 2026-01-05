@@ -42,6 +42,24 @@ export default function SearchBar({
   const isCommand = query.startsWith('/')
   const isTyping = query.length > 0
 
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    function handleGlobalKeyDown(e: KeyboardEvent) {
+      // Focus on '/'
+      if (e.key === '/' && !isFocused && !inputRef.current?.matches(':focus')) {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+      // Blur on 'Escape'
+      if (e.key === 'Escape' && isFocused) {
+        inputRef.current?.blur()
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('keydown', handleGlobalKeyDown)
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [isFocused])
+
   // Outside click handler
   useEffect(() => {
     if (!showSuggestions) return

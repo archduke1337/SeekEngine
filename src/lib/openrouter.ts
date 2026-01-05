@@ -741,12 +741,9 @@ export async function* streamOpenRouter(
       let buffer = winner.remainingBuffer
       let fullContent = winner.firstToken || ''
 
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          buffer += decoder.decode(value, { stream: true })
+      // Unified chunk processor to prevent logic duplication
+      const processChunk = function* (chunk: string) {
+          buffer += chunk
           const lines = buffer.split('\n')
           buffer = lines.pop() || ''
 
@@ -756,19 +753,33 @@ export async function* streamOpenRouter(
             if (!trimmed.startsWith('data: ')) continue
 
             try {
-              // OPTIMIZATION: Scan for content before parsing
               if (!trimmed.includes('"content":')) continue
-
               const json = JSON.parse(trimmed.slice(6))
               const delta = json.choices?.[0]?.delta?.content
               
               if (delta) {
                 fullContent += delta
-                // Yield immediately for true typewriter feel
                 yield { type: 'token', content: delta }
               }
             } catch { }
           }
+      }
+
+      try {
+        // 1. Process initial buffer (gathered during connection race)
+        if (buffer) {
+           const initial = buffer
+           buffer = '' // Reset, let processChunk rebuild it
+           for (const event of processChunk(initial)) yield event
+        }
+
+        // 2. Process incoming stream
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          
+          const chunk = decoder.decode(value, { stream: true })
+          for (const event of processChunk(chunk)) yield event
         }
       } finally {
         // Ensure request is aborted if we exit early (e.g. client disconnect)

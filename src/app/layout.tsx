@@ -5,6 +5,7 @@ import PageTransition from '../components/PageTransition'
 import LenisProvider from '../components/LenisProvider'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import RiverFooter from '../components/RiverFooter'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -110,12 +111,15 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased selection:bg-red-500/[0.08] dark:selection:bg-red-500/20 selection:text-current">
+      <body className="font-sans antialiased selection:bg-red-500/[0.08] dark:selection:bg-red-500/20 selection:text-current min-h-screen flex flex-col">
         <Providers>
           <Navbar />
           <LenisProvider>
             <PageTransition>
-              {children}
+              <div className="flex-1">
+                 {children}
+              </div>
+              <RiverFooter />
             </PageTransition>
           </LenisProvider>
         </Providers>

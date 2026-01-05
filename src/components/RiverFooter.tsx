@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import LivingIcon from './LivingIcon'
 
 /**
  * RiverFooter Component
@@ -25,10 +26,10 @@ export default function RiverFooter() {
     let offset = 0
 
     const waves = [
-      { amplitude: 15, frequency: 0.01, speed: 0.02, color: 'rgba(71, 85, 105, 0.1)' },
-      { amplitude: 10, frequency: 0.02, speed: -0.015, color: 'rgba(148, 163, 184, 0.08)' },
-      { amplitude: 20, frequency: 0.005, speed: 0.01, color: 'rgba(15, 23, 42, 0.05)' },
-      { amplitude: 8, frequency: 0.03, speed: 0.04, color: 'rgba(239, 68, 68, 0.03)' }
+      { amplitude: 15, frequency: 0.01, speed: 0.02, color: '#3b82f61a' }, // Blue-ish
+      { amplitude: 10, frequency: 0.02, speed: -0.015, color: '#8b5cf614' }, // Purple-ish
+      { amplitude: 20, frequency: 0.005, speed: 0.01, color: '#10b9810d' },  // Emerald-ish
+      { amplitude: 8, frequency: 0.03, speed: 0.04, color: '#ef444408' }     // Red-ish
     ]
 
     const setCanvasSize = () => {
@@ -101,10 +102,32 @@ export default function RiverFooter() {
     return () => observer.disconnect()
   }, [])
 
+  // Location State
+  const [location, setLocation] = useState('San Francisco, CA')
+
+  useEffect(() => {
+    // Attempt to fetch user location for personalized "System Active" status
+    const fetchLocation = async () => {
+        try {
+            const res = await fetch('https://ipapi.co/json/')
+            if (res.ok) {
+                const data = await res.json()
+                if (data.city && data.region_code) {
+                    setLocation(`${data.city}, ${data.region_code}`)
+                }
+            }
+        } catch (e) {
+            // Fallback cleanly
+            console.log('Using default system location')
+        }
+    }
+    fetchLocation()
+  }, [])
+
   if (!mounted) return null
 
   return (
-    <footer className="relative w-full h-[180px] overflow-hidden mt-2 border-t border-black/5 dark:border-white/5">
+    <footer className="relative w-full h-[180px] overflow-hidden mt-auto border-t border-black/5 dark:border-white/5 bg-[#fbfbfd] dark:bg-[#050505] z-0">
       <canvas 
         ref={canvasRef} 
         className="absolute inset-0 opacity-50" 
@@ -114,16 +137,20 @@ export default function RiverFooter() {
       <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent" />
       
       {/* Footer Content Overlay */}
-      <div className="absolute bottom-10 left-0 right-0 px-8 flex flex-col items-center gap-4">
-        <div className="flex items-center gap-3 py-2 px-4 rounded-full bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 backdrop-blur-md">
-            <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                Operating in Global Network
+      <div className="absolute bottom-6 left-0 right-0 px-8 flex flex-col items-center gap-5">
+        <div className="flex items-center gap-3 py-2.5 px-5 rounded-full bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 backdrop-blur-xl shadow-sm transition-all hover:bg-white/80 dark:hover:bg-zinc-800/80 cursor-default">
+            <LivingIcon color="bg-emerald-500" size="w-2 h-2" className="mr-0.5" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-600 dark:text-zinc-400">
+                Data Stream Active • {location}
             </span>
         </div>
         
-        <div className="text-[10px] font-bold tracking-[0.4em] uppercase text-zinc-400 dark:text-zinc-500">
-          SeekEngine 2026 
+        <div className="flex gap-6 text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-300 dark:text-zinc-600">
+          <a href="#" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">Manifesto</a>
+          <span>//</span>
+          <a href="#" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">System</a>
+          <span>//</span>
+          <a href="#" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">Privacy</a>
         </div>
       </div>
     </footer>

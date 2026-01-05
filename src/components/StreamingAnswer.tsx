@@ -17,26 +17,31 @@ interface StreamingAnswerProps {
   onComplete?: (answer: string) => void
 }
 
-// Thinking animation component
-function ThinkingIndicator() {
-  const [visible, setVisible] = useState(false)
-  
-  // Perceptual Polish: Only show thinking after 150ms to avoid flicker on fast responses
+// Processing Console Animation
+function ProcessingSteps() {
+  const [step, setStep] = useState(0)
+  const steps = [
+    "Initializing neural pathways...",
+    "Scanning visual index...",
+    "Synthesizing results...",
+    "Finalizing output..."
+  ]
+
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 150)
-    return () => clearTimeout(timer)
+    const interval = setInterval(() => {
+      setStep(s => (s < steps.length - 1 ? s + 1 : s))
+    }, 800)
+    return () => clearInterval(interval)
   }, [])
 
-  if (!visible) return null
-
   return (
-    <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
-      <div className="flex gap-1">
-        <span className="animate-pulse delay-0">●</span>
-        <span className="animate-pulse delay-100">●</span>
-        <span className="animate-pulse delay-200">●</span>
-      </div>
-      <span className="text-sm">Thinking...</span>
+    <div className="flex flex-col gap-2 font-mono text-xs text-zinc-500 dark:text-zinc-500">
+      {steps.map((text, i) => (
+        <div key={i} className={`flex items-center gap-2 transition-opacity duration-300 ${i > step ? 'opacity-0' : i === step ? 'opacity-100 text-blue-500' : 'opacity-40'}`}>
+           <span className={`w-1.5 h-1.5 rounded-full ${i === step ? 'bg-blue-500 animate-pulse' : 'bg-zinc-600'}`} />
+           <span>{text}</span>
+        </div>
+      ))}
     </div>
   )
 }
@@ -180,10 +185,10 @@ export function StreamingAnswer({
   const renderContent = () => {
     switch (state) {
       case 'idle':
-        return <ThinkingIndicator />
+        return <ProcessingSteps />
         
       case 'thinking':
-        return <ThinkingIndicator />
+        return <ProcessingSteps />
         
       case 'streaming':
         return (
@@ -247,12 +252,7 @@ export function StreamingAnswer({
     >
       {renderContent()}
       
-      {/* Loading bar indicator */}
-      {isLoading && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-200 dark:bg-zinc-700 overflow-hidden rounded-full">
-          <div className="h-full w-full bg-gradient-to-r from-blue-500/0 via-blue-500 to-blue-500/0 animate-shimmer" />
-        </div>
-      )}
+      {/* Loading bar removed as requested */}
     </div>
   )
 }

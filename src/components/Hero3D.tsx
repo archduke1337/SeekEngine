@@ -258,22 +258,22 @@ function SparkParticles({ count = 40, active = false }) {
 
 function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null!)
-  const color = isDark ? new THREE.Color("#020406") : new THREE.Color("#f1f1f1")
-  
-  const atmosphereMaterial = useMemo(() => new THREE.ShaderMaterial({
-    uniforms: {
-      uColor: { value: color },
-      uOpacity: { value: 0.15 },
-      uTime: { value: 0 }
-    },
-    vertexShader: `
+  const atmosphereMaterial = useMemo(() => {
+    const color = isDark ? new THREE.Color("#020406") : new THREE.Color("#f1f1f1")
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uColor: { value: color },
+        uOpacity: { value: 0.15 },
+        uTime: { value: 0 }
+      },
+      vertexShader: `
       varying vec2 vUv;
       void main() {
         vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
-    fragmentShader: `
+      fragmentShader: `
       uniform vec3 uColor;
       uniform float uOpacity;
       uniform float uTime;
@@ -289,7 +289,8 @@ function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
         gl_FragColor = vec4(finalColor, 1.0);
       }
     `
-  }), [isDark])
+    })
+  }, [isDark])
 
   useFrame((state) => {
     atmosphereMaterial.uniforms.uTime.value = state.clock.elapsedTime

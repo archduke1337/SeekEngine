@@ -23,10 +23,11 @@ export interface StreamMetadata {
   tier: string
   latencyMs: number
   attempts: number
+  cached: boolean
 }
 
 interface StreamEvent {
-  type: 'token' | 'thinking' | 'done' | 'error' | 'model_selected'
+  type: 'token' | 'thinking' | 'done' | 'error' | 'model_selected' | 'cache_hit'
   content?: string
   model?: string
   modelHuman?: string
@@ -34,6 +35,7 @@ interface StreamEvent {
   latencyMs?: number
   attempts?: number
   error?: string
+  cachedAt?: number
 }
 
 export function useStreamingAnswer() {
@@ -107,6 +109,7 @@ export function useStreamingAnswer() {
                   tier: event.tier || 'balanced',
                   latencyMs: 0,
                   attempts: event.attempts || 1,
+                  cached: false,
                 })
                 break
 
@@ -117,12 +120,17 @@ export function useStreamingAnswer() {
 
               case 'done':
                 setState('done')
+                // Set full answer if provided (for cache hits)
+                if (event.content) {
+                  setAnswer(event.content)
+                }
                 setMetadata({
                   model: event.model || '',
                   modelHuman: event.modelHuman || '',
                   tier: event.tier || 'balanced',
                   latencyMs: event.latencyMs || 0,
                   attempts: event.attempts || 1,
+                  cached: event.cachedAt !== undefined,
                 })
                 break
 

@@ -663,7 +663,8 @@ export async function* streamOpenRouter(
 
 export function createStreamingAnswerResponse(
   query: string,
-  context?: { title: string; snippet: string }[]
+  context?: { title: string; snippet: string }[],
+  abortSignal?: AbortSignal
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()
 
@@ -685,18 +686,37 @@ export function createStreamingAnswerResponse(
     },
   ]
 
+  let isCancelled = false
+
   return new ReadableStream({
     async start(controller) {
+      // Listen for client disconnect
+      abortSignal?.addEventListener('abort', () => {
+        isCancelled = true
+        try {
+          controller.close()
+        } catch {
+          // Already closed
+        }
+      })
+
       try {
         for await (const event of streamOpenRouter(messages, AITask.ANSWER)) {
+          // Check if cancelled before each emit
+          if (isCancelled) break
+          
           const data = `data: ${JSON.stringify(event)}\n\n`
           controller.enqueue(encoder.encode(data))
         }
-        controller.close()
+        if (!isCancelled) {
+          controller.close()
+        }
       } catch (error) {
-        const errorEvent = { type: 'error', error: (error as Error).message }
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorEvent)}\n\n`))
-        controller.close()
+        if (!isCancelled) {
+          const errorEvent = { type: 'error', error: (error as Error).message }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorEvent)}\n\n`))
+          controller.close()
+        }
       }
     },
   })

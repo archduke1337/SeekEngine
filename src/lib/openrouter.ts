@@ -49,6 +49,14 @@ const FREE_MODELS = [
   'nousresearch/hermes-3-llama-3.1-405b:free',
   'meta-llama/llama-3.1-405b-instruct:free',
   'mistralai/mistral-7b-instruct:free',
+  'google/gemma-3-12b-it:free',
+  'google/gemma-3-27b-it:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'meta-llama/llama-3.2-3b-instruct:free',
+  'qwen/qwen-2.5-vl-7b-instruct:free',
+  'nousresearch/hermes-3-llama-3.1-405b:free',
+  'meta-llama/llama-3.1-405b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
 
 ]
 

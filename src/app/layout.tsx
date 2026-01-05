@@ -110,7 +110,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased selection:bg-red-500/30 selection:text-red-900 dark:selection:text-red-100">
+      <body className="font-sans antialiased selection:bg-lime-400/20 selection:text-lime-900 dark:selection:text-lime-100">
         <Providers>
           <Navbar />
           <LenisProvider>

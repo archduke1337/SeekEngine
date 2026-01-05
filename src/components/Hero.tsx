@@ -27,7 +27,7 @@ export default function Hero() {
              rotate: [0, 90, 0]
            }}
            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-           className="w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-blue-600/20 via-indigo-500/15 to-purple-600/20 blur-[100px] mix-blend-normal dark:mix-blend-screen"
+           className="w-[40vw] h-[40vw] rounded-full bg-gradient-to-tr from-blue-600/20 via-indigo-500/15 to-purple-600/20 blur-[80px] mix-blend-normal dark:mix-blend-screen"
          />
       </div>
 

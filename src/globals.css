@@ -29,6 +29,31 @@
   }
 }
 
+/* LENIS SMOOTH SCROLL RESET - Prevents double scrollbars */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* GLOBAL SCROLL HANDLING */
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--bg);
   color: var(--fg);

@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import ResultCard from '../../components/ResultCard'
 import SearchBar from '../../components/SearchBar'
 import { ResultCardSkeleton } from '../../components/Skeleton'
@@ -22,6 +22,19 @@ export default function ResultsClient() {
   const [resultsError, setResultsError] = useState('')
 
   const [followUpQuery, setFollowUpQuery] = useState('')
+  const followUpInputRef = useRef<HTMLInputElement>(null)
+
+  // Global Keybinds
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === '/' && !document.activeElement?.matches('input, textarea')) {
+        e.preventDefault()
+        followUpInputRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Search Results Effect
   useEffect(() => {
@@ -168,12 +181,16 @@ export default function ResultsClient() {
                      >
                         <div className="relative">
                            <input 
+                              ref={followUpInputRef}
                               type="text" 
                               value={followUpQuery}
                               onChange={(e) => setFollowUpQuery(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleFollowUp()}
-                              placeholder="Ask a follow-up..."
-                              className="w-full bg-zinc-50 dark:bg-black/20 border-none rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-1 ring-zinc-200 dark:ring-zinc-700 transition-all outline-none"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleFollowUp()
+                                if (e.key === 'Escape') followUpInputRef.current?.blur()
+                              }}
+                              placeholder="Ask a follow-up... (Press '/')"
+                              className="w-full bg-zinc-50 dark:bg-black/20 border-none rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-1 ring-zinc-200 dark:ring-zinc-700 transition-all outline-none placeholder:text-zinc-400"
                            />
                            <button 
                              onClick={handleFollowUp}

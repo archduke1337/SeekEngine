@@ -99,22 +99,35 @@ export default function ResultsClient() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 relative z-10">
-        {/* Dynamic Query Header */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex-1">
-             <SearchBar />
-          </div>
-          <div className="flex items-center gap-3">
-             <button 
-               onClick={shareResults}
-               className="p-3 rounded-full bg-white dark:bg-zinc-800 border border-black/5 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
-               title="Share Search"
-             >
-               <svg className="w-5 h-5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-               </svg>
-             </button>
-          </div>
+        {/* Header Navigation */}
+        <header className="flex items-center justify-between py-8 mb-8">
+            <a href="/" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center transition-transform group-hover:scale-95 shadow-lg">
+                <svg className="w-4 h-4 text-white dark:text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <span className="font-bold text-lg tracking-tight text-black dark:text-white group-hover:opacity-70 transition-opacity">SeekEngine</span>
+            </a>
+
+            <div className="flex gap-4">
+               <button 
+                 onClick={shareResults}
+                 className="px-4 py-2 rounded-full bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-black dark:hover:text-white transition-all shadow-sm hover:shadow-md active:scale-95"
+               >
+                 Share
+               </button>
+            </div>
+        </header>
+
+        {/* Query Title */}
+        <div className="mb-12 animate-fade-in-up">
+           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 mb-2 block ml-1">
+             Analysis Result
+           </span>
+           <h1 className="text-3xl md:text-5xl font-black text-black dark:text-white tracking-tighter leading-tight">
+             {query}
+           </h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12">

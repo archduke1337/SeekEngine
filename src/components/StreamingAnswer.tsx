@@ -198,11 +198,12 @@ export function StreamingAnswer({
         
       case 'done':
         return (
-          <div className="w-full max-w-none animate-in fade-in duration-500">
+          <div className="w-full">
             <div 
-              className="text-[17px] leading-relaxed text-zinc-800 dark:text-zinc-200 font-sans space-y-4 min-h-[40px]"
+              className="prose prose-zinc dark:prose-invert max-w-none text-[17px] leading-7"
               dangerouslySetInnerHTML={{ 
-                __html: formatMarkdown(answer) || '<p class="text-zinc-400 italic">No content generated.</p>' 
+                 // Ensure fallback text if string is empty
+                 __html: formatMarkdown(answer) || '<p class="opacity-50 italic">No content generated.</p>' 
               }}
             />
             {metadata && (

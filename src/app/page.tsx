@@ -1,25 +1,30 @@
 /**
- * Homepage - SwiftUI Premium Experience
- * Features: 3D interactive hero, fluid deblur, floating glass search architecture.
+ * Homepage — Computational Organism
+ * 
+ * Philosophy: You've opened the first page of something important.
+ * Nothing is asking you to act yet. You're being let in, not pitched to.
+ * 
+ * The hero is a contained cinematic scene. Typography is minimal,
+ * embedded, and deferential. Scroll feels like entering, not moving down.
  */
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import SearchBar from '../components/SearchBar'
 import RiverFooter from '../components/RiverFooter'
 import { useTheme } from 'next-themes'
-import { ThreeErrorBoundary } from '../components/ThreeErrorBoundary'
 
-const Hero3D = dynamic(() => import('../components/Hero3D'), {
+const Hero = dynamic(() => import('../components/Hero'), {
   ssr: false,
-  loading: () => <div className="absolute inset-0 bg-white dark:bg-black" />,
+  loading: () => <div className="absolute inset-0" style={{ background: '#050508' }} />,
 })
 
 export default function Home() {
   const { resolvedTheme } = useTheme()
+  const containerRef = useRef<HTMLElement>(null)
   const { scrollY } = useScroll()
   
   const [isTyping, setIsTyping] = useState(false)
@@ -31,7 +36,6 @@ export default function Home() {
   useEffect(() => {
     setMounted(true)
     
-    // Perceptual Hardening: Reactive reduced-motion handling
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     const handleMotionChange = () => setPrefersReducedMotion(mediaQuery.matches)
     
@@ -58,109 +62,128 @@ export default function Home() {
     }
   }, [])
   
-  const opacityValue = useTransform(scrollY, [0, 400], [1, 0.1])
-  const heroScale = useTransform(scrollY, [0, 600], [1, 1.4])
-  const contentY = useTransform(scrollY, [0, 600], [0, -120])
-  const veilOpacity = useTransform(scrollY, [0, 400], [0, 0.4])
+  // Scroll transforms — depth separation, not collapse
+  const heroOpacity = useTransform(scrollY, [0, 600], [1, 0])
+  const heroDepth = useTransform(scrollY, [0, 600], [1, 1.15])
+  
+  // Typography parallax — subtle, embedded in the world
+  const titleY = useTransform(scrollY, [0, 600], [0, -80])
+  const titleOpacity = useTransform(scrollY, [0, 300], [1, 0])
+  
+  // Search bar subtle movement
+  const searchY = useTransform(scrollY, [0, 600], [0, -40])
+  const searchOpacity = useTransform(scrollY, [0, 400], [1, 0])
+  
+  // Smooth springs for heavy feel
+  const smoothTitleY = useSpring(titleY, { stiffness: 50, damping: 20 })
+  const smoothSearchY = useSpring(searchY, { stiffness: 50, damping: 20 })
 
-  // Hydration-safe theme check
   const isDark = mounted ? resolvedTheme === 'dark' : true
   const isMobile = windowWidth < 768
   const isHighPower = (isTyping || isFocused) && !prefersReducedMotion
 
   return (
     <>
-      <main className="min-h-screen flex flex-col bg-[#fbfbfd] dark:bg-[#000000] transition-colors duration-1000 overflow-x-hidden selection:bg-red-500/[0.08] dark:selection:bg-red-500/20 selection:text-current">
-        
-        {/* Dynamic Grid Overlay */}
-        <div className="fixed inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02] pointer-events-none" />
-
-        {/* Hero Section */}
-        <section className="relative h-screen flex flex-col items-center justify-center px-6" aria-label="Search introduction">
+      <main 
+        className="min-h-screen flex flex-col overflow-x-hidden selection:bg-white/10 selection:text-current"
+        style={{ background: '#050508' }}
+      >
+        {/* Hero Section — The Scene */}
+        <section 
+          ref={containerRef}
+          className="relative h-screen flex flex-col items-center justify-center" 
+          aria-label="SeekEngine"
+        >
+          {/* 3D Volumetric Hero */}
           <motion.div 
             style={{ 
-              scale: heroScale, 
-              opacity: opacityValue
+              scale: heroDepth, 
+              opacity: heroOpacity
             } as any} 
-            className="absolute inset-0 z-0 will-change-transform will-change-opacity"
+            className="absolute inset-0 z-0 will-change-transform"
           >
             {mounted ? (
-              <ThreeErrorBoundary>
-                <Hero3D isHighPower={isHighPower} isDark={isDark} isMobile={isMobile} />
-              </ThreeErrorBoundary>
+              <Hero isHighPower={isHighPower} isDark={isDark} isMobile={isMobile} />
             ) : (
-              <div className="absolute inset-0 bg-zinc-50 dark:bg-zinc-950 opacity-20" />
+              <div className="absolute inset-0" style={{ background: '#050508' }} />
             )}
           </motion.div>
 
-          <motion.div 
-            style={{ opacity: veilOpacity } as any}
-            className="absolute inset-0 pointer-events-none z-10 bg-white/20 dark:bg-black/20"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fbfbfd] dark:to-black z-20 pointer-events-none" />
-
-          {/* Heading and Search */}
-          <motion.div 
-            style={{ y: contentY } as any}
-            className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-10 sm:gap-16 will-change-transform"
-          >
-            <div className="text-center space-y-8 sm:space-y-12">
-              <motion.div
-                {...({
-                  initial: { opacity: 0, y: 40 },
-                  animate: { opacity: 1, y: 0 },
-                  transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
-                } as any)}
-              >
-                <h1 className="sr-only">SeekEngine — Intent-First Grounded Intelligence Search</h1>
-                <div className="h-32 sm:h-56" /> {/* Reduced Spacer for 3D Hero Title */}
-                
-                <motion.p 
-                  {...({
-                    initial: { opacity: 0, scale: 0.95 },
-                    animate: { opacity: 1, scale: 1 },
-                    transition: { delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }
-                  } as any)}
-                  className="text-lg sm:text-3xl text-zinc-500 dark:text-zinc-400 font-medium max-w-3xl mx-auto leading-relaxed tracking-tighter px-6 font-sans italic"
-                >
-                  The future of discovery is not a list of links. <br className="hidden sm:block" />
-                  It is a <span className="text-black dark:text-white font-black not-italic border-b border-black/10 dark:border-white/10 pb-1">sensed synthesis of human intent.</span>
-                </motion.p>
-              </motion.div>
-            </div>
-
+          {/* Content Layer — Typography embedded in the world */}
+          <div className="w-full max-w-5xl relative z-10 flex flex-col items-center gap-12 sm:gap-20 px-6">
+            
+            {/* Title — minimal, deferential */}
             <motion.div 
-              {...({
-                initial: { opacity: 0, y: 20, scale: 0.98 },
-                animate: { opacity: 1, y: 0, scale: 1 },
-                transition: { delay: 0.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }
-              } as any)}
-              className="w-full max-w-2xl px-6 relative"
+              style={{ y: smoothTitleY, opacity: titleOpacity } as any}
+              className="text-center will-change-transform"
+            >
+              <h1 className="sr-only">SeekEngine — Intent-First Grounded Intelligence Search</h1>
+              
+              {/* Brand mark — not shouting, just present */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <p 
+                  className="text-[2.5rem] sm:text-[4rem] md:text-[5rem] font-extralight tracking-[-0.04em] leading-none"
+                  style={{ 
+                    color: 'rgba(255, 255, 255, 0.06)',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                  }}
+                >
+                  SeekEngine
+                </p>
+              </motion.div>
+              
+              {/* Tagline — barely there */}
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 2, delay: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                className="mt-6 sm:mt-8 text-sm sm:text-base font-light tracking-wide"
+                style={{ 
+                  color: 'rgba(255, 255, 255, 0.25)',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
+                }}
+              >
+                Intent-first intelligence
+              </motion.p>
+            </motion.div>
+
+            {/* Search — functional, not decorative */}
+            <motion.div 
+              style={{ y: smoothSearchY, opacity: searchOpacity } as any}
+              className="w-full max-w-xl relative will-change-transform"
               role="search"
             >
-              <SearchBar 
-                autoFocus 
-                onTyping={setIsTyping} 
-                onFocusChange={setIsFocused}
-              />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.5, delay: 2, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <SearchBar 
+                  autoFocus 
+                  onTyping={setIsTyping} 
+                  onFocusChange={setIsFocused}
+                />
+              </motion.div>
             </motion.div>
+          </div>
 
-            {/* Live Synthesis Feed */}
-            <motion.div
-               {...({
-                 initial: { opacity: 0 },
-                 animate: { opacity: 1 },
-                 transition: { delay: 1.2, duration: 1.5 }
-               } as any)}
-               className="w-full"
-            >
-            </motion.div>
-          </motion.div>
-
+          {/* Bottom gradient — transition to content like a dissolve */}
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none z-20"
+            style={{
+              background: 'linear-gradient(to top, #050508 0%, transparent 100%)',
+            }}
+          />
         </section>
 
-        <RiverFooter />
+        {/* Content area — the scene continues */}
+        <div style={{ background: '#050508' }}>
+          <RiverFooter />
+        </div>
       </main>
     </>
   )

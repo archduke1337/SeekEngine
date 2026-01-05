@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar'
 import Providers from '../components/Providers'
 import PageTransition from '../components/PageTransition'
 import LenisProvider from '../components/LenisProvider'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 import '../globals.css'
 
 export const metadata: Metadata = {

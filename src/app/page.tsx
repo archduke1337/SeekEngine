@@ -84,18 +84,18 @@ export default function Home() {
             } as any} 
             className="absolute inset-0 z-0 will-change-transform will-change-opacity"
           >
-            {mounted && !prefersReducedMotion ? (
+            {mounted ? (
               <ThreeErrorBoundary>
                 <Hero3D isHighPower={isHighPower} isDark={isDark} isMobile={isMobile} />
               </ThreeErrorBoundary>
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-black opacity-50" />
+              <div className="absolute inset-0 bg-zinc-50 dark:bg-zinc-950 opacity-20" />
             )}
           </motion.div>
 
           <motion.div 
             style={{ opacity: veilOpacity } as any}
-            className="absolute inset-0 pointer-events-none z-10 bg-white dark:bg-black"
+            className="absolute inset-0 pointer-events-none z-10 bg-white/20 dark:bg-black/20"
           />
 
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fbfbfd] dark:to-black z-20 pointer-events-none" />

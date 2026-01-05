@@ -189,7 +189,7 @@ function SparkParticles({ count = 40, active = false }) {
   })
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} position={[3, 0, 0]}>
+    <instancedMesh ref={meshRef} args={[null as any, null as any, count]} position={[3, 0, 0]}>
       <boxGeometry args={[0.04, 0.04, 0.04]} />
       <meshBasicMaterial color="#ffcc00" transparent opacity={0.8} />
     </instancedMesh>
@@ -366,12 +366,12 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
         <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={isDark ? 0.8 : 0.4} />
         <Noise opacity={isDark ? 0.05 : 0.02} />
         <Vignette eskil={false} offset={0.1} darkness={isDark ? 0.8 : 0.4} />
-        <ChromaticAberration 
-            {...({
-                offset: new THREE.Vector2(0.001, 0.001),
-                opacity: isMobile ? 0 : 1
-            } as any)} 
-        />
+        {/* Render aberration only on non-mobile with safe casting to avoid effect-composer type strictness */}
+        {!isMobile ? (
+          <ChromaticAberration 
+              {...({ offset: new THREE.Vector2(0.001, 0.001) } as any)} 
+          />
+        ) : <></>}
       </EffectComposer>
       
       <Environment preset="night" />

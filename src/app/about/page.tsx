@@ -17,16 +17,16 @@ export default function AboutPage() {
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
                     <span className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-widest border border-black/5 dark:border-white/5">Research Release v2.1</span>
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Model Cluster Active</span>
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Active Cluster</span>
                 </div>
                 <h1 className="text-4xl sm:text-7xl font-bold text-black dark:text-white tracking-tight leading-[0.9]">
-                    The Architecture <br /> of Intelligence.
+                    Project Manifest.
                 </h1>
             </div>
             <div className="text-right hidden md:block text-zinc-400">
                 <p className="text-[10px] font-mono uppercase tracking-widest leading-relaxed">
                     Last Update: Jan 01, 2026 <br />
-                    TTFT Target: &lt; 400ms <br />
+                    Pune, India
                 </p>
             </div>
         </div>
@@ -34,26 +34,25 @@ export default function AboutPage() {
         {/* Narrative Flow */}
         <div className="space-y-40 pb-20">
           
-          {/* Section 01: The Core - Hybrid RAG */}
+          {/* Section 01: Philosophy */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 text-left">
                 <div className="space-y-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 01: The Problem</p>
-                    <h2 className="text-3xl sm:text-5xl font-bold text-black dark:text-white tracking-tight">The "Truth Penalty".</h2>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">01 — Philosophy</p>
+                    <h2 className="text-3xl sm:text-5xl font-bold text-black dark:text-white tracking-tight">Signal over Noise.</h2>
                 </div>
                 <div className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-4">
                     <p>
-                        Large Language Models inherently prioritize probabilistic fluency over factual accuracy, leading to "confident misinformation."
+                        The modern web is decaying into "confident misinformation." Generative AI has accelerated this entropy, prioritizing fluent lies over jagged truths.
                     </p>
                     <p>
-                        SeekEngine dissolves this hallucination problem by orchestrating a <span className="text-black dark:text-white font-semibold">Hybrid RAG Pipeline</span>. Unlike standard assistants that guess, we force a "Truth Penalty"—trading ~300ms of fusion overhead to ensure every generated assertion is securely tethered to a retrieved index node.
+                        SeekEngine rejects the probabilistic guess. We do not optimize for chat; we optimize for <span className="text-black dark:text-white font-semibold">grounding</span>. Every output must be tethered to a verifiable index node. If we cannot prove it, we do not say it.
                     </p>
                 </div>
             </div>
             
             {/* Visual: Logic Map - Parallel Orchestration */}
             <div className="relative p-8 sm:p-12 rounded-[3rem] bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden group">
-                {/* Ambient Flow Path (SVG) */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20 dark:opacity-40" viewBox="0 0 400 400">
                     <motion.path
                         d="M 50 100 L 350 100 L 350 300 L 50 300 Z"
@@ -91,7 +90,6 @@ export default function AboutPage() {
                     ))}
                 </div>
 
-                {/* Academic Caption */}
                 <div className="absolute bottom-6 right-8 opacity-40 group-hover:opacity-100 transition-opacity">
                     <p className="text-[8px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">
                         Fig 01.0 — Parallel Orchestration Model <br />
@@ -101,19 +99,19 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* Section 02: Methodology - Environment Encapsulation */}
+          {/* Section 02: Intent */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center lg:flex-row-reverse">
             <div className="lg:order-2 space-y-8 text-left">
                 <div className="space-y-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 02: Architecture</p>
-                    <h2 className="text-3xl sm:text-5xl font-bold text-black dark:text-white tracking-tight">Environment Encapsulation.</h2>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">02 — Intent</p>
+                    <h2 className="text-3xl sm:text-5xl font-bold text-black dark:text-white tracking-tight">System Integrity.</h2>
                 </div>
                 <div className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-4">
                     <p>
-                        Security is not a feature; it is the environment. SeekEngine executes all inference calls within <span className="text-black dark:text-white font-semibold">Server-Side Route Handlers</span>.
+                        The intent is to engineer a system that is hostile to hallucination.
                     </p>
                     <p>
-                        This "Security Proxy" architecture prevents API key leakage and ensures all external inputs—from user queries to retrieved search snippets—undergo strict sanitization (DOMPurify) before they ever reach the client's rendering engine.
+                        We enforce strict <span className="text-black dark:text-white font-semibold">Environment Encapsulation</span>. All inference logic is isolated in server-side route handlers, acting as a security proxy. We accept the "Truth Penalty"—a 300ms latency cost—to verify every token before it reaches the client.
                     </p>
                 </div>
                 <div className="pt-4">
@@ -198,7 +196,6 @@ export default function AboutPage() {
                         </div>
                     </div>
 
-                    {/* Academic Caption */}
                     <div className="pt-4 opacity-40 group-hover:opacity-100 transition-opacity">
                         <p className="text-[8px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] text-center">
                             Fig 02.1 — Server-Side Security Proxy & Data Sanitization
@@ -208,13 +205,13 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* Section 03: The Build */}
+          {/* Section 03: Constraints */}
           <section className="space-y-12 text-left">
             <div className="max-w-3xl space-y-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 03: The Build</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">03 — Constraints</p>
                 <h2 className="text-3xl sm:text-6xl font-bold text-black dark:text-white tracking-tight">Zero-Budget Engineering.</h2>
                 <p className="text-lg text-zinc-600 dark:text-zinc-400">
-                    SeekEngine serves as a proof-of-concept for building high-fidelity, secure retrieval systems without enterprise infrastructure.
+                    Creativity thrives in constraint. We built a high-fidelity retrieval system without enterprise capital, relying on efficient architecture over brute force.
                 </p>
             </div>
 
@@ -222,15 +219,15 @@ export default function AboutPage() {
                 {[
                     {
                         title: "Frontend Stack",
-                        desc: "Next.js 14 (App Router) for server-side route handling, ensuring a rigid separation between client views and sensitive logic.",
+                        desc: "Next.js 14 and Framer Motion. Zero extraneous heavy libraries. Performance by default.",
                     },
                     {
                         title: "Inference Layer",
-                        desc: "OpenRouter provides cost-constrained access to LLMs (Gemini, Llama) via a unified, sanitized endpoint.",
+                        desc: "OpenRouter & Google CSE. We leverage existing high-grade APIs rather than training massive models from scratch.",
                     },
                     {
                         title: "Security Core",
-                        desc: "DOMPurify for XSS scrubbing and Zod for strict schema validation of all upstream API responses.",
+                        desc: "Strict DOMPurify and Zod validation. We treat every external input as a hostile vector.",
                     }
                 ].map((spec, i) => (
                     <div key={i} className="p-8 rounded-[2rem] bg-zinc-50 dark:bg-zinc-900 border border-black/5 dark:border-white/5">
@@ -241,7 +238,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* Section 04: Research Artifacts */}
+          {/* Section 04: Specs */}
           <section className="bg-zinc-900 text-white rounded-[3rem] p-8 sm:p-16 text-left relative overflow-hidden ring-1 ring-white/10">
             <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-transparent pointer-events-none" />
@@ -249,8 +246,8 @@ export default function AboutPage() {
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-20">
                 <div className="space-y-8">
                     <div className="space-y-3">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500">Phase 04: Output</p>
-                        <h2 className="text-3xl font-bold tracking-tight">Research Artifacts.</h2>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500">04 — Output</p>
+                        <h2 className="text-3xl font-bold tracking-tight">System Specifications.</h2>
                     </div>
                     <div className="space-y-4">
                         {[
@@ -269,7 +266,7 @@ export default function AboutPage() {
                 
                 <div className="space-y-8">
                     <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-left">System Capability</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-left">Real-time Metrics</p>
                         <h2 className="text-3xl font-bold text-white tracking-tight text-left">Industrial Specs.</h2>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -288,12 +285,14 @@ export default function AboutPage() {
                 </div>
             </div>
           </section>
+          
+          {/* Section 05: Contact */}
           <section className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-10 border-t border-black/5 dark:border-white/5">
             <div className="space-y-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 05: Contact</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">05 — Contact</p>
                 <div className="space-y-2">
                     <h3 className="text-xl font-bold text-black dark:text-white">Project Correspondence.</h3>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm">For research inquiries, or architectural discussion.</p>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm">For research inquiries or architectural discussion.</p>
                 </div>
             </div>
             <div className="space-y-6">

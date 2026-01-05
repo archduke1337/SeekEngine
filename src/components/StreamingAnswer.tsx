@@ -185,7 +185,7 @@ export function StreamingAnswer({
         return (
           <div className="prose prose-zinc dark:prose-invert max-w-none">
             <div 
-              className="markdown-body"
+              className=""
               dangerouslySetInnerHTML={{ __html: formatMarkdown(answer) }}
             />
             {metadata && (

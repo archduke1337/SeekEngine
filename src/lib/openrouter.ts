@@ -725,44 +725,52 @@ export async function* streamOpenRouter(
 
       let uiBuffer = ''
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
 
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
 
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed || trimmed === 'data: [DONE]') continue
-          if (!trimmed.startsWith('data: ')) continue
+          for (const line of lines) {
+            const trimmed = line.trim()
+            if (!trimmed || trimmed === 'data: [DONE]') continue
+            if (!trimmed.startsWith('data: ')) continue
 
-          try {
-            // OPTIMIZATION: Scan for content before parsing
-            if (!trimmed.includes('"content":')) continue
+            try {
+              // OPTIMIZATION: Scan for content before parsing
+              if (!trimmed.includes('"content":')) continue
 
-            const json = JSON.parse(trimmed.slice(6))
-            const delta = json.choices?.[0]?.delta?.content
-            
-            if (delta) {
-              fullContent += delta
-              uiBuffer += delta
+              const json = JSON.parse(trimmed.slice(6))
+              const delta = json.choices?.[0]?.delta?.content
+              
+              if (delta) {
+                fullContent += delta
+                uiBuffer += delta
 
-              // OPTIMIZATION: Buffered emission
-              // Only yield if buffer is substantial or ends in whitespace/punctuation
-              if (uiBuffer.length > 20 || /[\s\p{P}]$/u.test(uiBuffer)) {
-                yield { type: 'token', content: uiBuffer }
-                uiBuffer = ''
+                // OPTIMIZATION: Buffered emission
+                // Only yield if buffer is substantial or ends in whitespace/punctuation
+                if (uiBuffer.length > 20 || /[\s\p{P}]$/u.test(uiBuffer)) {
+                  yield { type: 'token', content: uiBuffer }
+                  uiBuffer = ''
+                }
               }
-            }
-          } catch { }
+            } catch { }
+          }
         }
-      }
 
-      // Flush remaining buffer
-      if (uiBuffer) {
-        yield { type: 'token', content: uiBuffer }
+        // Flush remaining buffer
+        if (uiBuffer) {
+          yield { type: 'token', content: uiBuffer }
+        }
+      } finally {
+        // Ensure request is aborted if we exit early (e.g. client disconnect)
+        try {
+          await reader.cancel()
+          winner.controller.abort() 
+        } catch {}
       }
 
       // Success - emit done and exit

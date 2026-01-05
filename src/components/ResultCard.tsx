@@ -14,20 +14,19 @@ export default function ResultCard({ result }: { result: SearchResult }) {
       href={result.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="block group relative p-5 rounded-2xl bg-white dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 transition-all hover:shadow-lg hover:-translate-y-0.5"
+      className="block p-5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500/30 dark:hover:border-blue-400/30 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-200"
     >
-       <div className="flex flex-col gap-2">
-          {/* Header Source Info */}
+       <div className="space-y-2">
+          {/* Header */}
           <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-             <div className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-[9px] text-zinc-400">
+             <div className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-[9px] text-zinc-500">
                 {(result.source || 'W').charAt(0).toUpperCase()}
              </div>
              <span className="font-medium truncate max-w-[200px]">{result.displayLink || result.source}</span>
-             {result.date && <span className="opacity-50">• {result.date}</span>}
           </div>
 
           {/* Title - The main interactive bit */}
-          <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 group-hover:underline decoration-blue-500/30 underline-offset-2 leading-snug">
+          <h3 className="text-[17px] font-semibold text-blue-600 dark:text-blue-400 leading-snug">
              {result.title}
           </h3>
 

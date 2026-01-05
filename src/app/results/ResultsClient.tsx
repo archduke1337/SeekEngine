@@ -123,7 +123,7 @@ export default function ResultsClient() {
         {/* Query Title */}
         <div className="mb-12 animate-fade-in-up">
            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 mb-2 block ml-1">
-             Analysis Result
+             Engine Outcome
            </span>
            <h1 className="text-3xl md:text-5xl font-black text-black dark:text-white tracking-tighter leading-tight">
              {query}

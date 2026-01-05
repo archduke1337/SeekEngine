@@ -742,7 +742,7 @@ export async function* streamOpenRouter(
       let fullContent = winner.firstToken || ''
 
       // Unified chunk processor to prevent logic duplication
-      const processChunk = function* (chunk: string) {
+      const processChunk = function* (chunk: string): Generator<StreamEvent, void, unknown> {
           buffer += chunk
           const lines = buffer.split('\n')
           buffer = lines.pop() || ''

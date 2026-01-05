@@ -2,450 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Lenis Smooth Scroll Styles */
-html.lenis,
-html.lenis body {
-  height: auto;
+:root {
+  /* RAW SYSTEM COLORS - No "Palettes" */
+  --bg: #ffffff;
+  --fg: #000000;
+  --gray-1: #f5f5f7;
+  --gray-2: #86868b;
+  --accent: #007aff; /* System Blue */
 }
 
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
+.dark {
+  --bg: #000000;
+  --fg: #ffffff;
+  --gray-1: #1c1c1e;
+  --gray-2: #98989d;
+  --accent: #0a84ff;
 }
 
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
-
-@layer base {
-  /* Root variables for theming */
+@media (prefers-color-scheme: dark) {
   :root {
-    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-      "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-  }
-
-  html {
-    @apply antialiased;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-size: 16px;
-  }
-
-  body {
-    @apply bg-white dark:bg-black text-black dark:text-white;
-    font-family: var(--font-sans);
-    letter-spacing: -0.011em;
-  }
-
-  /* Reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-
-  /* Selection styling */
-  ::selection {
-    @apply bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white;
-  }
-
-  /* Focus visible for accessibility */
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-black dark:outline-white;
+    --bg: #000000;
+    --fg: #ffffff;
+    --gray-1: #1c1c1e;
+    --gray-2: #98989d;
+    --accent: #0a84ff;
   }
 }
 
-@layer components {
-  .search-input {
-    @apply w-full px-5 py-4 text-lg border-none ring-1 ring-zinc-200 dark:ring-zinc-800 rounded-full bg-white/80 dark:bg-black/80 backdrop-blur-xl text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all duration-300 shadow-sm hover:shadow-xl;
-  }
-
-  .suggestion-item {
-    @apply px-5 py-3.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer border-b border-zinc-100 dark:border-zinc-900 last:border-0 transition-colors duration-150 text-base;
-  }
-
-  .result-card {
-    @apply border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-all duration-200;
-  }
-
-  /* GPU-accelerated animations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-    backface-visibility: hidden;
-  }
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  /* APPLE SYSTEM FONT STACK - The only font that matters */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
 }
 
-/* Performance-optimized utilities */
-.bg-grid-black {
-  background-size: 40px 40px;
-  background-image: radial-gradient(circle, #000000 1px, transparent 1px);
+/* Utilities */
+.text-secondary {
+  color: var(--gray-2);
 }
 
-.bg-grid-white {
-  background-size: 40px 40px;
-  background-image: radial-gradient(circle, #ffffff 1px, transparent 1px);
-}
-
-/* GPU-accelerated fade animation */
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0;
-  transform: translate3d(0, 30px, 0);
-  will-change: opacity, transform;
-}
-
-.animate-delay-100 {
-  animation-delay: 100ms;
-}
-.animate-delay-150 {
-  animation-delay: 150ms;
-}
-.animate-delay-200 {
-  animation-delay: 200ms;
-}
-.animate-delay-300 {
-  animation-delay: 300ms;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 30px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-/* Scroll-based deblur utility */
-.deblur-on-scroll {
-  filter: blur(var(--scroll-blur, 10px));
-  transition: filter 0.2s ease-out;
-}
-
-/* Premium gradient orb */
-.gradient-orb {
-  background: radial-gradient(
-    circleAt Center,
-    var(--tw-gradient-from),
-    transparent 70%
-  );
-}
-
-/* Skeleton loading animation */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Streaming gradient loading bar */
-@keyframes streamingGradient {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.animate-streaming-gradient {
-  animation: streamingGradient 2s infinite linear;
-}
-
-/* Pulse animation delays for thinking dots */
-.delay-0 {
-  animation-delay: 0ms;
-}
-.delay-100 {
-  animation-delay: 100ms;
-}
-.delay-200 {
-  animation-delay: 200ms;
-}
-
-/* Content visibility for performance */
-.content-auto {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 500px;
-}
-
-/* Liquid glass effect */
-.liquid-glass {
-  @apply backdrop-blur-[120px] bg-white/10 dark:bg-black/10;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-/* Hot Engine Vibrations & Exhaust */
-@keyframes engineIdle {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(0.3px, 0.3px) rotate(0.05deg);
-  }
-  75% {
-    transform: translate(-0.3px, 0.3px) rotate(-0.05deg);
-  }
-}
-
-@keyframes engineOverdrive {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  10% {
-    transform: translate(-1px, -1px) rotate(-0.5deg);
-  }
-  20% {
-    transform: translate(1px, 0px) rotate(0.5deg);
-  }
-  30% {
-    transform: translate(-1px, 1px) rotate(0deg);
-  }
-  40% {
-    transform: translate(1px, 1px) rotate(0.5deg);
-  }
-  50% {
-    transform: translate(-1px, -1px) rotate(-0.5deg);
-  }
-  60% {
-    transform: translate(1px, -1px) rotate(0deg);
-  }
-  70% {
-    transform: translate(-1px, 1px) rotate(0.5deg);
-  }
-  80% {
-    transform: translate(1px, 1px) rotate(-0.5deg);
-  }
-  90% {
-    transform: translate(-1px, -1px) rotate(0deg);
-  }
-}
-
-@keyframes exhaustHeat {
-  0% {
-    transform: scale(1) translateY(0);
-    opacity: 0;
-    filter: blur(5px);
-  }
-  50% {
-    transform: scale(1.2) translateY(-10px);
-    opacity: 0.5;
-    filter: blur(10px);
-  }
-  100% {
-    transform: scale(1.5) translateY(-20px);
-    opacity: 0;
-    filter: blur(15px);
-  }
-}
-
-@keyframes dieselLiquidFlow {
-  0% {
-    background-position: 0% 50%;
-    filter: hue-rotate(0deg) brightness(1);
-  }
-  50% {
-    background-position: 100% 50%;
-    filter: hue-rotate(10deg) brightness(1.2);
-  }
-  100% {
-    background-position: 0% 50%;
-    filter: hue-rotate(0deg) brightness(1);
-  }
-}
-
-@keyframes moltenCore {
-  0% {
-    background-position: 0% 50%;
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-  }
-  50% {
-    background-position: 100% 50%;
-    text-shadow: 0 0 30px rgba(251, 191, 36, 0.6),
-      0 0 60px rgba(255, 255, 255, 0.3);
-  }
-  100% {
-    background-position: 0% 50%;
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-  }
-}
-
-@keyframes engineIdleVibration {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(0.5px, -0.5px) rotate(0.1deg);
-  }
-  50% {
-    transform: translate(-0.5px, 0.5px) rotate(-0.1deg);
-  }
-  75% {
-    transform: translate(0.5px, 0.5px) rotate(0.1deg);
-  }
-}
-
-@keyframes heatDistortion {
-  0%,
-  100% {
-    filter: blur(0px) brightness(1);
-    transform: scale(1);
-  }
-  50% {
-    filter: blur(1.5px) brightness(1.5);
-    transform: scale(1.02);
-  }
-}
-
-.hot-engine-text {
-  position: relative;
-  display: inline-block;
-  /* Molten Metal Gradient */
-  background: linear-gradient(
-    90deg,
-    #18181b 0%,
-    /* Cold Iron */ #991b1b 30%,
-    /* Glowing Red */ #ef4444 45%,
-    /* Radiant Orange */ #fbbf24 55%,
-    /* White Hot Core */ #ffffff 60%,
-    /* Melting Point */ #ef4444 75%,
-    #18181b 100%
-  );
-  background-size: 300% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
-
-  /* Internal Vibration & Molten Animation */
-  animation: moltenCore 3s ease-in-out infinite,
-    engineIdleVibration 0.1s linear infinite;
-
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 0.15em 0.25em; /* Increased horizontal padding for italic characters */
-  margin: -0.15em -0.25em;
-  will-change: filter, transform, background-position;
-}
-
-.diesel-flowing-text {
-  position: relative;
-  display: inline-block;
-  font-weight: 900;
-  /* Viscous Diesel Gradient */
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    #0f172a 20%,
-    #0ea5e9 40%,
-    /* Fuel Surface */ #1e293b 60%,
-    #000000 100%
-  );
-  background-size: 100% 300%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
-  animation: dieselContainerFlow 8s ease-in-out infinite;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.2));
-  padding: 0.1em 0; /* Vertical padding for the 'e' in Seek */
-  will-change: background-position;
-}
-
-@keyframes dieselContainerFlow {
-  0%,
-  100% {
-    background-position: center 0%;
-  }
-  50% {
-    background-position: center 100%;
-  }
-}
-
-@keyframes hotGradient {
-  0% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-.hot-engine-text.high-power {
-  animation: moltenCore 0.5s linear infinite,
-    engineIdleVibration 0.04s linear infinite,
-    heatDistortion 0.2s ease-in-out infinite;
-  filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8))
-    drop-shadow(0 0 50px rgba(251, 191, 36, 0.5));
-  scale: 1.05;
-}
-
-/* Atmospheric Heat Distortion Overlay */
-.hot-engine-text.high-power::after {
-  content: "Engine";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: inherit;
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: blur(12px) opacity(0.6);
-  transform: scale(1.1);
-  animation: heatPulse 1.5s ease-out infinite;
-  pointer-events: none;
-  z-index: -1;
-}
-
-@keyframes heatPulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(1.4);
-    opacity: 0;
-  }
-}
-
-.hot-engine-text:hover {
-  filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.6));
-}
-
-.engine-idle-shake {
-  animation: engineIdle 0.1s linear infinite;
-  will-change: transform, filter;
-}
-
-.engine-overdrive-shake {
-  animation: engineOverdrive 0.05s linear infinite;
-  will-change: transform, filter;
+/* Remove default focus rings - we will build custom ones */
+*:focus {
+  outline: none;
 }

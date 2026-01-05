@@ -25,7 +25,7 @@ export default function AboutPage() {
             </div>
             <div className="text-right hidden md:block text-zinc-400">
                 <p className="text-[10px] font-mono uppercase tracking-widest leading-relaxed">
-                    System Freeze: Jan 05, 2026 <br />
+                    Last Update: Jan 06, 2026 <br />
                     TTFT Target: &lt; 400ms <br />
                     Pune, India
                 </p>
@@ -33,7 +33,7 @@ export default function AboutPage() {
         </div>
 
         {/* Narrative Flow */}
-        <div className="space-y-40">
+        <div className="space-y-40 pb-20">
           
           {/* Section 01: The Core */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -229,7 +229,7 @@ export default function AboutPage() {
                     },
                     {
                         title: "Visual Core",
-                        desc: "React Three Fiber powers the interactive 3D hero section, using GLSL shaders for the atmospheric background effects.",
+                        desc: "Tailwind CSS & Framer Motion power the glassmorphism and ambient logic, replacing heavier 3D libraries for 60fps performance.",
                     }
                 ].map((spec, i) => (
                     <div key={i} className="p-8 rounded-[2rem] bg-zinc-50 dark:bg-zinc-900 border border-black/5 dark:border-white/5">
@@ -254,7 +254,7 @@ export default function AboutPage() {
                             { label: "Technical Manuscript", val: "v2.1 Stable" },
                             { label: "Grounding Benchmark", val: "Multi-Model Consensus" },
                             { label: "Neural Flow Protocol", val: "Active Framework" },
-                            { label: "Design System Freeze", val: "Jan 05, 2026" }
+                            { label: "Design System Freeze", val: "Jan 06, 2026" }
                         ].map((item, i) => (
                             <div key={i} className="flex justify-between items-center py-4 border-b border-white/5 last:border-0">
                                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{item.label}</span>
@@ -286,32 +286,31 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* Contact Node */}
-          <footer className="pt-20 border-t border-black/5 dark:border-white/5 text-left">
-            <div className="flex flex-col md:flex-row justify-between gap-12">
-                <div className="space-y-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-300 dark:text-zinc-700">Project Correspondence</h3>
-                    <p className="text-xl font-bold text-black dark:text-white">gauravramyadav@gmail.com</p>
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">Gaurav Yadav / archduke1337 — Pune, India</p>
-                </div>
-                <div className="flex gap-8 items-end">
-                    <Link href="https://github.com/archduke1337/SeekEngine" target="_blank" className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Github Repository</Link>
-                    <Link href="https://archduke.is-a.dev" target="_blank" className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Personal Portfolio</Link>
+          {/* Section 05: Correspondence */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-10 border-t border-black/5 dark:border-white/5">
+            <div className="space-y-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600">Phase 05: Contact</p>
+                <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-black dark:text-white">Project Correspondence.</h3>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm">For research inquiries, industrial integration, or architectural discussion.</p>
                 </div>
             </div>
-          </footer>
-        </div>
-
-        {/* Home Navigation */}
-        <div className="fixed bottom-10 right-10 z-50">
-          <Link 
-            href="/"
-            className="w-14 h-14 bg-white dark:bg-zinc-900 shadow-2xl border border-black/5 dark:border-white/10 rounded-[1.5rem] flex items-center justify-center hover:scale-105 active:scale-95 transition-all group overflow-hidden"
-          >
-            <svg className="w-5 h-5 text-black dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </Link>
+            <div className="space-y-6">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Lead Engineer</p>
+                    <p className="text-lg font-bold text-black dark:text-white">Gaurav Yadav</p>
+                    <p className="text-xs font-mono text-zinc-500">archduke1337 — Pune, India</p>
+                </div>
+                <div className="space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Direct Line</p>
+                    <a href="mailto:gauravramyadav@gmail.com" className="text-lg font-bold text-black dark:text-white hover:text-red-500 transition-colors">gauravramyadav@gmail.com</a>
+                </div>
+                <div className="flex gap-6 pt-2">
+                    <Link href="https://github.com/archduke1337/SeekEngine" target="_blank" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-black dark:hover:text-white transition-colors">GitHub</Link>
+                    <Link href="https://archduke.is-a.dev" target="_blank" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Portfolio</Link>
+                </div>
+            </div>
+          </section>
         </div>
       </div>
     </main>

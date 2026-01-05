@@ -51,27 +51,24 @@ export async function GET(request: NextRequest) {
     if (cached) {
       // Cache HIT - send instant SSE response with cached data
       const encoder = new TextEncoder()
-      const cacheEvent = {
-        type: 'cache_hit',
-        content: cached.answer,
-        model: cached.model,
-        modelHuman: cached.modelHuman,
-        tier: cached.tier,
-        latencyMs: 0,
-        attempts: cached.attempts,
-        cachedAt: cached.cachedAt,
-      }
       
       const stream = new ReadableStream({
         start(controller) {
           // Emit thinking briefly for smooth UX
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'thinking', content: 'Retrieving...' })}\n\n`))
           
-          // Then emit the cached response as done
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+          // Then emit the cached response as done (type must come after spread to override)
+          const doneEvent = {
             type: 'done',
-            ...cacheEvent,
-          })}\n\n`))
+            content: cached.answer,
+            model: cached.model,
+            modelHuman: cached.modelHuman,
+            tier: cached.tier,
+            latencyMs: 0,
+            attempts: cached.attempts,
+            cachedAt: cached.cachedAt,
+          }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(doneEvent)}\n\n`))
           
           controller.close()
         }

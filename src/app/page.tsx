@@ -7,7 +7,6 @@
 
 import Hero from '../components/Hero'
 import SearchBar from '../components/SearchBar'
-import RiverFooter from '../components/RiverFooter'
 
 export default function Home() {
   return (
@@ -31,7 +30,7 @@ export default function Home() {
       </div>
 
       {/* FOOTER */}
-      <RiverFooter />
+      {/* FOOTER - Globally provided by Layout */}
 
     </main>
   )

@@ -125,29 +125,15 @@ export function StreamingAnswer({
   } = useStreamingAnswer()
   
   const containerRef = useRef<HTMLDivElement>(null)
-  const hasStarted = useRef(false)
+  const lastStartedQuery = useRef<string | null>(null)
 
-  // Auto-start streaming when query changes
+  // Consolidated Lifecycle Effect: Resets and Starts in one go to avoid race conditions
   useEffect(() => {
-    if (autoStart && query && !hasStarted.current) {
-      hasStarted.current = true
+    if (autoStart && query && lastStartedQuery.current !== query) {
+      lastStartedQuery.current = query
       startStream(query)
     }
-    
-    return () => {
-      if (autoStart) {
-        hasStarted.current = false
-      }
-    }
   }, [query, autoStart, startStream])
-
-  // Reset when query changes
-  useEffect(() => {
-    if (query) {
-      hasStarted.current = false
-      reset()
-    }
-  }, [query, reset])
 
   // Callback when complete
   useEffect(() => {
@@ -247,8 +233,9 @@ function formatMarkdown(text: string): string {
   })
 
   // 2. Headers
-  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-6 mb-3 text-zinc-900 dark:text-zinc-100">$1</h3>')
-  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mt-8 mb-4 text-zinc-900 dark:text-zinc-100">$1</h2>')
+  formatted = formatted.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-black mt-4 mb-4 text-black dark:text-white tracking-tighter">$1</h1>')
+  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-extrabold mt-8 mb-4 text-zinc-900 dark:text-zinc-100 tracking-tight">$1</h2>')
+  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-6 mb-3 text-zinc-800 dark:text-zinc-200">$1</h3>')
 
   // 3. Bold/Italic
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-zinc-900 dark:text-white">$1</strong>')

@@ -140,7 +140,7 @@ export default function ResultsClient() {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative min-h-[120px]">
               <StreamingAnswer 
                 query={query} 
                 onComplete={setAiAnswer}

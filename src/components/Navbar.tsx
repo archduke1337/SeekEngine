@@ -39,8 +39,6 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Engine', href: '/' },
     { label: 'About', href: '/about' },
-    { label: 'Repo', href: 'https://github.com/archduke1337/SeekEngine', external: true },
-    { label: 'Dev', href: 'https://archduke.is-a.dev', external: true },
   ]
 
   if (!mounted) {
@@ -60,7 +58,7 @@ export default function Navbar() {
           opacity: visible ? 1 : 0 
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-full shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] pointer-events-auto transition-all duration-700 hover:shadow-[0_20px_60px_-12px_rgba(0,0,0,0.2)]"
+        className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 bg-white/70 dark:bg-black/60 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 dark:border-white/10 rounded-full shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] pointer-events-auto transition-all duration-700 hover:shadow-[0_12px_48px_-12px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:ring-white/5"
       >
         {/* Dynamic Nav Items */}
         <div className="flex items-center relative gap-0.5 sm:gap-1 px-1">
@@ -74,9 +72,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
-                aria-label={link.external ? `${link.label} (opens in new tab)` : link.label}
+                aria-label={link.label}
                 aria-current={isActive ? "page" : undefined}
                 className={`relative px-3 sm:px-5 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] rounded-full transition-all duration-500 ${
                   isActive
@@ -87,7 +83,7 @@ export default function Navbar() {
                 {isActive && (
                   <motion.div
                     layoutId="seekengine-nav-active"
-                    className="absolute inset-0 bg-black/5 dark:bg-white/10 rounded-full"
+                    className="absolute inset-0 bg-black/5 dark:bg-white/10 rounded-full shadow-sm"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -98,7 +94,7 @@ export default function Navbar() {
         </div>
 
         {/* Separator */}
-        <div className="w-[1px] h-3 sm:h-4 bg-zinc-200 dark:bg-white/10 mx-1.5 sm:mx-2" />
+        <div className="w-[1px] h-3 sm:h-4 bg-zinc-400/20 dark:bg-white/15 mx-1" />
 
         {/* Theme Toggle - Ultra Premium Shift */}
         <button

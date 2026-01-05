@@ -18,41 +18,54 @@ export default function Hero() {
 
   return (
     <section className="w-full flex flex-col items-center justify-center relative overflow-visible pointer-events-none py-12">
-      
+      {/* Ambient Background Glow - Stronger Deep Glow */}
+      <div className="absolute inset-0 overflow-visible flex items-center justify-center pointer-events-none z-0">
+         <motion.div 
+           animate={{ 
+             scale: [1, 1.2, 1],
+             opacity: [0.1, 0.2, 0.1],
+             rotate: [0, 90, 0]
+           }}
+           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+           className="w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-blue-600/20 via-indigo-500/15 to-purple-600/20 blur-[100px] mix-blend-normal dark:mix-blend-screen"
+         />
+      </div>
+
       {/* 
-         HERO TYPOGRAPHY - APPLE STYLE
-         Solid colors. Tight tracking. No gimmicks.
+         HERO TYPOGRAPHY - ULTRA GLASS
       */}
       <motion.div 
          style={{ y: y1 }}
          className="relative z-10 text-center px-4 pointer-events-auto"
       >
-        <div className="relative">
-          {/* 
-            Safe "Glass" via Text Shadows 
-            NO background-clip used to guarantee no rectangle artifacts.
-          */}
+        <div className="relative inline-block group">
+          
+          {/* MAIN TEXT LAYER */}
           <h1 
-            className="text-[12vw] sm:text-[10vw] leading-[0.9] font-bold italic tracking-[-0.04em] select-none whitespace-nowrap transition-all duration-500"
+            className="relative z-10 text-[12vw] sm:text-[10vw] leading-[0.9] font-bold italic tracking-[-0.04em] select-none whitespace-nowrap animate-text-shimmer bg-[size:200%_auto]"
             style={{
               fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
               
-              // 1. Semi-transparent fill (The "Glass Body")
-              color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+              // 1. ANIMATED GLASS BODY (Shimmer is here)
+              backgroundImage: isDark 
+                 ? 'linear-gradient(110deg, rgba(255,255,255,0.0) 45%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.0) 55%)'
+                 : 'linear-gradient(110deg, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.05) 55%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent',
               
-              // 2. The Rim (Physical Edge)
-              WebkitTextStroke: isDark ? '1.5px rgba(255,255,255,0.5)' : '1px rgba(0,0,0,0.2)',
+              // 2. THE RIM (Physical Edge)
+              WebkitTextStroke: isDark ? '1.5px rgba(255,255,255,0.6)' : '1.5px rgba(0,0,0,0.15)',
               
-              // 3. The Frost/Glow (Simulated Volume via Shadow)
+              // 3. THE GLOW (Emanating Light)
               textShadow: isDark
                 ? `
-                   0 0 5px rgba(255,255,255,0.2), 
-                   0 0 10px rgba(255,255,255,0.1), 
-                   0 0 20px rgba(255,255,255,0.1)
+                   0 0 30px rgba(255,255,255,0.1),
+                   0 0 60px rgba(59, 130, 246, 0.2)
                   `
-                : '0 5px 15px rgba(0,0,0,0.1)',
+                : '0 10px 30px rgba(0,0,0,0.05)',
                 
-              display: 'inline-block',
+              filter: isDark ? 'drop-shadow(0 0 1px rgba(255,255,255,0.5))' : 'none'
             }}
           >
              SeekEngine
@@ -79,11 +92,12 @@ export default function Hero() {
           className="text-xl md:text-2xl font-medium transition-colors duration-300"
            style={{
              fontFamily: 'SF Pro Text, -apple-system, sans-serif',
-             color: isDark ? '#F5F5F7' : '#1D1D1F', // Apple Primary Text
-             letterSpacing: '-0.01em'
+             color: isDark ? '#ffffff' : '#1D1D1F', // Brighter white for dark mode
+             letterSpacing: '-0.01em',
+             textShadow: isDark ? '0 0 20px rgba(255,255,255,0.2)' : 'none'
           }}
         >
-          It is a <span className="border-b-2" style={{ borderColor: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)' }}>sensed synthesis of human intent.</span>
+          It is a <span className="border-b-2" style={{ borderColor: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.1)' }}>sensed synthesis of human intent.</span>
         </h2>
       </motion.div>
 

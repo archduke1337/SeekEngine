@@ -31,9 +31,12 @@ export default function Home() {
   useEffect(() => {
     setMounted(true)
     
-    // Accessibility check: prefers-reduced-motion
+    // Perceptual Hardening: Reactive reduced-motion handling
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleMotionChange = () => setPrefersReducedMotion(mediaQuery.matches)
+    
     setPrefersReducedMotion(mediaQuery.matches)
+    mediaQuery.addEventListener('change', handleMotionChange)
 
     const update = () => setWindowWidth(window.innerWidth)
     update()
@@ -51,6 +54,7 @@ export default function Home() {
     return () => {
         if (raf) cancelAnimationFrame(raf)
         window.removeEventListener('resize', onResize)
+        mediaQuery.removeEventListener('change', handleMotionChange)
     }
   }, [])
   
@@ -66,7 +70,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="min-h-screen flex flex-col bg-[#fbfbfd] dark:bg-[#000000] transition-colors duration-1000 overflow-x-hidden selection:bg-[#004d00]/30 selection:text-white">
+      <main className="min-h-screen flex flex-col bg-[#fbfbfd] dark:bg-[#000000] transition-colors duration-1000 overflow-x-hidden selection:bg-red-500/[0.08] dark:selection:bg-red-500/20 selection:text-current">
         
         {/* Dynamic Grid Overlay */}
         <div className="fixed inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02] pointer-events-none" />

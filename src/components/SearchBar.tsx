@@ -12,10 +12,12 @@ import { useSearch } from '../hooks/useSearch'
 
 export default function SearchBar({ 
   autoFocus = false, 
-  onTyping 
+  onTyping,
+  onFocusChange
 }: { 
   autoFocus?: boolean, 
-  onTyping?: (isTyping: boolean) => void 
+  onTyping?: (isTyping: boolean) => void,
+  onFocusChange?: (isFocused: boolean) => void
 }) {
   const { 
     query, 
@@ -49,10 +51,14 @@ export default function SearchBar({
 
   const [isFocused, setIsFocused] = useState(false)
 
-  // Sync isTyping state back to parent for 3D effects
+  // Sync state back to parent for 3D/System effects
   useEffect(() => {
     onTyping?.(query.length > 0)
   }, [query, onTyping])
+
+  useEffect(() => {
+    onFocusChange?.(isFocused)
+  }, [isFocused, onFocusChange])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
@@ -145,7 +151,7 @@ export default function SearchBar({
             className={`w-full pl-10 sm:pl-14 pr-16 sm:pr-20 py-4 sm:py-5 text-sm sm:text-lg bg-transparent border-none focus:outline-none transition-all duration-300 tracking-tight font-medium ${
               isCommand ? 'text-red-500 font-mono' : 'text-black dark:text-white'
             }`}
-            aria-label="Search query"
+            aria-label="Search"
           />
         </div>
 

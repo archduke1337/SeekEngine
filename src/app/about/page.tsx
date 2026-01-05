@@ -91,6 +91,14 @@ export default function AboutPage() {
                         </div>
                     ))}
                 </div>
+
+                {/* Academic Caption */}
+                <div className="absolute bottom-6 right-8 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <p className="text-[8px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-right">
+                        Fig 01.0 — Neural Race Arbitration Protocol <br />
+                        Parallel Inference Latency Optimization
+                    </p>
+                </div>
             </div>
           </section>
 
@@ -189,6 +197,13 @@ export default function AboutPage() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Academic Caption */}
+                    <div className="pt-4 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <p className="text-[8px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] text-center">
+                            Fig 02.1 — Cross-Model Consensus & Grounding Boundary Enforcement
+                        </p>
                     </div>
                 </div>
             </div>

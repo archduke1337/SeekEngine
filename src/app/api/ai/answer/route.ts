@@ -41,10 +41,17 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Generate grounded answer
-    const answer = await generateAIAnswer(validation.query!, context)
+    const result = await generateAIAnswer(validation.query!, context)
     
     return NextResponse.json(
-      { answer },
+      {
+        answer: result.answer,
+        model: result.model,
+        modelHuman: result.modelHuman,
+        latencyMs: result.latencyMs,
+        tier: result.tier,
+        attempts: result.attempts,
+      },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',

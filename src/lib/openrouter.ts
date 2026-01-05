@@ -1,13 +1,15 @@
 /**
- * OpenRouter AI Integration (V4 - Task-Aware Routing)
+ * OpenRouter AI Integration (V5 - Observable AI)
  * 
  * Features:
+ * - Returns which model actually answered (transparency)
  * - Task-aware model routing (suggestions vs answers vs code)
  * - Policy-driven temperature and token limits
  * - Model tier classification (fast → balanced → heavy → code)
  * - Dynamic model fetching with caching
  * - Self-healing model health memory
- * - Basic telemetry logging
+ * - Telemetry logging with latency tracking
+ * - Human-friendly model name mapper
  * - ZOD validation boundaries
  */
 
@@ -36,6 +38,16 @@ type OpenRouterModel = {
   context_length?: number
 }
 
+// Observable AI result - exposes which model answered
+type AIResult = {
+  content: string
+  model: string
+  modelHuman: string
+  latencyMs: number
+  tier: ModelTier
+  attempts: number // How many models were tried before success
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 2️⃣ TASK DEFINITIONS & POLICIES
 // ─────────────────────────────────────────────────────────────────────────────
@@ -52,8 +64,8 @@ interface TaskPolicy {
   temperature: number
   maxTokens: number
   preferredTiers: ModelTier[]
-  maxLatency: number // per-model timeout in ms
-  globalTimeout: number // total time allowed
+  maxLatency: number
+  globalTimeout: number
 }
 
 const TASK_POLICIES: Record<AITask, TaskPolicy> = {
@@ -81,8 +93,69 @@ const TASK_POLICIES: Record<AITask, TaskPolicy> = {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3️⃣ MODEL TIER CLASSIFICATION
-// Maps model patterns to performance tiers
+// 3️⃣ HUMAN-FRIENDLY MODEL NAME MAPPER
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function humanizeModel(model: string): string {
+  const lower = model.toLowerCase()
+  
+  // Google models
+  if (lower.includes('gemini-2.0-flash')) return 'Gemini 2.0 Flash'
+  if (lower.includes('gemini')) return 'Gemini'
+  if (lower.includes('gemma-3n')) return 'Gemma 3N'
+  if (lower.includes('gemma-3-27b')) return 'Gemma 3 27B'
+  if (lower.includes('gemma-3-12b')) return 'Gemma 3 12B'
+  if (lower.includes('gemma')) return 'Gemma'
+  
+  // Meta models
+  if (lower.includes('llama-3.3-70b')) return 'LLaMA 3.3 70B'
+  if (lower.includes('llama-3.2-3b')) return 'LLaMA 3.2 3B'
+  if (lower.includes('llama-3.1-405b')) return 'LLaMA 3.1 405B'
+  if (lower.includes('llama')) return 'LLaMA'
+  
+  // Mistral models
+  if (lower.includes('devstral')) return 'Devstral'
+  if (lower.includes('mistral-small')) return 'Mistral Small'
+  if (lower.includes('mistral-7b')) return 'Mistral 7B'
+  if (lower.includes('mistral')) return 'Mistral'
+  
+  // Qwen models
+  if (lower.includes('qwen3-coder')) return 'Qwen3 Coder'
+  if (lower.includes('qwen-2.5-72b')) return 'Qwen 2.5 72B'
+  if (lower.includes('qwen-2.5-vl')) return 'Qwen 2.5 VL'
+  if (lower.includes('qwen-3-4b')) return 'Qwen 3 4B'
+  if (lower.includes('qwen')) return 'Qwen'
+  
+  // DeepSeek models
+  if (lower.includes('deepseek-r1')) return 'DeepSeek R1'
+  if (lower.includes('deepseek-chat')) return 'DeepSeek Chat'
+  if (lower.includes('deepseek')) return 'DeepSeek'
+  
+  // NVIDIA models
+  if (lower.includes('nemotron-nano')) return 'Nemotron Nano'
+  if (lower.includes('nemotron')) return 'Nemotron'
+  
+  // Other notable models
+  if (lower.includes('phi-3')) return 'Phi-3'
+  if (lower.includes('olmo')) return 'OLMo'
+  if (lower.includes('mimo')) return 'MiMo'
+  if (lower.includes('kimi')) return 'Kimi K2'
+  if (lower.includes('hermes')) return 'Hermes'
+  if (lower.includes('trinity')) return 'Trinity'
+  if (lower.includes('gpt-oss')) return 'GPT-OSS'
+  if (lower.includes('chimera')) return 'Chimera'
+  
+  // Fallback: extract provider/model name
+  const parts = model.split('/')
+  if (parts.length === 2) {
+    return parts[1].replace(/:free$/, '').replace(/-/g, ' ')
+  }
+  
+  return model
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4️⃣ MODEL TIER CLASSIFICATION
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MODEL_TIER_PATTERNS: Record<ModelTier, RegExp[]> = {
@@ -124,17 +197,20 @@ const MODEL_TIER_PATTERNS: Record<ModelTier, RegExp[]> = {
 }
 
 function classifyModel(modelId: string): ModelTier {
-  for (const [tier, patterns] of Object.entries(MODEL_TIER_PATTERNS)) {
-    if (patterns.some(pattern => pattern.test(modelId))) {
-      return tier as ModelTier
-    }
-  }
-  return 'balanced' // default tier
+  // Strip :free suffix for consistent matching
+  const id = modelId.replace(/:free$/, '').toLowerCase()
+  
+  // Prioritize code tier explicitly to prevent dual-classification
+  if (MODEL_TIER_PATTERNS.code.some(p => p.test(id))) return 'code'
+  if (MODEL_TIER_PATTERNS.fast.some(p => p.test(id))) return 'fast'
+  if (MODEL_TIER_PATTERNS.balanced.some(p => p.test(id))) return 'balanced'
+  if (MODEL_TIER_PATTERNS.heavy.some(p => p.test(id))) return 'heavy'
+  
+  return 'balanced'
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4️⃣ STATIC FALLBACK MODELS (Emergency Only)
-// Organized by tier for task-aware routing
+// 5️⃣ STATIC FALLBACK MODELS (Emergency Only)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STATIC_FALLBACK_MODELS: Record<ModelTier, string[]> = {
@@ -172,7 +248,7 @@ const STATIC_FALLBACK_MODELS: Record<ModelTier, string[]> = {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5️⃣ MODEL CACHE (Edge-Safe, In-Memory)
+// 6️⃣ MODEL CACHE (Edge-Safe, In-Memory)
 // ─────────────────────────────────────────────────────────────────────────────
 
 let cachedModels: Record<ModelTier, string[]> | null = null
@@ -180,14 +256,14 @@ let lastFetchTime = 0
 const CACHE_TTL = 1000 * 60 * 30 // 30 minutes
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6️⃣ MODEL HEALTH MEMORY (Self-Healing)
+// 7️⃣ MODEL HEALTH MEMORY (Self-Healing)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const modelFailures = new Map<string, number>()
 const MAX_MODEL_FAILURES = 3
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7️⃣ TELEMETRY (Basic Logging)
+// 8️⃣ TELEMETRY (Basic Logging)
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface TelemetryEvent {
@@ -210,7 +286,7 @@ function logTelemetry(event: TelemetryEvent): void {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8️⃣ FREE + TEXT-ONLY FILTER LOGIC
+// 9️⃣ FREE + TEXT-ONLY FILTER LOGIC
 // ─────────────────────────────────────────────────────────────────────────────
 
 function isFree(model: OpenRouterModel): boolean {
@@ -224,7 +300,7 @@ function supportsText(model: OpenRouterModel): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9️⃣ DYNAMIC MODEL FETCHER (Cached + Tiered)
+// 🔟 DYNAMIC MODEL FETCHER (Cached + Tiered)
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
@@ -250,12 +326,8 @@ async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
     const data = await res.json()
     const models: OpenRouterModel[] = data?.data ?? []
 
-    // Filter: free + text-capable
-    const freeTextModels = models
-      .filter(isFree)
-      .filter(supportsText)
+    const freeTextModels = models.filter(isFree).filter(supportsText)
 
-    // Classify into tiers
     const tieredModels: Record<ModelTier, string[]> = {
       fast: [],
       balanced: [],
@@ -269,7 +341,6 @@ async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
       tieredModels[tier].push(modelId)
     }
 
-    // Sort each tier by context length (smaller = faster first)
     for (const tier of Object.keys(tieredModels) as ModelTier[]) {
       tieredModels[tier].sort()
     }
@@ -288,8 +359,7 @@ async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 🔟 TASK-AWARE MODEL SELECTOR
-// Returns models ordered by task preference
+// 1️⃣1️⃣ TASK-AWARE MODEL SELECTOR
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function getModelsForTask(task: AITask): Promise<string[]> {
@@ -298,7 +368,7 @@ async function getModelsForTask(task: AITask): Promise<string[]> {
 
   const orderedModels: string[] = []
 
-  // Add models from preferred tiers first
+  // Add preferred tiers first
   for (const tier of policy.preferredTiers) {
     orderedModels.push(...(tieredModels[tier] || []))
   }
@@ -311,17 +381,26 @@ async function getModelsForTask(task: AITask): Promise<string[]> {
   }
 
   // De-duplicate while preserving order
-  return [...new Set(orderedModels)]
+  const uniqueModels = [...new Set(orderedModels)]
+  
+  // Sort by health: healthy models float up, sick models sink
+  uniqueModels.sort((a, b) => {
+    const failuresA = modelFailures.get(a) || 0
+    const failuresB = modelFailures.get(b) || 0
+    return failuresA - failuresB
+  })
+
+  return uniqueModels
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣1️⃣ CORE OPENROUTER CALLER (Task-Aware)
+// 1️⃣2️⃣ CORE OPENROUTER CALLER (Observable - Returns Model Info)
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function callOpenRouter(
   messages: ChatMessage[],
   task: AITask = AITask.ANSWER
-): Promise<string | null> {
+): Promise<AIResult | null> {
   if (!OPENROUTER_API_KEY) {
     console.warn('⚠️ OPENROUTER_API_KEY missing')
     return null
@@ -331,14 +410,15 @@ async function callOpenRouter(
   const models = await getModelsForTask(task)
 
   const startTime = Date.now()
+  let attempts = 0
 
   for (const model of models) {
-    // Skip unhealthy models
     if ((modelFailures.get(model) || 0) >= MAX_MODEL_FAILURES) {
       continue
     }
+    
+    attempts++
 
-    // Check global timeout
     if (Date.now() - startTime > policy.globalTimeout) {
       console.warn(`⏱️ Global timeout (${policy.globalTimeout}ms) for task: ${task}`)
       return null
@@ -374,14 +454,12 @@ async function callOpenRouter(
       clearTimeout(timeoutId)
       const latency = Date.now() - modelStartTime
 
-      // Retry-worthy transient errors
       if ([429, 500, 502, 503].includes(response.status)) {
         logTelemetry({ task, model, tier, latency, success: false, error: `HTTP ${response.status}` })
         await new Promise(r => setTimeout(r, 300))
         continue
       }
 
-      // Non-transient failure
       if (!response.ok) {
         modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
         logTelemetry({ task, model, tier, latency, success: false, error: `HTTP ${response.status}` })
@@ -394,7 +472,14 @@ async function callOpenRouter(
 
       if (content) {
         logTelemetry({ task, model, tier, latency, success: true, tokens })
-        return content
+        return {
+          content,
+          model,
+          modelHuman: humanizeModel(model),
+          latencyMs: latency,
+          tier,
+          attempts,
+        }
       }
 
       logTelemetry({ task, model, tier, latency, success: false, error: 'Empty response' })
@@ -416,7 +501,7 @@ async function callOpenRouter(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣2️⃣ HARDENED JSON EXTRACTION UTILITY
+// 1️⃣3️⃣ HARDENED JSON EXTRACTION UTILITY
 // ─────────────────────────────────────────────────────────────────────────────
 
 function extractJsonArray(text: string): string | null {
@@ -425,10 +510,18 @@ function extractJsonArray(text: string): string | null {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣3️⃣ SEARCH SUGGESTIONS (Task-Aware)
+// 1️⃣4️⃣ SEARCH SUGGESTIONS (Observable)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getSearchSuggestions(query: string): Promise<string[]> {
+export interface SuggestionsResult {
+  suggestions: string[]
+  model: string
+  modelHuman: string
+  latencyMs: number
+  attempts: number
+}
+
+export async function getSearchSuggestions(query: string): Promise<SuggestionsResult> {
   const messages: ChatMessage[] = [
     {
       role: 'system',
@@ -441,32 +534,62 @@ export async function getSearchSuggestions(query: string): Promise<string[]> {
     },
   ]
 
-  const content = await callOpenRouter(messages, AITask.SUGGESTIONS)
-  if (!content) return generateFallbackSuggestions(query)
+  const result = await callOpenRouter(messages, AITask.SUGGESTIONS)
+
+  if (!result) {
+    return {
+      suggestions: generateFallbackSuggestions(query),
+      model: 'fallback',
+      modelHuman: 'Fallback',
+      latencyMs: 0,
+      attempts: 0,
+    }
+  }
 
   try {
-    const json = extractJsonArray(content)
+    const json = extractJsonArray(result.content)
     if (!json) throw new Error('No JSON array found')
 
     const parsed = JSON.parse(json)
     const validated = suggestionsResponseSchema.safeParse({ suggestions: parsed })
 
-    return validated.success
-      ? validated.data.suggestions.slice(0, 5)
-      : generateFallbackSuggestions(query)
+    return {
+      suggestions: validated.success
+        ? validated.data.suggestions.slice(0, 5)
+        : generateFallbackSuggestions(query),
+      model: result.model,
+      modelHuman: result.modelHuman,
+      latencyMs: result.latencyMs,
+      attempts: result.attempts,
+    }
   } catch {
-    return generateFallbackSuggestions(query)
+    return {
+      suggestions: generateFallbackSuggestions(query),
+      model: result.model,
+      modelHuman: result.modelHuman,
+      latencyMs: result.latencyMs,
+      attempts: result.attempts,
+    }
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣4️⃣ ANSWER GENERATION (Task-Aware)
+// 1️⃣5️⃣ ANSWER GENERATION (Observable)
 // ─────────────────────────────────────────────────────────────────────────────
+
+export interface AnswerResult {
+  answer: string
+  model: string
+  modelHuman: string
+  latencyMs: number
+  tier: ModelTier
+  attempts: number
+}
 
 export async function generateAIAnswer(
   query: string,
   context?: { title: string; snippet: string }[]
-): Promise<string> {
+): Promise<AnswerResult> {
   const contextText =
     context
       ?.map((r, i) => `[${i + 1}] "${r.title}": ${r.snippet}`)
@@ -485,20 +608,47 @@ export async function generateAIAnswer(
     },
   ]
 
-  const content = await callOpenRouter(messages, AITask.ANSWER)
-  const validated = answerResponseSchema.safeParse({ answer: content || '' })
+  const result = await callOpenRouter(messages, AITask.ANSWER)
 
-  return validated.success ? validated.data.answer : 'AI summary unavailable.'
+  if (!result) {
+    return {
+      answer: 'AI summary unavailable.',
+      model: 'none',
+      modelHuman: 'Unavailable',
+      latencyMs: 0,
+      tier: 'balanced',
+      attempts: 0,
+    }
+  }
+
+  const validated = answerResponseSchema.safeParse({ answer: result.content })
+
+  return {
+    answer: validated.success ? validated.data.answer : 'AI summary unavailable.',
+    model: result.model,
+    modelHuman: result.modelHuman,
+    latencyMs: result.latencyMs,
+    tier: result.tier,
+    attempts: result.attempts,
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣5️⃣ CODE GENERATION (New Task-Aware Function)
+// 1️⃣6️⃣ CODE GENERATION (Observable)
 // ─────────────────────────────────────────────────────────────────────────────
+
+export interface CodeResult {
+  code: string
+  model: string
+  modelHuman: string
+  latencyMs: number
+  attempts: number
+}
 
 export async function generateCode(
   prompt: string,
   language?: string
-): Promise<string> {
+): Promise<CodeResult> {
   const messages: ChatMessage[] = [
     {
       role: 'system',
@@ -510,12 +660,29 @@ export async function generateCode(
     },
   ]
 
-  const content = await callOpenRouter(messages, AITask.CODE)
-  return content || '// Code generation unavailable'
+  const result = await callOpenRouter(messages, AITask.CODE)
+
+  if (!result) {
+    return {
+      code: '// Code generation unavailable',
+      model: 'none',
+      modelHuman: 'Unavailable',
+      latencyMs: 0,
+      attempts: 0,
+    }
+  }
+
+  return {
+    code: result.content,
+    model: result.model,
+    modelHuman: result.modelHuman,
+    latencyMs: result.latencyMs,
+    attempts: result.attempts,
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1️⃣6️⃣ FALLBACK GENERATOR
+// 1️⃣7️⃣ FALLBACK GENERATOR
 // ─────────────────────────────────────────────────────────────────────────────
 
 function generateFallbackSuggestions(query: string): string[] {

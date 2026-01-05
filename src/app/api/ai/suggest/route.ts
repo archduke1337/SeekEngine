@@ -24,10 +24,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const suggestions = await getSearchSuggestions(validation.query!)
+    const result = await getSearchSuggestions(validation.query!)
     
     return NextResponse.json(
-      { suggestions },
+      {
+        suggestions: result.suggestions,
+        model: result.model,
+        modelHuman: result.modelHuman,
+        latencyMs: result.latencyMs,
+        attempts: result.attempts,
+      },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',

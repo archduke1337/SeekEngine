@@ -3,7 +3,8 @@ import Navbar from '../components/Navbar'
 import Providers from '../components/Providers'
 import PageTransition from '../components/PageTransition'
 import LenisProvider from '../components/LenisProvider'
-import { Analytics } from '@vercel/analytics/next'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -119,6 +120,7 @@ export default function RootLayout({
           </LenisProvider>
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

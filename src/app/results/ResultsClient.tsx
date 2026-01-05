@@ -93,7 +93,7 @@ export default function ResultsClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#000000] pt-24 pb-16 transition-colors duration-1000">
+    <main className="w-full flex-1 bg-[#fbfbfd] dark:bg-[#000000] pt-24 pb-16 transition-colors duration-1000 flex flex-col">
       {/* Subtle Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-indigo-500/10 to-transparent dark:from-indigo-500/5 dark:to-transparent rounded-full blur-[100px]" />

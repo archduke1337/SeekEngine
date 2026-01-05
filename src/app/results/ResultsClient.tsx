@@ -4,9 +4,9 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ResultCard from '../../components/ResultCard'
 import SearchBar from '../../components/SearchBar'
-import { AnswerSkeleton, ResultCardSkeleton } from '../../components/Skeleton'
+import { ResultCardSkeleton } from '../../components/Skeleton'
 import { SearchResult } from '../../lib/google-search'
-import TypewriterText from '../../components/TypewriterText'
+import { StreamingAnswer } from '../../components/StreamingAnswer'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ResultsClient() {
@@ -14,8 +14,6 @@ export default function ResultsClient() {
   const query = searchParams.get('q') || ''
 
   const [aiAnswer, setAiAnswer] = useState('')
-  const [aiLoading, setAiLoading] = useState(true)
-  const [aiError, setAiError] = useState('')
   const [copied, setCopied] = useState(false)
 
   const [results, setResults] = useState<SearchResult[]>([])
@@ -24,31 +22,7 @@ export default function ResultsClient() {
 
   const [followUpQuery, setFollowUpQuery] = useState('')
 
-  useEffect(() => {
-    if (!query) return
-
-    setAiLoading(true)
-    setAiError('')
-
-    const fetchAnswer = async () => {
-      try {
-        const response = await fetch(
-          `/api/ai/answer?q=${encodeURIComponent(query)}`
-        )
-        if (!response.ok) throw new Error('Failed to fetch answer')
-        const data = await response.json()
-        setAiAnswer(data.answer || '')
-      } catch (error) {
-        console.error('Error fetching answer:', error)
-        setAiError('Could not generate AI answer. Try refining your search.')
-      } finally {
-        setAiLoading(false)
-      }
-    }
-
-    fetchAnswer()
-  }, [query])
-
+  // Search Results Effect
   useEffect(() => {
     if (!query) return
 
@@ -94,9 +68,6 @@ export default function ResultsClient() {
 
   const handleSearch = (searchQuery: string) => {
     if (searchQuery.trim()) {
-      window.history.pushState({}, '', `/results?q=${encodeURIComponent(searchQuery)}`)
-      // Custom event or simple state reset would be better, but for now pushState + reload 
-      // is what was intended. Actually, let's use router.push which is cleaner.
       window.location.href = `/results?q=${encodeURIComponent(searchQuery)}`
     }
   }
@@ -169,25 +140,17 @@ export default function ResultsClient() {
               </div>
             </div>
 
-            <div className="prose prose-zinc dark:prose-invert max-w-none">
-              {aiLoading ? (
-                <AnswerSkeleton />
-              ) : aiError ? (
-                <div className="p-6 bg-red-50/50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-800/50 rounded-2xl text-red-600 dark:text-red-400 text-sm">
-                  {aiError}
-                </div>
-              ) : aiAnswer ? (
-                <div className="text-base md:text-xl text-zinc-800 dark:text-zinc-200 leading-relaxed font-serif">
-                   <TypewriterText text={aiAnswer} speed={12} />
-                </div>
-              ) : (
-                <div className="text-zinc-400 italic">Iterating consensus...</div>
-              )}
+            <div className="relative">
+              <StreamingAnswer 
+                query={query} 
+                onComplete={setAiAnswer}
+                className="text-base md:text-xl text-zinc-800 dark:text-zinc-200 leading-relaxed font-serif"
+              />
             </div>
 
             {/* Follow-up Console */}
             <AnimatePresence>
-              {!aiLoading && aiAnswer && (
+              {aiAnswer && (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

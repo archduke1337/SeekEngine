@@ -23,6 +23,10 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const MODELS_ENDPOINT = 'https://openrouter.ai/api/v1/models'
 
+// Debug API Key presence (safe log)
+console.log(`🔑 OpenRouter API Key Present: ${!!OPENROUTER_API_KEY}`)
+
+
 type ChatRole = 'system' | 'user' | 'assistant'
 type ChatMessage = { role: ChatRole; content: string }
 
@@ -325,8 +329,10 @@ async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
 
     const data = await res.json()
     const models: OpenRouterModel[] = data?.data ?? []
+    console.log(`🌐 Fetched ${models.length} raw models from OpenRouter`)
 
     const freeTextModels = models.filter(isFree).filter(supportsText)
+    console.log(`🆓 Found ${freeTextModels.length} free text-capable models`)
 
     const tieredModels: Record<ModelTier, string[]> = {
       fast: [],
@@ -424,7 +430,10 @@ async function callOpenRouter(
       return null
     }
 
+    console.log(`🤖 Attempt ${attempts}: Trying ${humanizeModel(model)} (${model}) [Tier: ${classifyModel(model)}]`)
+
     const modelStartTime = Date.now()
+
     const tier = classifyModel(model)
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), policy.maxLatency)
@@ -455,18 +464,22 @@ async function callOpenRouter(
       const latency = Date.now() - modelStartTime
 
       if ([429, 500, 502, 503].includes(response.status)) {
+        console.warn(`⚠️ Transient error ${response.status} for ${model}`)
         logTelemetry({ task, model, tier, latency, success: false, error: `HTTP ${response.status}` })
         await new Promise(r => setTimeout(r, 300))
         continue
       }
 
       if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error')
+        console.error(`❌ Model ${model} failed with ${response.status}: ${errorText}`)
         modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
         logTelemetry({ task, model, tier, latency, success: false, error: `HTTP ${response.status}` })
         continue
       }
 
       const data = await response.json()
+
       const content = data?.choices?.[0]?.message?.content
       const tokens = data?.usage?.total_tokens
 
@@ -497,6 +510,7 @@ async function callOpenRouter(
     }
   }
 
+  console.error('❌ All models failed for this request.')
   return null
 }
 

@@ -17,26 +17,27 @@ interface StreamingAnswerProps {
   onComplete?: (answer: string) => void
 }
 
+const STEPS = [
+  "Initializing neural pathways...",
+  "Scanning visual index...",
+  "Synthesizing results...",
+  "Finalizing output..."
+]
+
 // Processing Console Animation
 function ProcessingSteps() {
   const [step, setStep] = useState(0)
-  const steps = [
-    "Initializing neural pathways...",
-    "Scanning visual index...",
-    "Synthesizing results...",
-    "Finalizing output..."
-  ]
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setStep(s => (s < steps.length - 1 ? s + 1 : s))
+      setStep(s => (s < STEPS.length - 1 ? s + 1 : s))
     }, 800)
     return () => clearInterval(interval)
   }, [])
 
   return (
     <div className="flex flex-col gap-2 font-mono text-xs text-zinc-500 dark:text-zinc-500">
-      {steps.map((text, i) => (
+      {STEPS.map((text, i) => (
         <div key={i} className={`flex items-center gap-2 transition-opacity duration-300 ${i > step ? 'opacity-0' : i === step ? 'opacity-100 text-blue-500' : 'opacity-40'}`}>
            <span className={`w-1.5 h-1.5 rounded-full ${i === step ? 'bg-blue-500 animate-pulse' : 'bg-zinc-600'}`} />
            <span>{text}</span>

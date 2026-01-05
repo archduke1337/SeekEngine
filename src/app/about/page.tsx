@@ -43,7 +43,7 @@ export default function AboutPage() {
                 </div>
                 <div className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed space-y-4">
                     <p>
-                        The modern web is decaying into "confident misinformation." Generative AI has accelerated this entropy, prioritizing fluent lies over jagged truths.
+                        The modern web is decaying into &ldquo;confident misinformation.&rdquo; Generative AI has accelerated this entropy, prioritizing fluent lies over jagged truths.
                     </p>
                     <p>
                         SeekEngine rejects the probabilistic guess. We do not optimize for chat; we optimize for <span className="text-black dark:text-white font-semibold">grounding</span>. Every output must be tethered to a verifiable index node. If we cannot prove it, we do not say it.
@@ -111,7 +111,7 @@ export default function AboutPage() {
                         The intent is to engineer a system that is hostile to hallucination.
                     </p>
                     <p>
-                        We enforce strict <span className="text-black dark:text-white font-semibold">Environment Encapsulation</span>. All inference logic is isolated in server-side route handlers, acting as a security proxy. We accept the "Truth Penalty"—a 300ms latency cost—to verify every token before it reaches the client.
+                        We enforce strict <span className="text-black dark:text-white font-semibold">Environment Encapsulation</span>. All inference logic is isolated in server-side route handlers, acting as a security proxy. We accept the &ldquo;Truth Penalty&rdquo;—a 300ms latency cost—to verify every token before it reaches the client.
                     </p>
                 </div>
                 <div className="pt-4">

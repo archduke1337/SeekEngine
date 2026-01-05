@@ -137,22 +137,27 @@ export default function RiverFooter() {
   }, [])
 
   // Location State
-  const [location, setLocation] = useState('San Francisco, CA')
+  const [location, setLocation] = useState('SYSTEM ONLINE')
 
   useEffect(() => {
     // Attempt to fetch user location for personalized "System Active" status
+    // Silently updates if successful, otherwise stays "SYSTEM ONLINE"
     const fetchLocation = async () => {
         try {
-            const res = await fetch('https://ipapi.co/json/')
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 3000) // 3s timeout
+            
+            const res = await fetch('https://ipapi.co/json/', { signal: controller.signal })
+            clearTimeout(timeoutId)
+            
             if (res.ok) {
                 const data = await res.json()
                 if (data.city && data.region_code) {
-                    setLocation(`${data.city}, ${data.region_code}`)
+                    setLocation(`${data.city.toUpperCase()}, ${data.region_code}`)
                 }
             }
         } catch (e) {
-            // Fallback cleanly
-            console.log('Using default system location')
+            // If fails, we just keep "SYSTEM ONLINE" - no UI jar
         }
     }
     fetchLocation()

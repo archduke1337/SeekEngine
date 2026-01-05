@@ -42,14 +42,15 @@ export default function Hero() {
           
           {/* MAIN TEXT LAYER */}
           <h1 
-            className="relative z-10 text-[12vw] sm:text-[10vw] leading-[0.9] font-bold italic tracking-[-0.04em] select-none whitespace-nowrap animate-text-shimmer bg-[size:200%_auto]"
+            className="relative z-10 text-[12vw] sm:text-[10vw] leading-[0.9] font-bold italic tracking-[-0.04em] select-none whitespace-nowrap"
             style={{
               fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
               
-              // 1. ANIMATED GLASS BODY (Shimmer is here)
+              // 1. STATIC GLASS BODY (No Shimmer)
+              // We use a subtle top-down fade to give volume without movement
               backgroundImage: isDark 
-                 ? 'linear-gradient(110deg, rgba(255,255,255,0.0) 45%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.0) 55%)'
-                 : 'linear-gradient(110deg, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.05) 55%)',
+                 ? 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.0) 100%)'
+                 : 'linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.0) 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               color: 'transparent',

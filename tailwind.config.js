@@ -11,9 +11,14 @@ module.exports = {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
         },
+        'text-shimmer': {
+          '0%': { backgroundPosition: '200% center' },
+          '100%': { backgroundPosition: '-200% center' },
+        },
       },
       animation: {
         shimmer: 'shimmer 2s infinite linear',
+        'text-shimmer': 'text-shimmer 3s linear infinite',
       },
     },
   },

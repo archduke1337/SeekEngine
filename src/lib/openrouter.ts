@@ -83,7 +83,7 @@ const TASK_POLICIES: Record<AITask, TaskPolicy> = {
   [AITask.ANSWER]: {
     temperature: 0.35,
     maxTokens: 800,
-    preferredTiers: ['balanced', 'heavy'],
+    preferredTiers: ['fast', 'balanced', 'heavy'],
     maxLatency: 5000,
     globalTimeout: 12000,
   },
@@ -557,32 +557,22 @@ export async function* streamOpenRouter(
   // Emit thinking state
   yield { type: 'thinking', content: 'Connecting to AI...' }
 
-  for (const model of models) {
-    if ((modelFailures.get(model) || 0) >= MAX_MODEL_FAILURES) {
-      continue
-    }
-
-    if (Date.now() - startTime > policy.globalTimeout) {
-      yield { type: 'error', error: 'Global timeout reached' }
-      return
-    }
-
-    attempts++
-    const modelStartTime = Date.now()
+  // Helper: Race a single model to first token (Strict 800ms TTFT)
+  const connectToModel = async (model: string): Promise<{
+    model: string,
+    reader: ReadableStreamDefaultReader<Uint8Array>,
+    decoder: TextDecoder,
+    remainingBuffer: string,
+    firstToken: string | null
+    latency: number
+    controller: AbortController
+    tier: ModelTier
+  }> => {
     const tier = classifyModel(model.replace(/:free$/, ''))
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), policy.maxLatency)
+    const modelStartTime = Date.now()
 
     try {
-      // Emit model selection
-      yield { 
-        type: 'model_selected', 
-        model, 
-        modelHuman: humanizeModel(model),
-        tier,
-        attempts 
-      }
-
       const response = await fetch(
         `${OPENROUTER_BASE_URL}/chat/completions`,
         {
@@ -599,29 +589,115 @@ export async function* streamOpenRouter(
             temperature: policy.temperature,
             max_tokens: policy.maxTokens,
             top_p: 1,
-            stream: true, // Enable streaming
+            stream: true,
           }),
           signal: controller.signal,
         }
       )
 
-      clearTimeout(timeoutId)
-
-      if ([429, 500, 502, 503].includes(response.status)) {
-        await new Promise(r => setTimeout(r, 300))
-        continue
-      }
-
       if (!response.ok || !response.body) {
-        modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
-        continue
+         throw new Error(`HTTP ${response.status}`)
       }
 
-      // Stream the response
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
-      let fullContent = ''
+      
+      // STRICT TTFT CHECK: 1000ms (Softened from 800ms for stability)
+      const ttftTimeout = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('TTFT_TIMEOUT')), 1000)
+      )
+
+      const readFirstChunk = async () => {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            const trimmed = line.trim()
+            if (!trimmed || trimmed === 'data: [DONE]') continue
+            if (!trimmed.startsWith('data: ')) continue
+
+            try {
+              const json = JSON.parse(trimmed.slice(6))
+              const delta = json.choices?.[0]?.delta?.content
+              if (delta) {
+                 return delta // Found first token!
+              }
+            } catch { }
+          }
+        }
+        throw new Error('No token found')
+      }
+
+      // Race reading against timeout
+      const firstToken = await Promise.race([readFirstChunk(), ttftTimeout])
+
+      return {
+        model,
+        reader,
+        decoder,
+        remainingBuffer: buffer,
+        firstToken,
+        latency: Date.now() - modelStartTime,
+        controller,
+        tier
+      }
+
+    } catch (err) {
+      if ((err as Error).message === 'TTFT_TIMEOUT') {
+        console.warn(`⏳ TTFT Timeout for ${model}`)
+      }
+      controller.abort() // Ensure cleanup
+      throw err
+    }
+  }
+
+  // RACE LOOP: Process models in batches of 2
+  for (let i = 0; i < models.length; i += 2) {
+    const batch = models.slice(i, i + 2)
+    attempts += batch.length
+    
+    const pendingControllers: AbortController[] = []
+    
+    try {
+      const promises = batch.map(m => {
+        return connectToModel(m).then(res => {
+          pendingControllers.push(res.controller)
+          return res
+        })
+      })
+
+      // Wait for FIRST successful connection with token
+      const winner = await Promise.any(promises)
+
+      // 🛑 Abort all other pending requests in this batch
+      pendingControllers.forEach(c => {
+        if (c !== winner.controller) c.abort()
+      })
+
+      // Emit selection info
+      yield { 
+        type: 'model_selected', 
+        model: winner.model, 
+        modelHuman: humanizeModel(winner.model),
+        tier: winner.tier,
+        attempts 
+      }
+
+      // Yield the first token we already captured
+      if (winner.firstToken) {
+        yield { type: 'token', content: winner.firstToken }
+      }
+
+      // Continue streaming the winner normally
+      const { reader, decoder } = winner
+      let buffer = winner.remainingBuffer
+      let fullContent = winner.firstToken || ''
 
       while (true) {
         const { done, value } = await reader.read()
@@ -643,37 +719,33 @@ export async function* streamOpenRouter(
               fullContent += delta
               yield { type: 'token', content: delta }
             }
-          } catch {
-            // Ignore parse errors for partial chunks
-          }
+          } catch { }
         }
       }
 
-      // Emit completion with metadata
-      const latency = Date.now() - modelStartTime
-      logTelemetry({ task, model, tier, latency, success: true })
-
+      // Success - emit done and exit
+      // Update telemetry
+      logTelemetry({ task, model: winner.model, tier: winner.tier, latency: winner.latency, success: true })
+      
       yield {
         type: 'done',
         content: fullContent,
-        model,
-        modelHuman: humanizeModel(model),
-        tier,
-        latencyMs: latency,
-        attempts,
+        model: winner.model,
+        modelHuman: humanizeModel(winner.model),
+        tier: winner.tier,
+        latencyMs: winner.latency,
+        attempts
       }
       return
 
-    } catch (err: unknown) {
-      clearTimeout(timeoutId)
-      const error = err as Error
-      
-      if (error.name === 'AbortError') {
-        // Timeout, try next model
-        continue
-      } else {
-        modelFailures.set(model, (modelFailures.get(model) || 0) + 1)
-      }
+    } catch (e) {
+      // Both failed, continue to next batch
+       pendingControllers.forEach(c => c.abort())
+    }
+    
+    if (Date.now() - startTime > policy.globalTimeout) {
+       yield { type: 'error', error: 'Global timeout reached' }
+       return
     }
   }
 

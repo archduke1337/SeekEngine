@@ -141,9 +141,11 @@ export default function AboutPage() {
                             {[1, 2, 3, 4, 5].map((i) => (
                                 <div key={i} className="w-px h-full bg-zinc-200 dark:bg-zinc-800 relative">
                                     <motion.div 
-                                        animate={{ y: ["0%", "400%"] }}
-                                        transition={{ duration: 2 + i, repeat: Infinity, ease: "linear" }}
-                                        className="absolute -top-4 left-[-1.5px] w-[4px] h-4 bg-gradient-to-t from-red-500 to-transparent shadow-[0_0_8px_red]"
+                                        {...({
+                                            animate: { y: ["0%", "400%"] },
+                                            transition: { duration: 2 + i, repeat: Infinity, ease: "linear" },
+                                            className: "absolute -top-4 left-[-1.5px] w-[4px] h-4 bg-gradient-to-t from-red-500 to-transparent shadow-[0_0_8px_red]"
+                                        } as any)}
                                     />
                                 </div>
                             ))}
@@ -165,13 +167,25 @@ export default function AboutPage() {
                             <div className="space-y-2">
                                 <div className="flex justify-between text-[7px] font-black opacity-50 uppercase"><span>Claude_Node</span><span>Active</span></div>
                                 <div className="h-1 w-full bg-white/10 dark:bg-black/10 rounded-full overflow-hidden">
-                                    <motion.div initial={{ width: 0 }} animate={{ width: "85%" }} className="h-full bg-red-500" />
+                                    <motion.div 
+                                        {...({
+                                            initial: { width: 0 },
+                                            animate: { width: "85%" },
+                                            className: "h-full bg-red-500"
+                                        } as any)} 
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-[7px] font-black opacity-50 uppercase"><span>Qwen_Node</span><span>Active</span></div>
                                 <div className="h-1 w-full bg-white/10 dark:bg-black/10 rounded-full overflow-hidden">
-                                    <motion.div initial={{ width: 0 }} animate={{ width: "92%" }} className="h-full bg-red-500" />
+                                    <motion.div 
+                                        {...({
+                                            initial: { width: 0 },
+                                            animate: { width: "92%" },
+                                            className: "h-full bg-red-500"
+                                        } as any)} 
+                                    />
                                 </div>
                             </div>
                         </div>

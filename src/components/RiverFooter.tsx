@@ -104,6 +104,38 @@ export default function RiverFooter() {
     return () => observer.disconnect()
   }, [])
 
+  // Dashboard State
+  const [time, setTime] = useState('')
+  const [latency, setLatency] = useState(12)
+
+  // Live Clock & Ping Simulator
+  useEffect(() => {
+    // Clock
+    const timeInterval = setInterval(() => {
+        setTime(new Date().toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit',
+            timeZoneName: 'short'
+        }))
+    }, 1000)
+    setTime(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' }))
+
+    // Latency Jitter
+    const pingInterval = setInterval(() => {
+        setLatency(prev => {
+            const jitter = Math.floor(Math.random() * 5) - 2 // -2 to +2
+            return Math.max(5, Math.min(40, prev + jitter))
+        })
+    }, 2000)
+
+    return () => {
+        clearInterval(timeInterval)
+        clearInterval(pingInterval)
+    }
+  }, [])
+
   // Location State
   const [location, setLocation] = useState('San Francisco, CA')
 
@@ -129,30 +161,35 @@ export default function RiverFooter() {
   if (!mounted) return null
 
   return (
-    <footer className="relative w-full h-[180px] overflow-hidden mt-auto border-t border-black/5 dark:border-white/5 bg-[#fbfbfd] dark:bg-[#050505] z-0">
+    <footer className="relative w-full h-[120px] overflow-hidden mt-auto border-t border-black/5 dark:border-white/5 bg-[#fbfbfd] dark:bg-[#050505] z-0 transition-colors duration-500">
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 opacity-50" 
+        className="absolute inset-0 opacity-30 mix-blend-soft-light" 
         aria-hidden="true"
         role="presentation"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-black via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-white/90 dark:from-black/90 via-transparent to-transparent" />
       
-      {/* Footer Content Overlay */}
-      <div className="absolute bottom-6 left-0 right-0 px-8 flex flex-col items-center gap-5">
-        <div className="flex items-center gap-3 py-2.5 px-5 rounded-full bg-white/50 dark:bg-black/20 border border-black/5 dark:border-white/5 backdrop-blur-xl shadow-sm transition-all hover:bg-white/80 dark:hover:bg-zinc-800/80 cursor-default">
-            <LivingIcon color="bg-emerald-500" size="w-2 h-2" className="mr-0.5" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-600 dark:text-zinc-400">
-                Data Stream Active • {location}
+      {/* Footer Content Overlay - Clean Line */}
+      <div className="absolute bottom-0 left-0 right-0 px-8 pb-8 flex items-end justify-between text-[10px] font-mono text-zinc-400 dark:text-zinc-600 font-medium tracking-wide">
+        
+        {/* Left: Latency */}
+        <div className="flex items-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-emerald-500/50"></span>
+            <span>{latency}ms</span>
+        </div>
+
+        {/* Center: System Status (No Pill) */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-8 flex items-center gap-2">
+            <LivingIcon color="bg-emerald-500" size="w-1.5 h-1.5" className="mr-0.5" />
+            <span className="uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
+                {location}
             </span>
         </div>
-        
-        <div className="flex gap-6 text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-300 dark:text-zinc-600">
-          <a href="#" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">Manifesto</a>
-          <span>//</span>
-          <a href="#" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">System</a>
-          <span>//</span>
-          <a href="#" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">Privacy</a>
+
+        {/* Right: Clock */}
+        <div className="tabular-nums">
+            {time}
         </div>
       </div>
     </footer>

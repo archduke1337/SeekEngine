@@ -54,11 +54,11 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative h-screen flex flex-col items-center justify-center px-6">
           <motion.div 
-            style={{ 
+            style={({ 
               scale: heroScale, 
               opacity: opacityValue,
               willChange: "transform, opacity"
-            }} 
+            } as any)} 
             className="absolute inset-0 z-0"
           >
             <ThreeErrorBoundary>
@@ -75,10 +75,10 @@ export default function Home() {
 
           {/* Heading and Search */}
           <motion.div 
-            style={{ 
+            style={({ 
               y: contentY,
               willChange: "transform"
-            }}
+            } as any)}
             className="w-full max-w-5xl relative z-30 flex flex-col items-center gap-10 sm:gap-16"
           >
             <div className="text-center space-y-8 sm:space-y-12">

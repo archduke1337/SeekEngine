@@ -3,7 +3,9 @@
  * Provides high-fidelity, real-time Google search results
  */
 
-const SERPAPI_KEY = process.env.SERPAPI_KEY
+import { ENV } from './env'
+
+const SERPAPI_KEY = ENV.SERPAPI_KEY
 const SERPAPI_URL = 'https://serpapi.com/search'
 
 export interface SerpResult {

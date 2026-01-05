@@ -14,12 +14,13 @@
  */
 
 import { suggestionsResponseSchema, answerResponseSchema } from './validation'
+import { ENV } from './env'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1️⃣ CONSTANTS & TYPES
 // ─────────────────────────────────────────────────────────────────────────────
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+const OPENROUTER_API_KEY = ENV.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const MODELS_ENDPOINT = 'https://openrouter.ai/api/v1/models'
 
@@ -414,7 +415,7 @@ async function callOpenRouter(
   task: AITask = AITask.ANSWER
 ): Promise<AIResult | null> {
   // Check key at runtime (Edge compatible)
-  const apiKey = process.env.OPENROUTER_API_KEY
+  const apiKey = ENV.OPENROUTER_API_KEY
   if (!apiKey) {
     console.warn('⚠️ OPENROUTER_API_KEY missing - check .env.local')
     return null
@@ -552,7 +553,7 @@ export async function* streamOpenRouter(
   messages: ChatMessage[],
   task: AITask = AITask.ANSWER
 ): AsyncGenerator<StreamEvent> {
-  const apiKey = process.env.OPENROUTER_API_KEY
+  const apiKey = ENV.OPENROUTER_API_KEY
   if (!apiKey) {
     yield { type: 'error', error: 'OPENROUTER_API_KEY missing' }
     return

@@ -3,8 +3,10 @@
  * Handles traditional web search results
  */
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
-const GOOGLE_CX = process.env.GOOGLE_CX
+import { ENV } from './env'
+
+const GOOGLE_API_KEY = ENV.GOOGLE_SEARCH_API_KEY
+const GOOGLE_CX = ENV.GOOGLE_SEARCH_CX
 const GOOGLE_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1'
 
 export interface SearchResult {

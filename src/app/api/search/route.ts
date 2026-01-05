@@ -13,6 +13,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Query is required' }, { status: 400 })
   }
 
+  console.log(`🔍 [SEARCH] Query: "${query}"`)
+
   try {
     // Attempt SerpApi first
     const serpResults = await getSerpResults(query)

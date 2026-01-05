@@ -786,8 +786,11 @@ export async function* streamOpenRouter(
       // Update telemetry
       logTelemetry({ task, model: winner.model, tier: winner.tier, latency: winner.latency, success: true })
       
-      // LOG THE GENERATED RESPONSE (Sample)
-      console.log(`📝 [GENERATED] ${winner.model} (${winner.tier}): "${fullContent.slice(0, 100).replace(/\n/g, ' ')}..."`)
+      // LOG THE GENERATED RESPONSE (Full preview for verification)
+      const preview = fullContent.length > 300 
+        ? fullContent.slice(0, 300) + '...' 
+        : fullContent
+      console.log(`📝 [GENERATED] ${winner.model}:\n"${preview.replace(/\n/g, ' ')}"`)
 
       yield {
         type: 'done',

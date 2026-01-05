@@ -43,16 +43,20 @@ export async function GET(request: NextRequest) {
   }
 
   const query = validation.query!
+  console.log(`🤖 [AI STREAM] Query: "${query}"`)
 
   try {
     // 1. Semantic Cache DISABLED per user request
     // To re-enable, uncomment the getCachedAnswer logic here
     
     // 2. Fetch search context for grounding
+    console.log(`🌐 [RAG] Fetching search context for: "${query}"`)
     let context = await getSerpResults(query)
+    let source = 'SerpApi'
     
     // Fallback if SerpApi empty
     if (!context || context.length === 0) {
+       console.log(`⚠️  SerpApi returned no results, falling back to Google Custom Search...`)
        const googleResults = await getWebSearchResults(query)
        context = googleResults.map(r => ({
          title: r.title,
@@ -60,7 +64,10 @@ export async function GET(request: NextRequest) {
          link: r.link,
          source: r.displayLink
        }))
+       source = 'Google Search'
     }
+
+    console.log(`✅ [CONTEXT] Found ${context.length} results from ${source}`)
 
     // 3. Create streaming response (Direct, NO CACHE WRITE)
     const stream = createStreamingAnswerResponse(

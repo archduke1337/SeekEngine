@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
   }
 
   const query = validation.query!
+  console.log(`💡 [SUGGEST] Query: "${query}"`)
   const cacheKey = normalizeForCache(query)
 
   try {

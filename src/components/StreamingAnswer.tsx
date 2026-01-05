@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useStreamingAnswer, StreamState } from '../hooks/useStreamingAnswer'
 
 interface StreamingAnswerProps {
@@ -19,6 +19,16 @@ interface StreamingAnswerProps {
 
 // Thinking animation component
 function ThinkingIndicator() {
+  const [visible, setVisible] = useState(false)
+  
+  // Perceptual Polish: Only show thinking after 150ms to avoid flicker on fast responses
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 150)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!visible) return null
+
   return (
     <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
       <div className="flex gap-1">
@@ -34,7 +44,7 @@ function ThinkingIndicator() {
 // Streaming cursor
 function StreamingCursor() {
   return (
-    <span className="inline-block w-2 h-4 ml-0.5 bg-blue-500 dark:bg-blue-400 animate-pulse rounded-sm" />
+    <span className="inline-block w-2 h-4 ml-0.5 bg-blue-500 dark:bg-blue-400 animate-pulse rounded-sm align-middle" />
   )
 }
 
@@ -101,7 +111,7 @@ function ModelBadge({
       
       {/* Timing info */}
       <span className="text-xs text-zinc-400 dark:text-zinc-500">
-        • {cached ? 'instant' : `${latencyMs}ms`}
+        • {cached ? 'instant' : `${latencyMs}ms TTFT`}
         {!cached && attempts > 1 && ` • ${attempts} attempts`}
       </span>
     </div>
@@ -126,25 +136,43 @@ export function StreamingAnswer({
   
   const containerRef = useRef<HTMLDivElement>(null)
   const lastStartedQuery = useRef<string | null>(null)
+  const completed = useRef(false)
+  const shouldAutoScroll = useRef(true)
 
-  // Consolidated Lifecycle Effect: Resets and Starts in one go to avoid race conditions
+  // Standard Streaming UX: Only auto-scroll if user is near the bottom
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const onScroll = () => {
+      // Threshold of 40px from bottom to consider "at bottom"
+      shouldAutoScroll.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40
+    }
+
+    el.addEventListener('scroll', onScroll)
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Consolidated Lifecycle Effect
   useEffect(() => {
     if (autoStart && query && lastStartedQuery.current !== query) {
       lastStartedQuery.current = query
+      completed.current = false
       startStream(query)
     }
   }, [query, autoStart, startStream])
 
-  // Callback when complete
+  // Lifecycle Callback Guard: Prevents double-fire if state re-paints
   useEffect(() => {
-    if (state === 'done' && onComplete && answer) {
+    if (state === 'done' && onComplete && answer && !completed.current) {
+      completed.current = true
       onComplete(answer)
     }
   }, [state, answer, onComplete])
 
-  // Auto-scroll to bottom during streaming
+  // Intelligent Auto-scroll
   useEffect(() => {
-    if (state === 'streaming' && containerRef.current) {
+    if (state === 'streaming' && containerRef.current && shouldAutoScroll.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight
     }
   }, [answer, state])
@@ -160,9 +188,10 @@ export function StreamingAnswer({
       case 'streaming':
         return (
           <div className="w-full max-w-none">
-            <div className="whitespace-pre-wrap">
+            <div className="whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
               {answer}
-              <StreamingCursor />
+              {/* Avoid cursor drop if ending with newline */}
+              {!answer.endsWith('\n') && <StreamingCursor />}
             </div>
           </div>
         )
@@ -171,8 +200,10 @@ export function StreamingAnswer({
         return (
           <div className="w-full max-w-none">
             <div 
-              className=""
-              dangerouslySetInnerHTML={{ __html: formatMarkdown(answer) || '<p class="text-zinc-400 italic">No content generated.</p>' }}
+              className="prose prose-zinc dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ 
+                __html: formatMarkdown(answer) || '<p class="text-zinc-400 italic">No content generated.</p>' 
+              }}
             />
             {metadata && (
               <ModelBadge 
@@ -192,7 +223,10 @@ export function StreamingAnswer({
             <span>⚠️</span>
             <span className="text-sm">{error || 'An error occurred'}</span>
             <button 
-              onClick={() => startStream(query)}
+              onClick={() => {
+                completed.current = false
+                startStream(query)
+              }}
               className="ml-2 px-2 py-1 text-xs bg-red-100 dark:bg-red-900/30 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
             >
               Retry
@@ -214,20 +248,27 @@ export function StreamingAnswer({
       
       {/* Loading bar indicator */}
       {isLoading && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 animate-shimmer" 
-               style={{ width: '200%', animation: 'shimmer 2s infinite linear' }} />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-zinc-200 dark:bg-zinc-700 overflow-hidden rounded-full">
+          <div className="h-full w-full bg-gradient-to-r from-blue-500/0 via-blue-500 to-blue-500/0 animate-shimmer" />
         </div>
       )}
     </div>
   )
 }
 
-// Basic markdown formatting with Code Block support
-function formatMarkdown(text: string): string {
-  let formatted = text
+function escapeHTML(str: string) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+}
 
-  // 1. Code Blocks (PRE)
+// Basic markdown formatting with Code Block support & Security Sanitization
+function formatMarkdown(text: string): string {
+  // 0. Security First: Escape HTML before any transformations to prevent XSS
+  let formatted = escapeHTML(text)
+
+  // 1. Code Blocks (PRE) - Extract and protect
   formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     return `<div class="my-4 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800"><div class="px-4 py-2 bg-zinc-900/50 border-b border-zinc-800 text-xs text-zinc-400 font-mono flex justify-between"><span>${lang || 'code'}</span></div><div class="p-4 overflow-x-auto"><pre><code class="font-mono text-sm text-zinc-300">${code.trim()}</code></pre></div></div>`
   })
@@ -250,14 +291,9 @@ function formatMarkdown(text: string): string {
   // 6. Citations
   formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="ml-0.5 text-blue-500 dark:text-blue-400 font-bold text-[10px] bg-blue-50 dark:bg-blue-900/20 px-1 rounded cursor-pointer hover:underline">[$1]</sup>')
 
-  // 7. Line breaks - ONLY for single newlines that aren't part of the structures above
-  // We'll rely on a CSS class for general spacing, but we need to handle paragraph breaks
+  // 7. Line breaks
   formatted = formatted.replace(/\n\n/g, '<div class="h-4"></div>')
   formatted = formatted.replace(/\n/g, '<br />')
-  
-  // Cleanup artifacts (like br inside div structures or pre)
-  // This is hard with regex. 
-  // Simplified strategy: The user wants "Better than raw text". This output is significantly better.
   
   return formatted
 }

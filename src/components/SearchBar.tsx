@@ -36,9 +36,12 @@ export default function SearchBar({
   
   const [isFocused, setIsFocused] = useState(false)
   const isCommand = query.startsWith('/')
+  const isTyping = query.length > 0
 
-  // Outside click handler - hardened for UX consistency
+  // Outside click handler - scoped to when suggestions are actually visible
   useEffect(() => {
+    if (!showSuggestions) return
+
     function handleClickOutside(event: MouseEvent) {
       if (!suggestionsRef.current) return
 
@@ -54,7 +57,7 @@ export default function SearchBar({
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [showSuggestions])
 
   // Command mode logic - reset suggestions/predictions to maintain focus
   useEffect(() => {
@@ -70,17 +73,17 @@ export default function SearchBar({
     if (!showSuggestions) setSelectedIndex(-1)
   }, [showSuggestions])
 
-  // Sync state back to parent with optimized reactivity
+  // Sync state back to parent with explicit reactivity
   useEffect(() => {
-    onTyping?.(query.length > 0)
-  }, [query.length > 0, onTyping])
+    onTyping?.(isTyping)
+  }, [isTyping, onTyping])
 
   useEffect(() => {
     onFocusChange?.(isFocused)
   }, [isFocused, onFocusChange])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    // Prevent empty submissions
+    // Prevent empty submissions and respect selected suggestion
     if (e.key === 'Enter') {
       if (!query.trim()) return
       
@@ -93,12 +96,12 @@ export default function SearchBar({
     } else if (e.key === 'Tab' && prediction && prediction !== query) {
       e.preventDefault()
       updateQuery(prediction)
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'ArrowDown' && suggestions.length > 0) {
       e.preventDefault()
       setSelectedIndex(prev => 
         prev < suggestions.length - 1 ? prev + 1 : prev
       )
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp' && suggestions.length > 0) {
       e.preventDefault()
       setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
     } else if (e.key === 'Escape') {
@@ -106,15 +109,17 @@ export default function SearchBar({
     }
   }
 
-  // Refined ghost text logic
-  const ghostText = query.length > 0 && prediction && prediction.toLowerCase().startsWith(query.toLowerCase())
+  // Refined ghost text logic with empty query safeguard
+  const ghostText = isTyping && prediction && prediction.toLowerCase().startsWith(query.toLowerCase())
     ? prediction.slice(query.length)
     : ''
+
+  const showSuggestionsList = showSuggestions && !isCommand && suggestions.length > 0
 
   return (
     <div className="relative w-full" ref={suggestionsRef}>
       <motion.div 
-        layout={isFocused ? "position" : false}
+        layout={isFocused ? "position" : undefined}
         className={`relative group backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-700 ${
           isFocused 
             ? 'ring-4 ring-red-500/5 bg-white/60 dark:bg-zinc-900/60 border-red-500/20 shadow-red-500/10' 
@@ -155,8 +160,8 @@ export default function SearchBar({
             ref={inputRef}
             type="text"
             role="combobox"
-            aria-expanded={showSuggestions && !isCommand && suggestions.length > 0}
-            aria-controls="search-suggestions"
+            aria-expanded={showSuggestionsList}
+            aria-controls={showSuggestionsList ? "search-suggestions" : undefined}
             aria-activedescendant={selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined}
             value={query}
             onChange={(e) => {
@@ -202,7 +207,14 @@ export default function SearchBar({
            </AnimatePresence>
 
            <button
-             onClick={() => query.trim() && handleSearch(query)}
+             onClick={() => {
+                if (!query.trim()) return
+                if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                  handleSearch(suggestions[selectedIndex])
+                } else {
+                  handleSearch(query)
+                }
+             }}
              className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all duration-500 ${
                query.trim() 
                ? (isCommand ? 'bg-red-500 text-white' : 'bg-black dark:bg-white text-white dark:text-black') + ' scale-100 opacity-100 shadow-lg' 
@@ -218,7 +230,7 @@ export default function SearchBar({
 
       {/* Suggestions Architecture */}
       <AnimatePresence>
-        {showSuggestions && !isCommand && suggestions.length > 0 && (
+        {showSuggestionsList && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -228,8 +240,11 @@ export default function SearchBar({
             className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2.2rem] md:rounded-[2.8rem] shadow-2xl z-50 p-2 md:p-3 pb-6 md:pb-8 max-h-[60vh] overflow-y-auto overscroll-contain"
           >
             <div className="px-5 md:px-7 py-3 md:py-4 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-2 md:mb-3">
-              <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
-                {(suggestions && suggestions.length) || 0} Paths Found
+              <div 
+                className="text-[10px] text-slate-400 font-bold tracking-widest uppercase"
+                aria-live="polite"
+              >
+                {suggestions.length} paths found
               </div>
             </div>
             {suggestions.map((suggestion, index) => (

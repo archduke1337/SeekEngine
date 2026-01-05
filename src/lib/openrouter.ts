@@ -452,7 +452,7 @@ async function callOpenRouter(
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': 'https://github.com/archduke1337/seekengine',
             'X-Title': 'SeekEngine',
@@ -542,10 +542,12 @@ export async function* streamOpenRouter(
   messages: ChatMessage[],
   task: AITask = AITask.ANSWER
 ): AsyncGenerator<StreamEvent> {
-  if (!OPENROUTER_API_KEY) {
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!apiKey) {
     yield { type: 'error', error: 'OPENROUTER_API_KEY missing' }
     return
   }
+  console.log('🔑 Streaming API Key validated')
 
   const policy = TASK_POLICIES[task]
   const models = await getModelsForTask(task)
@@ -586,7 +588,7 @@ export async function* streamOpenRouter(
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': 'https://github.com/archduke1337/seekengine',
             'X-Title': 'SeekEngine',

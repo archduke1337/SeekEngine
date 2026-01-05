@@ -5,7 +5,6 @@
  * Aesthetic: SwiftUI Glass Architecture with AI Prediction Focus
  */
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearch } from '../hooks/useSearch'
@@ -34,14 +33,22 @@ export default function SearchBar({
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  
+  const [isFocused, setIsFocused] = useState(false)
+  const isCommand = query.startsWith('/')
 
+  // Outside click handler - hardened for UX consistency
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node)
-      ) {
+      if (!suggestionsRef.current) return
+
+      const target = event.target as Node
+      const isInside = suggestionsRef.current.contains(target)
+      const isInput = inputRef.current?.contains(target)
+
+      if (!isInside && !isInput) {
         setShowSuggestions(false)
+        setSelectedIndex(-1)
       }
     }
 
@@ -49,19 +56,34 @@ export default function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const [isFocused, setIsFocused] = useState(false)
+  // Command mode logic - reset suggestions/predictions to maintain focus
+  useEffect(() => {
+    if (isCommand) {
+      setSuggestions([])
+      setPrediction('')
+      setShowSuggestions(false)
+    }
+  }, [isCommand, setSuggestions, setPrediction])
 
-  // Sync state back to parent for 3D/System effects
+  // Reset selection index when suggestions are hidden
+  useEffect(() => {
+    if (!showSuggestions) setSelectedIndex(-1)
+  }, [showSuggestions])
+
+  // Sync state back to parent with optimized reactivity
   useEffect(() => {
     onTyping?.(query.length > 0)
-  }, [query, onTyping])
+  }, [query.length > 0, onTyping])
 
   useEffect(() => {
     onFocusChange?.(isFocused)
   }, [isFocused, onFocusChange])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    // Prevent empty submissions
     if (e.key === 'Enter') {
+      if (!query.trim()) return
+      
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
         handleSearch(suggestions[selectedIndex])
       } else {
@@ -84,17 +106,15 @@ export default function SearchBar({
     }
   }
 
-  const ghostText = prediction && prediction.toLowerCase().startsWith(query.toLowerCase())
+  // Refined ghost text logic
+  const ghostText = query.length > 0 && prediction && prediction.toLowerCase().startsWith(query.toLowerCase())
     ? prediction.slice(query.length)
     : ''
-
-  // Slash command detection for UI feedback
-  const isCommand = query.startsWith('/')
 
   return (
     <div className="relative w-full" ref={suggestionsRef}>
       <motion.div 
-        layout
+        layout={isFocused ? "position" : false}
         className={`relative group backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl overflow-hidden transition-all duration-700 ${
           isFocused 
             ? 'ring-4 ring-red-500/5 bg-white/60 dark:bg-zinc-900/60 border-red-500/20 shadow-red-500/10' 
@@ -134,6 +154,10 @@ export default function SearchBar({
           <input
             ref={inputRef}
             type="text"
+            role="combobox"
+            aria-expanded={showSuggestions && !isCommand && suggestions.length > 0}
+            aria-controls="search-suggestions"
+            aria-activedescendant={selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined}
             value={query}
             onChange={(e) => {
               updateQuery(e.target.value)
@@ -144,7 +168,14 @@ export default function SearchBar({
                 suggestions.length > 0 && setShowSuggestions(true)
                 setIsFocused(true)
             }}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => {
+                // Delay blur to allow suggestion clicks
+                requestAnimationFrame(() => {
+                    if (!suggestionsRef.current?.contains(document.activeElement)) {
+                        setIsFocused(false)
+                    }
+                })
+            }}
             onKeyDown={handleKeyDown}
             placeholder={isCommand ? "Console Mode: Enter command..." : "Search intelligence index..."}
             autoFocus={autoFocus}
@@ -171,7 +202,7 @@ export default function SearchBar({
            </AnimatePresence>
 
            <button
-             onClick={() => handleSearch(query)}
+             onClick={() => query.trim() && handleSearch(query)}
              className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl sm:rounded-2xl transition-all duration-500 ${
                query.trim() 
                ? (isCommand ? 'bg-red-500 text-white' : 'bg-black dark:bg-white text-white dark:text-black') + ' scale-100 opacity-100 shadow-lg' 
@@ -192,7 +223,9 @@ export default function SearchBar({
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2.2rem] md:rounded-[2.8rem] shadow-2xl z-50 p-2 md:p-3 pb-6 md:pb-8"
+            id="search-suggestions"
+            role="listbox"
+            className="absolute top-full left-0 right-0 mt-3 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl border border-black/5 dark:border-white/5 rounded-[2.2rem] md:rounded-[2.8rem] shadow-2xl z-50 p-2 md:p-3 pb-6 md:pb-8 max-h-[60vh] overflow-y-auto overscroll-contain"
           >
             <div className="px-5 md:px-7 py-3 md:py-4 flex items-center gap-3 border-b border-black/5 dark:border-white/5 mb-2 md:mb-3">
               <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
@@ -202,6 +235,9 @@ export default function SearchBar({
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
+                id={`suggestion-${index}`}
+                role="option"
+                aria-selected={selectedIndex === index}
                 onClick={() => {
                   updateQuery(suggestion)
                   handleSearch(suggestion)

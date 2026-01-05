@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useMemo, Suspense, useEffect, useState } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { 
   Text3D, 
   Center, 
@@ -9,8 +9,6 @@ import {
   Float, 
   Environment,
   PresentationControls,
-  Instances,
-  Instance,
   ContactShadows
 } from '@react-three/drei'
 import { EffectComposer, Bloom, Noise, Vignette, ChromaticAberration } from '@react-three/postprocessing'
@@ -19,57 +17,10 @@ import gsap from 'gsap'
 
 /**
  * SeekEngine High-Performance 3D Hero
- * Final High-Fidelity Implementation
+ * Production-Grade Refactor: WebGL Optimizations & GPU discipline.
  */
 
 // --- SHADERS ---
-
-const BackgroundShader = {
-  uniforms: {
-    uTime: { value: 0 },
-  },
-  vertexShader: `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = vec4(position, 1.0);
-    }
-  `,
-  fragmentShader: `
-    varying vec2 vUv;
-    uniform float uTime;
-
-    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
-    float noise(vec2 p) {
-      vec2 i = floor(p); vec2 f = fract(p);
-      f = f*f*(3.0-2.0*f);
-      return mix(mix(hash(i + vec2(0,0)), hash(i + vec2(1,0)), f.x),
-                 mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
-    }
-
-    void main() {
-      vec2 p = vUv - 0.5;
-      float d = length(p);
-      
-      float n = noise(vUv * 3.0 + uTime * 0.1);
-      
-      vec3 colorA = vec3(0.01, 0.015, 0.02); // Deep obsidian
-      vec3 colorB = vec3(0.06, 0.03, 0.01); // Dark industrial amber
-      vec3 colorC = vec3(0.04, 0.01, 0.01); // Deep oil crimson
-      
-      vec3 color = mix(colorA, colorB, n * 0.5 + 0.5);
-      color = mix(color, colorC, sin(uTime * 0.2) * 0.5 + 0.5);
-      
-      // Add industrial grain
-      color += (hash(vUv + uTime) - 0.5) * 0.02;
-      
-      // Vignette
-      color *= smoothstep(1.0, 0.3, d);
-      
-      gl_FragColor = vec4(color, 1.0);
-    }
-  `
-}
 
 const DieselShader = {
   uniforms: {
@@ -92,7 +43,6 @@ const DieselShader = {
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
       vViewPosition = -mvPosition.xyz;
       
-      // Internal fluid sloshing distortion
       float slosh = sin(position.x * 3.0 + uTime * 0.5) * 0.015 * uFill;
       vec3 pos = position + normal * slosh;
       
@@ -113,25 +63,18 @@ const DieselShader = {
       vec3 viewDir = normalize(vViewPosition);
       float fresnel = pow(max(0.0, 1.0 - dot(normal, viewDir)), 2.5);
       
-      // Dynamic fluid level (Y axis)
-      float level = (vWorldPosition.y + 1.0) * 0.5; // Roughly 0 to 1
+      float level = (vWorldPosition.y + 1.0) * 0.5;
       float wave = sin(vWorldPosition.x * 2.0 + uTime) * 0.05 * uFill;
       float fluidMask = step(level, uFill + wave);
       
-      // Container Material
       vec3 containerColor = vec3(0.12, 0.14, 0.18) * (0.8 + fresnel * 0.4);
-      
-      // Thick Diesel Fluid (Viscous & Oily)
       vec3 fluidColor = mix(uColorFluid, uColorSurface * 0.2, fresnel);
-      fluidColor += sin(vViewPosition.z * 15.0 + uTime) * 0.01; // Viscosity refractive ripples
+      fluidColor += sin(vViewPosition.z * 15.0 + uTime) * 0.01;
       
       vec3 color = mix(containerColor, fluidColor, fluidMask);
-      
-      // Surface Tension Glow
       float surface = smoothstep(uFill + wave - 0.08, uFill + wave, level) * fluidMask;
       color += surface * uColorSurface * 0.5;
       
-      // Specular Highlight
       float spec = pow(max(dot(reflect(-viewDir, normal), vec3(0,1,0)), 0.0), 32.0);
       color += spec * 0.1;
       
@@ -164,9 +107,7 @@ const MoltenShader = {
       vNormal = normalize(normalMatrix * normal);
       vPosition = position;
       
-      // Heavy mechanical vibration
       float vib = noise(position * 20.0 + uTime * 40.0) * 0.008 * uHeat;
-      // Thermal softening distortion
       float softening = noise(vec3(position.xy * 2.0, uTime * 0.2)) * 0.04 * uHeat;
       
       vec3 pos = position + normal * (vib + softening);
@@ -183,25 +124,20 @@ const MoltenShader = {
       vec3 normal = normalize(vNormal);
       float fresnel = pow(max(0.0, 1.0 - dot(normal, vec3(0,0,1))), 3.0);
       
-      // Dark forged iron (cool)
       vec3 ironColor = vec3(0.06, 0.07, 0.09) * (0.8 + fresnel * 0.4);
       
-      // Heating phases
-      vec3 dullGlow = vec3(0.8, 0.1, 0.0); // Deep red
-      vec3 brightMolten = vec3(1.0, 0.5, 0.0); // Bright orange
-      vec3 whiteHot = vec3(1.0, 0.95, 0.8); // Incandescent
+      vec3 dullGlow = vec3(0.8, 0.1, 0.0);
+      vec3 brightMolten = vec3(1.0, 0.5, 0.0);
+      vec3 whiteHot = vec3(1.0, 0.95, 0.8);
       
       float h = max(0.0, uHeat);
       vec3 moltenColor = mix(dullGlow, brightMolten, pow(h, 1.5));
       moltenColor = mix(moltenColor, whiteHot, pow(h, 4.0) * (1.0 - fresnel));
       
-      // Convection pulse
       float convection = 0.9 + 0.1 * sin(uTime * 4.0 + vPosition.y * 10.0);
       
       vec3 finalColor = mix(ironColor, moltenColor * convection, uHeat);
-      
-      // Thermal bloom leakage
-      finalColor += uHeat * fresnel * moltenColor * 0.5;
+      finalColor += h * fresnel * moltenColor * 0.5;
       
       gl_FragColor = vec4(finalColor, 1.0);
     }
@@ -226,13 +162,18 @@ function SparkParticles({ count = 40, active = false }) {
     return temp
   }, [count])
 
+  // Correct visibility management via effect
+  useEffect(() => {
+    if (meshRef.current) meshRef.current.visible = active
+  }, [active])
+
   useFrame((state, delta) => {
-    if (!meshRef.current) return
+    if (!meshRef.current || !active) return
     
     particles.forEach((p, i) => {
       p.t += delta * p.speed
       const time = p.t % 2
-      const scale = active ? (1 - (time / 2)) * 0.5 : 0
+      const scale = (1 - (time / 2)) * 0.5
       
       tempObject.position.set(
         p.offset[0] * 2, 
@@ -245,7 +186,6 @@ function SparkParticles({ count = 40, active = false }) {
     })
     
     meshRef.current.instanceMatrix.needsUpdate = true
-    meshRef.current.visible = active
   })
 
   return (
@@ -261,6 +201,9 @@ function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
   const atmosphereMaterial = useMemo(() => {
     const color = isDark ? new THREE.Color("#020406") : new THREE.Color("#f1f1f1")
     return new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
       uniforms: {
         uColor: { value: color },
         uOpacity: { value: 0.15 },
@@ -305,9 +248,27 @@ function IndustrialAtmosphere({ isDark }: { isDark: boolean }) {
 }
 
 function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boolean, isDark: boolean, isMobile: boolean }) {
-  const [fill, setFill] = useState(0)
-  const [heat, setHeat] = useState(0)
-  const fontUrl = "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_bold.typeface.json"
+  // --- GPU DISCIPLINE: USE REFS FOR PERFORMANCE VALUES ---
+  const fillRef = useRef(0)
+  const heatRef = useRef(0)
+  
+  // Use public local fonts for production reliability
+  const fontUrl = "/fonts/helvetiker_bold.typeface.json"
+
+  // Memoize uniforms to prevent GC churn and breakage of GPU caching
+  const dieselUniforms = useMemo(() => ({
+    ...DieselShader.uniforms,
+    uFill: { value: 0 },
+    uTime: { value: 0 },
+    uColorFluid: { value: new THREE.Color('#050301') },
+    uColorSurface: { value: new THREE.Color('#ff9900') }
+  }), [])
+
+  const moltenUniforms = useMemo(() => ({
+    ...MoltenShader.uniforms,
+    uHeat: { value: 0 },
+    uTime: { value: 0 }
+  }), [])
 
   // Responsive values
   const textScale = isMobile ? 0.70 : 1.05
@@ -316,20 +277,16 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
   const cameraZ = isMobile ? 22 : 12
 
   useEffect(() => {
-    // Stage 1: Industrial Initialization
     const tl = gsap.timeline()
     tl.to({}, { duration: 0.5 })
-      .to({}, { 
+      .to(fillRef, { 
+        current: 1,
         duration: 4, 
-        onUpdate: () => setFill(tl.progress()),
         ease: "power2.inOut"
       })
-      .to({}, { 
+      .to(heatRef, { 
+        current: 0.65,
         duration: 3, 
-        onUpdate: function() { 
-          // Safely get progress from timeline
-          setHeat(tl.progress() * 0.65) 
-        },
         ease: "sine.inOut"
       }, "-=2.5")
     
@@ -337,16 +294,24 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
   }, [])
 
   useEffect(() => {
-    const tween = gsap.to({}, { 
+    const target = isHighPower ? 1.0 : 0.65
+    const tween = gsap.to(heatRef, { 
+        current: target,
         duration: 1.5, 
-        onUpdate: () => { 
-            const target = isHighPower ? 1.0 : 0.65
-            const p = tween.progress()
-            setHeat(cur => THREE.MathUtils.lerp(cur, target, p))
-        } 
+        ease: "power2.out"
     })
     return () => { tween.kill() }
   }, [isHighPower])
+
+  useFrame((state) => {
+    // Inject values directly into uniforms without React re-renders
+    const time = state.clock.elapsedTime
+    dieselUniforms.uTime.value = time
+    dieselUniforms.uFill.value = fillRef.current
+    
+    moltenUniforms.uTime.value = time
+    moltenUniforms.uHeat.value = heatRef.current
+  })
 
   return (
     <>
@@ -357,82 +322,56 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
       
       <IndustrialAtmosphere isDark={isDark} />
       
-      <PresentationControls
-        global
-        config={{ mass: 2, tension: 400 }}
-        snap={{ mass: 4, tension: 1200 }}
-        rotation={[0, 0, 0]}
-        polar={[-Math.PI / 15, Math.PI / 15]}
-        azimuth={[-Math.PI / 8, Math.PI / 8]}
-      >
-        <group scale={textScale} position={[0, isMobile ? 0.4 : 0.9, 0]}>
-          <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.3}>
-            {/* SEEK - Diesel Container */}
-            <Center position={seekPos}>
-              <Text3D
-                font={fontUrl}
-                size={1.4}
-                height={0.5}
-                bevelEnabled
-                bevelThickness={0.06}
-                bevelSize={0.04}
-                curveSegments={8}
-              >
-                Seek
-                <shaderMaterial
-                  attach="material"
-                  vertexShader={DieselShader.vertexShader}
-                  fragmentShader={DieselShader.fragmentShader}
-                  uniforms={{
-                    ...DieselShader.uniforms,
-                    uFill: { value: fill },
-                    uColor: { value: new THREE.Color(isDark ? "#ffffff" : "#111111") }
-                  }}
-                  side={THREE.DoubleSide}
-                />
-              </Text3D>
-            </Center>
-
-            {/* ENGINE - Molten Forging */}
-            <Center position={enginePos}>
-              <Text3D
-                font={fontUrl}
-                size={1.4}
-                height={0.5}
-                bevelEnabled
-                bevelThickness={0.06}
-                bevelSize={0.04}
-                curveSegments={8}
-              >
-                Engine
-                <shaderMaterial
-                  attach="material"
-                  vertexShader={MoltenShader.vertexShader}
-                  fragmentShader={MoltenShader.fragmentShader}
-                  uniforms={{
-                    ...MoltenShader.uniforms,
-                    uHeat: { value: heat },
-                    uBaseColor: { value: new THREE.Color(isDark ? "#1a1a1a" : "#333333") }
-                  }}
-                  side={THREE.DoubleSide}
-                />
-              </Text3D>
-            </Center>
-            
-            <SparkParticles active={isHighPower || heat > 0.8} />
-          </Float>
+      {/* Performance Optimization: Disable controls on mobile to save GPU cycles */}
+      {isMobile ? (
+        <group scale={textScale} position={[0, 0.4, 0]}>
+           <TextObjects 
+            fontUrl={fontUrl} 
+            seekPos={seekPos} 
+            enginePos={enginePos} 
+            dieselUniforms={dieselUniforms} 
+            moltenUniforms={moltenUniforms} 
+            heatRef={heatRef}
+            isHighPower={isHighPower}
+          />
         </group>
-      </PresentationControls>
+      ) : (
+        <PresentationControls
+            global
+            config={{ mass: 2, tension: 400 }}
+            snap={{ mass: 4, tension: 1200 }}
+            rotation={[0, 0, 0]}
+            polar={[-Math.PI / 15, Math.PI / 15]}
+            azimuth={[-Math.PI / 8, Math.PI / 8]}
+        >
+            <group scale={textScale} position={[0, 0.9, 0]}>
+                <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.3}>
+                    <TextObjects 
+                        fontUrl={fontUrl} 
+                        seekPos={seekPos} 
+                        enginePos={enginePos} 
+                        dieselUniforms={dieselUniforms} 
+                        moltenUniforms={moltenUniforms} 
+                        heatRef={heatRef}
+                        isHighPower={isHighPower}
+                    />
+                </Float>
+            </group>
+        </PresentationControls>
+      )}
 
       <ContactShadows position={[0, -2.5, 0]} opacity={isDark ? 0.25 : 0.15} scale={40} blur={4} far={4.5} />
       
-      {/* @ts-ignore - Prop mismatch in library types */}
       <EffectComposer multisampling={0}>
         <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={isDark ? 0.8 : 0.4} />
         <Noise opacity={isDark ? 0.05 : 0.02} />
         <Vignette eskil={false} offset={0.1} darkness={isDark ? 0.8 : 0.4} />
-        {/* @ts-ignore - Library type mismatch in v2.x */}
-        <ChromaticAberration offset={new THREE.Vector2(0.001, 0.001)} />
+        <ChromaticAberration 
+            {...({
+                offset: new THREE.Vector2(0.001, 0.001),
+                opacity: isMobile ? 0 : 1
+            } as any)} 
+        />
       </EffectComposer>
       
       <Environment preset="night" />
@@ -440,11 +379,72 @@ function IndustrialScene({ isHighPower, isDark, isMobile }: { isHighPower: boole
   )
 }
 
+function TextObjects({ 
+    fontUrl, 
+    seekPos, 
+    enginePos, 
+    dieselUniforms, 
+    moltenUniforms, 
+    heatRef,
+    isHighPower 
+}: any) {
+    return (
+        <>
+            <Center position={seekPos}>
+                <Text3D
+                    font={fontUrl}
+                    size={1.4}
+                    height={0.5}
+                    bevelEnabled
+                    bevelThickness={0.06}
+                    bevelSize={0.04}
+                    curveSegments={8}
+                >
+                    Seek
+                    <shaderMaterial
+                        attach="material"
+                        vertexShader={DieselShader.vertexShader}
+                        fragmentShader={DieselShader.fragmentShader}
+                        uniforms={dieselUniforms}
+                        side={THREE.DoubleSide}
+                    />
+                </Text3D>
+            </Center>
+
+            <Center position={enginePos}>
+                <Text3D
+                    font={fontUrl}
+                    size={1.4}
+                    height={0.5}
+                    bevelEnabled
+                    bevelThickness={0.06}
+                    bevelSize={0.04}
+                    curveSegments={8}
+                >
+                    Engine
+                    <shaderMaterial
+                        attach="material"
+                        vertexShader={MoltenShader.vertexShader}
+                        fragmentShader={MoltenShader.fragmentShader}
+                        uniforms={moltenUniforms}
+                        side={THREE.DoubleSide}
+                    />
+                </Text3D>
+            </Center>
+            
+            <SparkParticles active={isHighPower} />
+        </>
+    )
+}
+
 export default function Hero3D({ isHighPower = false, isDark = true, isMobile = false }: { isHighPower?: boolean, isDark?: boolean, isMobile?: boolean }) {
+  // Clamp DPR on mobile to prevent thermal throttling
+  const dpr: [number, number] = isMobile ? [1, 1] : [1, 1.5]
+
   return (
     <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
       <Canvas 
-        dpr={[1, 1.5]} 
+        dpr={dpr} 
         gl={{ 
             antialias: true, 
             alpha: true,

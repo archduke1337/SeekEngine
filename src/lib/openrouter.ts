@@ -352,8 +352,9 @@ async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
       tieredModels[tier].push(modelId)
     }
 
+    // Shuffle models within each tier to ensure variety in attribution
     for (const tier of Object.keys(tieredModels) as ModelTier[]) {
-      tieredModels[tier].sort()
+      tieredModels[tier] = tieredModels[tier].sort(() => Math.random() - 0.5)
     }
 
     cachedModels = tieredModels
@@ -398,7 +399,7 @@ async function getModelsForTask(task: AITask): Promise<string[]> {
   uniqueModels.sort((a, b) => {
     const failuresA = modelFailures.get(a) || 0
     const failuresB = modelFailures.get(b) || 0
-    return failuresA - failuresB
+    return (failuresA - failuresB) || (Math.random() - 0.5)
   })
 
   return uniqueModels

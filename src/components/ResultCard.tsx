@@ -21,38 +21,32 @@ export default function ResultCard({ result }: { result: SearchResult }) {
         role="article"
         aria-label={`Search result: ${result.title}`}
         aria-describedby="external-link-hint"
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: "-50px" }}
-        whileHover={{ y: -4, scale: 1.01 }}
-        className="block p-6 rounded-[2rem] bg-white/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/5 dark:border-white/5 shadow-sm hover:shadow-xl transition-all group"
+        className="block group"
       >
-        <div className="flex items-start justify-between gap-5">
-          <div className="flex-1 min-w-0">
-            {/* Source Link */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 truncate">
-                {(result.source || result.displayLink)?.toLowerCase()}
-              </span>
-              <div className="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-800" />
-              <span 
-                className="text-[9px] font-bold text-slate-400"
-                title="Result retrieved from indexed source"
-              >
-                Node Verified
-              </span>
-            </div>
-            
-            {/* Title - Bold & Responsive */}
-            <h3 className="text-xl font-bold text-black dark:text-white group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors line-clamp-1 mb-2 tracking-tight">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:border-black/10 dark:hover:border-white/10 transition-all duration-300 shadow-sm hover:shadow-md">
+           
+           {/* Metadata Header */}
+           <div className="flex items-center gap-2 mb-3">
+             <div className="w-4 h-4 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[8px] font-bold text-zinc-400">
+               {result.source?.slice(0,1) || 'W'}
+             </div>
+             <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 truncate">
+                {result.displayLink || result.source}
+             </span>
+             <span className="text-xs text-zinc-300 dark:text-zinc-600">•</span>
+             <span className="text-xs text-zinc-400">Verified</span>
+           </div>
+
+           {/* Title */}
+           <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 group-hover:underline decoration-blue-500/30 underline-offset-2 mb-2 leading-snug tracking-tight">
               {result.title}
-            </h3>
-            
-            {/* Snippet - Refined Typography */}
-            <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-medium">
+           </h3>
+
+           {/* Snippet */}
+           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-2">
               {result.snippet}
-            </p>
-          </div>
+           </p>
+
         </div>
       </motion.a>
     </>

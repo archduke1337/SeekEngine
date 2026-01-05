@@ -180,7 +180,7 @@ export function StreamingAnswer({
   const renderContent = () => {
     switch (state) {
       case 'idle':
-        return null
+        return <ThinkingIndicator />
         
       case 'thinking':
         return <ThinkingIndicator />
@@ -198,9 +198,9 @@ export function StreamingAnswer({
         
       case 'done':
         return (
-          <div className="w-full max-w-none">
+          <div className="w-full max-w-none animate-in fade-in duration-500">
             <div 
-              className="prose prose-zinc dark:prose-invert max-w-none"
+              className="text-[17px] leading-relaxed text-zinc-800 dark:text-zinc-200 font-sans space-y-4 min-h-[40px]"
               dangerouslySetInnerHTML={{ 
                 __html: formatMarkdown(answer) || '<p class="text-zinc-400 italic">No content generated.</p>' 
               }}
@@ -263,38 +263,45 @@ function escapeHTML(str: string) {
     .replace(/>/g, '&gt;')
 }
 
-// Basic markdown formatting with Code Block support & Security Sanitization
+// Semantic Markdown Formatter
 function formatMarkdown(text: string): string {
-  // 0. Security First: Escape HTML before any transformations to prevent XSS
   let formatted = escapeHTML(text)
 
-  // 1. Code Blocks (PRE) - Extract and protect
+  // 1. Code Blocks (Preserve whitespace, dark mode contrast)
   formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
-    return `<div class="my-4 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800"><div class="px-4 py-2 bg-zinc-900/50 border-b border-zinc-800 text-xs text-zinc-400 font-mono flex justify-between"><span>${lang || 'code'}</span></div><div class="p-4 overflow-x-auto"><pre><code class="font-mono text-sm text-zinc-300">${code.trim()}</code></pre></div></div>`
+    return `<div class="my-6 rounded-xl overflow-hidden bg-[#0d0d0d] border border-white/10 shadow-lg"><div class="px-4 py-2 bg-white/5 border-b border-white/5 text-[11px] font-mono text-zinc-400 flex justify-between uppercase tracking-wider"><span>${lang || 'CODE'}</span></div><div class="p-4 overflow-x-auto"><pre><code class="font-mono text-sm text-zinc-300 leading-relaxed">${code.trim()}</code></pre></div></div>`
   })
 
-  // 2. Headers
-  formatted = formatted.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-black mt-4 mb-4 text-black dark:text-white tracking-tighter">$1</h1>')
-  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-extrabold mt-8 mb-4 text-zinc-900 dark:text-zinc-100 tracking-tight">$1</h2>')
-  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-bold mt-6 mb-3 text-zinc-800 dark:text-zinc-200">$1</h3>')
+  // 2. Headers (Apple-style hierarchy)
+  formatted = formatted.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-semibold mt-8 mb-4 text-zinc-900 dark:text-zinc-50 tracking-tight">$1</h1>')
+  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-8 mb-3 text-zinc-900 dark:text-zinc-100 tracking-tight">$1</h2>')
+  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-medium mt-6 mb-3 text-zinc-800 dark:text-zinc-200">$1</h3>')
 
-  // 3. Bold/Italic
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-zinc-900 dark:text-white">$1</strong>')
-  formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+  // 3. Bold & Italic
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-zinc-900 dark:text-zinc-50">$1</strong>')
+  formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic text-zinc-600 dark:text-zinc-400">$1</em>')
 
-  // 4. Inline code
-  formatted = formatted.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md font-mono text-sm text-pink-500 dark:text-pink-400 border border-black/5 dark:border-white/5">$1</code>')
+  // 4. Inline Code
+  formatted = formatted.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-white/10 rounded-[6px] font-mono text-[13px] text-pink-600 dark:text-pink-400 border border-black/5 dark:border-white/5">$1</code>')
 
-  // 5. Lists (unordered)
-  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, '<div class="flex gap-2 mb-2 ml-1"><span class="text-zinc-400">•</span><span class="text-zinc-700 dark:text-zinc-300">$1</span></div>')
-
-  // 6. Citations
-  formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="ml-0.5 text-blue-500 dark:text-blue-400 font-bold text-[10px] bg-blue-50 dark:bg-blue-900/20 px-1 rounded cursor-pointer hover:underline">[$1]</sup>')
-
-  // 7. Line breaks
-  formatted = formatted.replace(/\n\n/g, '<div class="h-4"></div>')
-  formatted = formatted.replace(/\n/g, '<br />')
+  // 5. Lists (Unordered - Bullet points)
+  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1 group"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 shrink-0 group-hover:bg-blue-500 transition-colors"></span><span class="text-[17px] leading-relaxed text-zinc-700 dark:text-zinc-300">$1</span></div>')
   
+  // 6. Lists (Ordered)
+  formatted = formatted.replace(/^\s*(\d+)\.\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1"><span class="text-sm font-mono text-zinc-400 dark:text-zinc-500 mt-1 select-none">$1.</span><span class="text-[17px] leading-relaxed text-zinc-700 dark:text-zinc-300">$2</span></div>')
+
+  // 7. Citations (Superscript interactive)
+  formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="ml-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors select-none">[$1]</sup>')
+
+  // 8. Paragraphs (Detect Double Newline)
+  // We first replace \n\n with a spacer div
+  formatted = formatted.replace(/\n\n/g, '<div class="h-6"></div>')
+  // Then single newlines with spaces to allow text flowing, OR <br> if you prefer strict breaks.
+  // Standard Markdown usually ignores single newlines, but for AI chat, we often want to preserve them as soft breaks or spaces.
+  // Let's treat valid text blocks as paragraphs implicitly by the container's spacing, 
+  // but explicitly handle breaks that weren't double newlines.
+  formatted = formatted.replace(/([^\n])\n([^\n])/g, '$1<br class="md:hidden" /> $2') 
+
   return formatted
 }
 

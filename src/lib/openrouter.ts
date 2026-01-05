@@ -733,8 +733,6 @@ export async function* streamOpenRouter(
       let buffer = winner.remainingBuffer
       let fullContent = winner.firstToken || ''
 
-      let uiBuffer = ''
-
       try {
         while (true) {
           const { done, value } = await reader.read()
@@ -758,22 +756,11 @@ export async function* streamOpenRouter(
               
               if (delta) {
                 fullContent += delta
-                uiBuffer += delta
-
-                // OPTIMIZATION: Buffered emission
-                // Only yield if buffer is substantial or ends in whitespace/punctuation
-                if (uiBuffer.length > 20 || /[\s\p{P}]$/u.test(uiBuffer)) {
-                  yield { type: 'token', content: uiBuffer }
-                  uiBuffer = ''
-                }
+                // Yield immediately for true typewriter feel
+                yield { type: 'token', content: delta }
               }
             } catch { }
           }
-        }
-
-        // Flush remaining buffer
-        if (uiBuffer) {
-          yield { type: 'token', content: uiBuffer }
         }
       } finally {
         // Ensure request is aborted if we exit early (e.g. client disconnect)

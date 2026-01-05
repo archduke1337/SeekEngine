@@ -92,150 +92,126 @@ export default function ResultsClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#000000] pt-32 pb-16 transition-colors duration-1000">
-      {/* Dynamic Background Elements */}
+    <main className="min-h-screen bg-[#fbfbfd] dark:bg-[#000000] pt-24 pb-16 transition-colors duration-1000">
+      {/* Subtle Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[800px] h-[600px] bg-gradient-to-b from-slate-100/50 to-transparent dark:from-slate-900/20 dark:to-transparent rounded-full blur-[120px] opacity-60" />
-        <div className="fixed inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02]" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-indigo-500/10 to-transparent dark:from-indigo-500/5 dark:to-transparent rounded-full blur-[100px]" />
       </div>
 
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         {/* Dynamic Query Header */}
-        <div className="mb-8 md:mb-12 animate-fade-in-up flex flex-col sm:flex-row sm:items-end justify-between border-b border-black/5 dark:border-white/5 pb-6 md:pb-8 gap-6 sm:gap-4">
-          <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-400">Engine Output</p>
-            <h1 className="text-3xl sm:text-5xl font-black text-black dark:text-white tracking-tighter line-clamp-2">
-              {query}
-            </h1>
+        <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex-1">
+             <SearchBar />
           </div>
-          <button 
-            onClick={shareResults}
-            className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 rounded-full bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl border border-black/5 dark:border-white/5 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-black dark:hover:text-white transition-all active:scale-95 shadow-sm"
-          >
-            Share Insight
-          </button>
+          <div className="flex items-center gap-3">
+             <button 
+               onClick={shareResults}
+               className="p-3 rounded-full bg-white dark:bg-zinc-800 border border-black/5 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+               title="Share Search"
+             >
+               <svg className="w-5 h-5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+               </svg>
+             </button>
+          </div>
         </div>
 
-        {/* Synthesis Hub - RAG Summary */}
-        <section className="mb-12 md:mb-16 animate-fade-in-up animate-delay-100">
-          <div className="relative group p-6 md:p-10 rounded-[2.5rem] bg-white dark:bg-zinc-900/40 backdrop-blur-3xl border border-black/5 dark:border-white/5 shadow-2xl overflow-hidden transition-all duration-700">
-            {/* Ambient Background */}
-            <div className="absolute -top-24 -right-24 w-64 h-64 bg-slate-100 dark:bg-slate-800 rounded-full blur-[80px] opacity-0 group-hover:opacity-40 transition-opacity duration-1000" />
+        <div className="flex flex-col lg:flex-row gap-12">
+            
+            {/* LEFT COLUMN: Synthesis Hub (Answer) */}
+            <div className="w-full lg:w-2/3 animate-fade-in-up">
+              {/* Synthesis Card */}
+              <div className="relative group p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/10 shadow-xl overflow-hidden mb-10">
+                 
+                 {/* Header */}
+                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-black/5 dark:border-white/5">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">AI Synthesis</span>
+                    <div className="ml-auto">
+                      <button 
+                        onClick={copyToClipboard}
+                        className="text-xs text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 font-medium transition-colors"
+                      >
+                         {copied ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
+                 </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
-              <div>
-                <h2 className="text-xl font-bold text-black dark:text-white tracking-tight">
-                    Engine Output
-                </h2>
-                <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold italic">Seek in Real-Time</p>
+                 <StreamingAnswer 
+                    query={query} 
+                    onComplete={setAiAnswer}
+                    className="text-[17px] leading-relaxed text-zinc-800 dark:text-zinc-200"
+                 />
+
+                 {/* Follow-up Console */}
+                 <AnimatePresence>
+                   {aiAnswer && (
+                     <motion.div 
+                       initial={{ opacity: 0, height: 0 }}
+                       animate={{ opacity: 1, height: 'auto' }}
+                       className="mt-6 pt-6 border-t border-black/5 dark:border-white/5"
+                     >
+                        <div className="relative">
+                           <input 
+                              type="text" 
+                              value={followUpQuery}
+                              onChange={(e) => setFollowUpQuery(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleFollowUp()}
+                              placeholder="Ask a follow-up..."
+                              className="w-full bg-zinc-50 dark:bg-black/20 border-none rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-1 ring-zinc-200 dark:ring-zinc-700 transition-all outline-none"
+                           />
+                           <button 
+                             onClick={handleFollowUp}
+                             disabled={!followUpQuery.trim()}
+                             className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                           >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                              </svg>
+                           </button>
+                        </div>
+                     </motion.div>
+                   )}
+                 </AnimatePresence>
               </div>
-              
-              <div className="sm:ml-auto">
-                <button 
-                  onClick={copyToClipboard}
-                  className="w-full sm:w-auto px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black dark:hover:text-white flex items-center justify-center gap-2 transition-colors border border-black/5 dark:border-white/5 rounded-full"
-                >
-                  {copied ? 'Copied' : 'Extract Content'}
-                </button>
-              </div>
+
+              {/* Related/Citations Logic could go here */}
             </div>
 
-            <div className="relative min-h-[120px]">
-              <StreamingAnswer 
-                query={query} 
-                onComplete={setAiAnswer}
-                className="text-base md:text-xl text-zinc-800 dark:text-zinc-200 leading-relaxed font-serif"
-              />
-            </div>
-
-            {/* Follow-up Console */}
-            <AnimatePresence>
-              {aiAnswer && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-10 pt-8 border-t border-black/5 dark:border-white/5"
-                >
-                  <div className="relative">
-                    <input 
-                      type="text"
-                      value={followUpQuery}
-                      onChange={(e) => setFollowUpQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleFollowUp()}
-                      placeholder="Ask a clarifying follow-up..."
-                      className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 pl-6 pr-32 text-sm focus:ring-2 ring-black/10 dark:ring-white/10 transition-all outline-none"
-                    />
-                    <button 
-                      onClick={handleFollowUp}
-                      disabled={!followUpQuery.trim()}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 px-4 sm:px-6 py-2.5 bg-black dark:bg-white text-white dark:text-black text-[9px] sm:text-[11px] font-black uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-xl active:scale-95 disabled:opacity-30"
-                    >
-                      Transmit
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </section>
-
-        {/* Global Web Index */}
-        <section className="animate-fade-in-up animate-delay-200 pb-20">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 border-b border-black/5 dark:border-white/5 pb-4 gap-4">
-             <div className="flex items-center gap-3">
-               <h2 className="text-xs font-black uppercase tracking-[0.4em] text-slate-500">
-                Verified Global Index
-              </h2>
-             </div>
-             <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
-               {(results?.length) || 0} Nodes Resolved
-             </div>
-          </div>
-          
-          {resultsLoading ? (
-            <div className="space-y-6">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <ResultCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : results.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 md:gap-8">
-              {results.map((result, index) => (
-                <motion.div
-                  key={result.link}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                  <ResultCard result={result} />
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-20 flex flex-col items-center text-center">
-               <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-full flex items-center justify-center mb-6">
-                 <svg className="w-8 h-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                 </svg>
-               </div>
-               <h3 className="text-xl font-bold text-black dark:text-white mb-2">No direct mapping found</h3>
-               <p className="text-zinc-500 text-sm max-w-sm mb-8 leading-relaxed">
-                 The index could not resolve this context. Our intelligence suggests exploring adjacent paths.
-               </p>
-               <div className="flex flex-wrap justify-center gap-3">
-                  {["Semantic Neural Mapping", "Quantum Optimization", "Recursive Discovery"].map((suggest) => (
-                    <button
-                      key={suggest}
-                      onClick={() => handleSearch(suggest)}
-                      className="px-5 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-black dark:hover:text-white transition-all shadow-sm"
-                    >
-                      {suggest}
-                    </button>
-                  ))}
+            {/* RIGHT COLUMN: Web Index (Results) */}
+            <div className="w-full lg:w-1/3 animate-fade-in-up animate-delay-100">
+               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-zinc-400" />
+                  Visual Index
+               </h3>
+               
+               <div className="space-y-4">
+                  {resultsLoading ? (
+                    Array.from({ length: 4 }).map((_, i) => <ResultCardSkeleton key={i} />)
+                  ) : results.length > 0 ? (
+                    results.map((result, index) => (
+                      <motion.div
+                        key={result.link}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        <ResultCard result={result} />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="p-6 text-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
+                        <p className="text-sm text-zinc-500">No adjacent nodes found.</p>
+                    </div>
+                  )}
                </div>
             </div>
-          )}
-        </section>
+        </div>
       </div>
     </main>
   )

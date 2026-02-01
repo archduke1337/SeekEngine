@@ -38,9 +38,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Engine', href: '/' },
-    { label: 'About', href: '/about' },
-    { label: 'Research', href: 'https://archduke.is-a.dev/research/seekengine', external: true },
-    { label: 'Dev', href: 'https://archduke.is-a.dev/about', external: true },
+    { label: 'Dev', href: 'https://www.linkedin.com/in/aditya-singh-320a61315/', external: true },
   ]
 
   if (!mounted) {

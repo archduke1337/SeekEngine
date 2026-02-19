@@ -3,12 +3,16 @@
 @tailwind utilities;
 
 :root {
-  /* RAW SYSTEM COLORS - No "Palettes" */
+  /* RAW SYSTEM COLORS */
   --bg: #ffffff;
   --fg: #000000;
   --gray-1: #f5f5f7;
   --gray-2: #86868b;
-  --accent: #007aff; /* System Blue */
+  --accent: #007aff;
+  --accent-hover: #0066d6;
+  --surface: rgba(245, 245, 247, 0.8);
+  --border: rgba(0, 0, 0, 0.06);
+  --glow: rgba(0, 122, 255, 0.15);
 }
 
 .dark {
@@ -17,6 +21,10 @@
   --gray-1: #1c1c1e;
   --gray-2: #98989d;
   --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --surface: rgba(28, 28, 30, 0.8);
+  --border: rgba(255, 255, 255, 0.08);
+  --glow: rgba(10, 132, 255, 0.2);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,10 +34,14 @@
     --gray-1: #1c1c1e;
     --gray-2: #98989d;
     --accent: #0a84ff;
+    --accent-hover: #409cff;
+    --surface: rgba(28, 28, 30, 0.8);
+    --border: rgba(255, 255, 255, 0.08);
+    --glow: rgba(10, 132, 255, 0.2);
   }
 }
 
-/* LENIS SMOOTH SCROLL RESET - Prevents double scrollbars */
+/* LENIS SMOOTH SCROLL RESET */
 html.lenis,
 html.lenis body {
   height: auto;
@@ -57,11 +69,39 @@ body {
 body {
   background-color: var(--bg);
   color: var(--fg);
-  /* APPLE SYSTEM FONT STACK - The only font that matters */
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+}
+
+/* CUSTOM SCROLLBAR - Minimal & Refined */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Utilities */
@@ -69,7 +109,131 @@ body {
   color: var(--gray-2);
 }
 
-/* Remove default focus rings - we will build custom ones */
+/* ACCESSIBLE FOCUS - Only visible for keyboard navigation */
 *:focus {
   outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* SMOOTH THEME TRANSITIONS */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0ms;
+  transition-timing-function: ease;
+}
+
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-duration: 500ms !important;
+}
+
+/* ANIMATION UTILITIES */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out both;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out both;
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+
+/* GLASS MORPHISM UTILITIES */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 0.5px solid var(--border);
+}
+
+.glass-heavy {
+  background: var(--surface);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 0.5px solid var(--border);
+}
+
+/* GRADIENT BORDER EFFECT */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.gradient-border:hover::before {
+  opacity: 1;
+}
+
+/* SELECTION COLORS */
+::selection {
+  background: var(--glow);
+  color: inherit;
 }

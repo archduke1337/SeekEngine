@@ -5,7 +5,7 @@
 export function SkeletonLine({ width = '100%' }: { width?: string }) {
   return (
     <div
-      className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded-md animate-pulse"
+      className="h-4 bg-zinc-100 dark:bg-zinc-800/80 rounded-lg animate-pulse"
       style={{ width }}
     />
   )
@@ -13,7 +13,7 @@ export function SkeletonLine({ width = '100%' }: { width?: string }) {
 
 export function AnswerSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 py-2">
       <SkeletonLine width="100%" />
       <SkeletonLine width="95%" />
       <SkeletonLine width="88%" />
@@ -24,18 +24,21 @@ export function AnswerSkeleton() {
 
 export function ResultCardSkeleton() {
   return (
-    <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
-      <div className="flex items-start gap-3">
-        {/* Favicon skeleton */}
-        <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse flex-shrink-0" />
+    <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-100 dark:border-zinc-800">
+      <div className="space-y-2.5">
+        {/* Header skeleton */}
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+          <div className="h-3 w-24 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse" />
+        </div>
         
-        <div className="flex-1 space-y-2">
-          <div className="h-3 w-24 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
-          <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded-md animate-pulse" />
-          <div className="space-y-1.5">
-            <div className="h-3 w-full bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
-            <div className="h-3 w-4/5 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
-          </div>
+        {/* Title skeleton */}
+        <div className="h-4 w-3/4 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse" />
+        
+        {/* Snippet skeleton */}
+        <div className="space-y-1.5">
+          <div className="h-3 w-full bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse" />
+          <div className="h-3 w-4/5 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse" />
         </div>
       </div>
     </div>

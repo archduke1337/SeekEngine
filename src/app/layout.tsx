@@ -117,7 +117,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans antialiased selection:bg-red-500/[0.08] dark:selection:bg-red-500/20 selection:text-current min-h-screen flex flex-col overflow-x-hidden">
+      <body className="font-sans antialiased min-h-screen flex flex-col overflow-x-hidden">
         <Providers>
           <ErrorBoundary>
             <Navbar />

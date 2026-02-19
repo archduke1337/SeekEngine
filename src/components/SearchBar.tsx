@@ -130,20 +130,19 @@ export default function SearchBar({
         }}
       >
         <div 
-           className="relative overflow-hidden rounded-2xl flex items-center transition-all duration-300"
+           className="relative overflow-hidden rounded-2xl flex items-center transition-all duration-500"
            style={{
-             // SwiftUI "SystemUltraThinMaterial" approximation
-             background: isDark ? 'rgba(30, 30, 30, 0.55)' : 'rgba(245, 245, 245, 0.65)',
-             backdropFilter: 'blur(30px) saturate(160%)',
-             WebkitBackdropFilter: 'blur(30px) saturate(160%)',
-             
-             // Native-like hairline border
-             border: isDark ? '0.5px solid rgba(255,255,255,0.12)' : '0.5px solid rgba(0,0,0,0.08)',
-             
-             // Subtle depth, no heavy drop shadows default
+             background: isDark ? 'rgba(28, 28, 30, 0.6)' : 'rgba(245, 245, 247, 0.7)',
+             backdropFilter: 'blur(40px) saturate(180%)',
+             WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+             border: isDark ? '0.5px solid rgba(255,255,255,0.1)' : '0.5px solid rgba(0,0,0,0.06)',
              boxShadow: isFocused 
-               ? (isDark ? '0 0 0 1px rgba(255,255,255,0.15), 0 10px 40px -10px rgba(0,0,0,0.8)' : '0 0 0 1px rgba(0,0,0,0.05), 0 10px 40px -10px rgba(0,0,0,0.1)')
-               : (isDark ? 'inset 0 1px 0 rgba(255,255,255,0.05)' : 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 10px rgba(0,0,0,0.02)'),
+               ? (isDark 
+                   ? '0 0 0 1px rgba(10,132,255,0.3), 0 8px 32px -8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)' 
+                   : '0 0 0 1px rgba(0,122,255,0.2), 0 8px 32px -8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5)')
+               : (isDark 
+                   ? 'inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.2)' 
+                   : 'inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.03)'),
            }}
         >
             {/* Search Icon - SF Symbol Style */}
@@ -210,8 +209,28 @@ export default function SearchBar({
             </div>
 
             {/* Action Buttons */}
-            <div className="pr-2 flex items-center gap-2">
-               {/* Clear Button - Only show if query exists */}
+            <div className="pr-3 flex items-center gap-1.5">
+               {/* Keyboard hint - show when not focused and no query */}
+               <AnimatePresence>
+                 {!isFocused && !query && (
+                   <motion.kbd
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}
+                     transition={{ duration: 0.2 }}
+                     className="hidden sm:inline-flex items-center justify-center w-6 h-6 text-[11px] font-mono font-medium rounded-md border"
+                     style={{
+                       color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)',
+                       borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                       background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                     }}
+                   >
+                     /
+                   </motion.kbd>
+                 )}
+               </AnimatePresence>
+               
+               {/* Clear Button */}
                <AnimatePresence>
                  {query && (
                    <motion.button
@@ -233,20 +252,25 @@ export default function SearchBar({
                  )}
                </AnimatePresence>
                
-               {/* Submit Arrow - Only show if query exists */}
+               {/* Submit Arrow */}
                <AnimatePresence>
                   {query && (
                     <motion.button
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0.8, opacity: 0 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
                       onClick={() => handleSearch(query)}
-                      className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg"
+                      className="w-8 h-8 rounded-xl flex items-center justify-center transition-shadow duration-300"
                       style={{
-                        background: isDark ? '#3A3A3C' : '#007AFF', // Standard Apple Blue or Gray
-                        color: '#FFFFFF'
+                        background: isDark 
+                          ? 'linear-gradient(135deg, #3A3A3C, #2C2C2E)' 
+                          : 'linear-gradient(135deg, #007AFF, #0066D6)',
+                        color: '#FFFFFF',
+                        boxShadow: isDark 
+                          ? '0 2px 8px rgba(0,0,0,0.3)' 
+                          : '0 2px 12px rgba(0,122,255,0.3)'
                       }}
                     >
                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -316,11 +340,18 @@ export default function SearchBar({
                  </div>
                ))}
                
-               {/* Quick Actions Footer (Optional) */}
-               <div className="px-5 py-2 border-t flex justify-between items-center bg-black/5 dark:bg-white/5"
-                    style={{ borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}>
-                  <span className="text-xs font-medium opacity-50 uppercase tracking-wider">Seek Intelligence</span>
-                  <span className="text-xs opacity-40">Press ↵ to search</span>
+               {/* Quick Actions Footer */}
+               <div className="px-5 py-2.5 border-t flex justify-between items-center"
+                    style={{ 
+                      borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                      background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'
+                    }}>
+                  <span className="text-[10px] font-semibold opacity-40 uppercase tracking-wider">Seek Intelligence</span>
+                  <div className="flex items-center gap-1.5">
+                    <kbd className="px-1.5 py-0.5 text-[10px] font-mono rounded border opacity-30"
+                         style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>↵</kbd>
+                    <span className="text-[10px] opacity-30">search</span>
+                  </div>
                </div>
             </div>
           </motion.div>

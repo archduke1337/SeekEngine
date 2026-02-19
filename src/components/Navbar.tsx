@@ -38,7 +38,9 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Engine', href: '/' },
-    { label: 'Dev', href: 'https://www.linkedin.com/in/aditya-singh-320a61315/', external: true },
+    { label: 'About', href: '/about' },
+    { label: 'Research', href: 'https://archduke.is-a.dev/research/seekengine', external: true },
+    { label: 'Dev', href: 'https://archduke.is-a.dev/about', external: true },
   ]
 
   if (!mounted) {
@@ -58,7 +60,7 @@ export default function Navbar() {
           opacity: visible ? 1 : 0 
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 bg-white/70 dark:bg-black/60 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 dark:border-white/10 rounded-full shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)] pointer-events-auto transition-all duration-700 hover:shadow-[0_12px_48px_-12px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:ring-white/5"
+        className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 bg-white/75 dark:bg-zinc-900/70 backdrop-blur-2xl backdrop-saturate-150 border border-zinc-200/50 dark:border-zinc-800/50 rounded-full shadow-[0_2px_16px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_16px_-4px_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-700 hover:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.4)]"
       >
         {/* Dynamic Nav Items */}
         <div className="flex items-center relative gap-0.5 sm:gap-1 px-1">
@@ -98,10 +100,10 @@ export default function Navbar() {
         {/* Separator */}
         <div className="w-[1px] h-3 sm:h-4 bg-zinc-400/20 dark:bg-white/15 mx-1" />
 
-        {/* Theme Toggle - Ultra Premium Shift */}
+        {/* Theme Toggle */}
         <button
           onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
-          className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/5 transition-all active:scale-95 duration-700 group overflow-hidden"
+          className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-90 duration-300 group overflow-hidden"
           aria-label="Toggle theme"
         >
           <div className="relative w-5 h-5 overflow-hidden pointer-events-none">
@@ -120,11 +122,6 @@ export default function Navbar() {
               </svg>
             </motion.div>
           </div>
-          
-          {/* Dynamic Radial Glow */}
-          <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none blur-xl ${
-            isDarkMode ? 'bg-orange-400/20' : 'bg-red-500/20'
-          }`} />
         </button>
       </motion.nav>
     </div>

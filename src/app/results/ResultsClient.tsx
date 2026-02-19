@@ -11,6 +11,8 @@ import { useSearchHistory } from '../../hooks/useSearchHistory'
 import { motion, AnimatePresence } from 'framer-motion'
 import LivingIcon from '../../components/LivingIcon'
 import Link from 'next/link'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
 
 const TIME_OPTIONS = [
   { label: 'Any time', value: '' },
@@ -25,6 +27,8 @@ export default function ResultsClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const query = searchParams.get('q') || ''
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
 
   const [aiAnswer, setAiAnswer] = useState('')
   const [copied, setCopied] = useState(false)
@@ -38,6 +42,11 @@ export default function ResultsClient() {
   const searchAbortRef = useRef<AbortController | null>(null)
   const { addEntry } = useSearchHistory()
   const [timeFilter, setTimeFilter] = useState('')
+
+  const accentColor = isDark ? '#00fff0' : '#0090ff'
+  const accentSecondary = isDark ? '#ff006a' : '#e0005a'
+  const surfaceBg = isDark ? 'rgba(14,14,22,0.7)' : 'rgba(240,240,248,0.8)'
+  const borderColor = isDark ? 'rgba(0,255,240,0.06)' : 'rgba(0,144,255,0.08)'
 
   // Record search in history
   useEffect(() => {
@@ -60,7 +69,6 @@ export default function ResultsClient() {
   useEffect(() => {
     if (!query) return
 
-    // Reset state for new query
     setResultsLoading(true)
     setResultsError('')
     setResults([])
@@ -68,7 +76,6 @@ export default function ResultsClient() {
     setFollowUpQuery('')
     setCopied(false)
 
-    // Abort previous in-flight search request
     if (searchAbortRef.current) {
       searchAbortRef.current.abort()
     }
@@ -140,10 +147,12 @@ export default function ResultsClient() {
 
   if (!query) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-24 bg-white dark:bg-black transition-colors duration-500">
+      <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-24 transition-colors duration-500"
+            style={{ background: isDark ? '#0a0a0f' : '#f0f0f5' }}>
         <div className="w-full max-w-2xl space-y-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black dark:text-white">
-            Search with AI
+          <h1 className="text-4xl sm:text-5xl font-display font-bold tracking-tight"
+              style={{ color: isDark ? '#e0e0f0' : '#0a0a1a' }}>
+            Query the Machine
           </h1>
           <SearchBar autoFocus />
         </div>
@@ -152,31 +161,46 @@ export default function ResultsClient() {
   }
 
   return (
-    <main className="w-full flex-1 bg-[#fafafa] dark:bg-[#000000] pt-24 pb-16 transition-colors duration-700 flex flex-col">
-      {/* Ambient Background */}
+    <main className="w-full flex-1 pt-24 pb-16 transition-colors duration-700 flex flex-col"
+          style={{ background: isDark ? '#0a0a0f' : '#f0f0f5' }}>
+      {/* Ambient Background — Retro Glow */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-blue-500/[0.06] via-indigo-500/[0.04] to-transparent dark:from-blue-500/[0.04] dark:via-indigo-500/[0.02] dark:to-transparent rounded-full blur-[100px]" />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] bg-gradient-to-tr from-emerald-500/[0.04] to-transparent dark:from-emerald-500/[0.02] dark:to-transparent rounded-full blur-[80px]" />
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full blur-[100px]"
+             style={{ background: isDark
+               ? 'radial-gradient(circle, rgba(0,255,240,0.04) 0%, rgba(180,0,255,0.02) 50%, transparent 80%)'
+               : 'radial-gradient(circle, rgba(0,144,255,0.06) 0%, rgba(144,0,224,0.03) 50%, transparent 80%)'
+             }} />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full blur-[80px]"
+             style={{ background: isDark
+               ? 'radial-gradient(circle, rgba(255,0,106,0.03) 0%, transparent 70%)'
+               : 'radial-gradient(circle, rgba(224,0,90,0.04) 0%, transparent 70%)'
+             }} />
       </div>
 
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         {/* Header Navigation */}
         <header className="flex items-center justify-between py-6 mb-6">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 bg-black dark:bg-white rounded-xl flex items-center justify-center transition-all group-hover:scale-95 group-hover:rounded-lg shadow-sm">
-                <svg className="w-4 h-4 text-white dark:text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <span className="font-bold text-lg tracking-tight text-black dark:text-white group-hover:opacity-70 transition-opacity">SeekEngine</span>
+              <Image src="/logo.png" alt="SeekEngine" width={28} height={28} className="transition-transform group-hover:scale-90" />
+              <span className="font-display font-bold text-lg tracking-tight transition-opacity group-hover:opacity-70"
+                    style={{ color: isDark ? '#e0e0f0' : '#0a0a1a' }}>
+                SeekEngine
+              </span>
             </Link>
 
             <div className="flex gap-3">
                <button 
                  onClick={shareResults}
-                 className="px-4 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700 transition-all active:scale-95"
+                 className="px-4 py-2 rounded-lg font-mono text-xs font-medium transition-all active:scale-95"
+                 style={{
+                   background: surfaceBg,
+                   border: `1px solid ${borderColor}`,
+                   color: isDark ? '#6b6b80' : '#6b6b80',
+                 }}
+                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = accentColor; (e.currentTarget as HTMLElement).style.borderColor = accentColor + '33' }}
+                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#6b6b80'; (e.currentTarget as HTMLElement).style.borderColor = borderColor }}
                >
-                 Share
+                 SHARE
                </button>
             </div>
         </header>
@@ -184,34 +208,46 @@ export default function ResultsClient() {
         {/* Query Title */}
         <div className="mb-10 animate-fade-in-up">
            <div className="flex items-center gap-2 mb-3">
-             <div className="w-1 h-4 rounded-full bg-blue-500/60 dark:bg-blue-400/60" />
-             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">
+             <div className="w-1 h-4 rounded-full" style={{ background: accentColor, opacity: 0.6 }} />
+             <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em]"
+                   style={{ color: isDark ? '#4a4a5a' : '#8a8a9a' }}>
                Engine Outcome
              </span>
            </div>
-           <h1 className="text-3xl md:text-5xl font-bold text-black dark:text-white tracking-tight leading-tight">
+           <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight leading-tight"
+               style={{ color: isDark ? '#e0e0f0' : '#0a0a1a' }}>
              {query}
            </h1>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12">
             
-            {/* LEFT COLUMN: Synthesis Hub (Answer) */}
+            {/* LEFT COLUMN: Synthesis Hub */}
             <div className="w-full lg:w-2/3 animate-fade-in-up">
-              {/* Synthesis Card */}
-              <div className="relative group p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900/80 border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden mb-10 transition-shadow duration-300 hover:shadow-lg">
+              <div className="relative group p-6 md:p-8 rounded-xl overflow-hidden mb-10 transition-all duration-300"
+                   style={{
+                     background: surfaceBg,
+                     border: `1px solid ${borderColor}`,
+                   }}>
                  
-                 {/* Subtle gradient border accent at top */}
-                 <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                 {/* Top neon accent line */}
+                 <div className="absolute top-0 left-0 right-0 h-[1px]"
+                      style={{ background: `linear-gradient(90deg, transparent, ${accentColor}33, ${isDark ? '#b400ff' : '#9000e0'}22, transparent)` }} />
                  
                  {/* Header */}
-                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                    <LivingIcon color="bg-blue-500" size="w-2 h-2" />
-                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 tracking-tight">Deep Analysis</span>
+                 <div className="flex items-center gap-3 mb-6 pb-4"
+                      style={{ borderBottom: `1px solid ${borderColor}` }}>
+                    <LivingIcon color={isDark ? 'bg-[#00fff0]' : 'bg-[#0090ff]'} size="w-2 h-2" />
+                    <span className="text-sm font-mono font-semibold tracking-tight" style={{ color: isDark ? '#c0c0d0' : '#2a2a3a' }}>
+                      Deep Analysis
+                    </span>
                     <div className="ml-auto flex items-center gap-2">
                       <button 
                         onClick={copyToClipboard}
-                        className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 font-medium transition-colors px-2 py-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                        className="flex items-center gap-1.5 text-xs font-mono font-medium transition-colors px-2 py-1 rounded-lg"
+                        style={{ color: isDark ? '#4a4a5a' : '#8a8a9a' }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = accentColor }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = isDark ? '#4a4a5a' : '#8a8a9a' }}
                       >
                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -226,7 +262,8 @@ export default function ResultsClient() {
                     query={query} 
                     onComplete={setAiAnswer}
                     onRegenerate={() => setAiAnswer('')}
-                    className="text-[17px] leading-relaxed text-zinc-800 dark:text-zinc-200"
+                    className="text-[17px] leading-relaxed"
+                    style={{ color: isDark ? '#c0c0d0' : '#2a2a3a' }}
                  />
 
                  {/* Follow-up Console */}
@@ -235,9 +272,12 @@ export default function ResultsClient() {
                      <motion.div 
                        initial={{ opacity: 0, height: 0 }}
                        animate={{ opacity: 1, height: 'auto' }}
-                       className="mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800"
+                       className="mt-6 pt-6"
+                       style={{ borderTop: `1px solid ${borderColor}` }}
                      >
                         <div className="relative">
+                           <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-sm"
+                                 style={{ color: accentColor, opacity: 0.5 }}>&gt;</span>
                            <input 
                               ref={followUpInputRef}
                               type="text" 
@@ -247,15 +287,25 @@ export default function ResultsClient() {
                                 if (e.key === 'Enter') handleFollowUp()
                                 if (e.key === 'Escape') followUpInputRef.current?.blur()
                               }}
-                              placeholder="Ask a follow-up..."
-                              className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/50 dark:border-zinc-700/50 rounded-xl py-3 pl-4 pr-12 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+                              placeholder="follow-up query..."
+                              className="w-full rounded-lg py-3 pl-9 pr-14 text-sm font-mono transition-all outline-none"
+                              style={{
+                                background: isDark ? 'rgba(10,10,16,0.6)' : 'rgba(230,230,240,0.6)',
+                                border: `1px solid ${borderColor}`,
+                                color: isDark ? '#c0c0d0' : '#2a2a3a',
+                                caretColor: accentColor,
+                              }}
+                              onFocus={(e) => { (e.currentTarget as HTMLElement).style.borderColor = accentColor + '33' }}
+                              onBlur={(e) => { (e.currentTarget as HTMLElement).style.borderColor = borderColor }}
                            />
                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                             <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-mono text-zinc-400 border border-zinc-200 dark:border-zinc-700 rounded">/</kbd>
+                             <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-mono rounded"
+                                  style={{ color: isDark ? '#4a4a5a' : '#8a8a9a', border: `1px solid ${borderColor}` }}>/</kbd>
                              <button 
                                onClick={handleFollowUp}
                                disabled={!followUpQuery.trim()}
-                               className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-30 disabled:hover:bg-blue-600 transition-all active:scale-95"
+                               className="p-1.5 rounded-lg transition-all active:scale-95 disabled:opacity-30"
+                               style={{ background: accentColor, color: '#0a0a0f' }}
                              >
                                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -267,14 +317,13 @@ export default function ResultsClient() {
                    )}
                  </AnimatePresence>
               </div>
-
-              {/* Related/Citations Logic could go here */}
             </div>
 
-            {/* RIGHT COLUMN: Web Index (Results) */}
+            {/* RIGHT COLUMN: Web Index */}
             <div className="w-full lg:w-1/3 animate-fade-in-up animate-delay-100">
-               <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2">
-                  <LivingIcon color="bg-zinc-400" size="w-1.5 h-1.5" />
+               <h3 className="text-[11px] font-mono font-semibold uppercase tracking-[0.15em] mb-4 flex items-center gap-2"
+                   style={{ color: isDark ? '#4a4a5a' : '#8a8a9a' }}>
+                  <LivingIcon color={isDark ? 'bg-[#00fff0]/40' : 'bg-[#0090ff]/40'} size="w-1.5 h-1.5" />
                   Web Sources
                </h3>
 
@@ -284,23 +333,30 @@ export default function ResultsClient() {
                    <button
                      key={opt.value}
                      onClick={() => setTimeFilter(opt.value)}
-                     className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 ${
-                       timeFilter === opt.value
-                         ? 'bg-zinc-900 dark:bg-white text-white dark:text-black shadow-sm'
-                         : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                     }`}
+                     className="px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium transition-all duration-200"
+                     style={{
+                       background: timeFilter === opt.value
+                         ? (isDark ? accentColor : accentColor)
+                         : (isDark ? 'rgba(14,14,22,0.6)' : 'rgba(230,230,240,0.6)'),
+                       color: timeFilter === opt.value
+                         ? '#0a0a0f'
+                         : (isDark ? '#6b6b80' : '#6b6b80'),
+                       border: timeFilter === opt.value
+                         ? `1px solid ${accentColor}`
+                         : `1px solid ${borderColor}`,
+                     }}
                    >
                      {opt.label}
                    </button>
                  ))}
                </div>
                
-               <div className="space-y-4">
+               <div className="space-y-3">
                   {resultsLoading ? (
                     Array.from({ length: 4 }).map((_, i) => <ResultCardSkeleton key={i} />)
                   ) : resultsError ? (
-                    <div className="p-6 text-center rounded-2xl border border-dashed border-red-200 dark:border-red-800">
-                        <p className="text-sm text-red-500 dark:text-red-400">{resultsError}</p>
+                    <div className="p-6 text-center rounded-xl" style={{ border: `1px dashed ${accentSecondary}44` }}>
+                        <p className="text-sm font-mono" style={{ color: accentSecondary }}>{resultsError}</p>
                     </div>
                   ) : results.length > 0 ? (
                     results.map((result, index) => (
@@ -315,8 +371,8 @@ export default function ResultsClient() {
                       </motion.div>
                     ))
                   ) : (
-                    <div className="p-6 text-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
-                        <p className="text-sm text-zinc-500">No adjacent nodes found.</p>
+                    <div className="p-6 text-center rounded-xl" style={{ border: `1px dashed ${borderColor}` }}>
+                        <p className="text-sm font-mono" style={{ color: isDark ? '#4a4a5a' : '#8a8a9a' }}>No adjacent nodes found.</p>
                     </div>
                   )}
                </div>

@@ -6,6 +6,19 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        mono: ['JetBrains Mono', 'SF Mono', 'Fira Code', 'monospace'],
+        display: ['Space Grotesk', 'JetBrains Mono', 'sans-serif'],
+      },
+      colors: {
+        retro: {
+          cyan: '#00fff0',
+          pink: '#ff006a',
+          purple: '#b400ff',
+          dark: '#0a0a0f',
+          surface: '#12121a',
+        },
+      },
       keyframes: {
         shimmer: {
           '0%': { transform: 'translateX(-100%)' },
@@ -43,6 +56,26 @@ module.exports = {
           from: { '--border-angle': '0deg' },
           to: { '--border-angle': '360deg' },
         },
+        'scanline': {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(100vh)' },
+        },
+        'flicker': {
+          '0%, 100%': { opacity: '1' },
+          '92%': { opacity: '1' },
+          '93%': { opacity: '0.8' },
+          '94%': { opacity: '1' },
+          '96%': { opacity: '0.9' },
+          '97%': { opacity: '1' },
+        },
+        'terminal-blink': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(0,255,240,0.15)' },
+          '50%': { boxShadow: '0 0 20px 4px rgba(0,255,240,0.15)' },
+        },
       },
       animation: {
         shimmer: 'shimmer 2s infinite linear',
@@ -56,6 +89,10 @@ module.exports = {
         'dot-pulse-3': 'dot-pulse 1.4s ease-in-out 0.4s infinite',
         'title-shimmer': 'title-shimmer 8s ease-in-out infinite',
         'border-spin': 'border-spin 4s linear infinite',
+        'scanline': 'scanline 8s linear infinite',
+        'flicker': 'flicker 4s ease-in-out infinite',
+        'terminal-blink': 'terminal-blink 1s steps(1) infinite',
+        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
       },
       backgroundSize: {
         'gradient-xl': '200% 200%',

@@ -1,8 +1,104 @@
 'use client'
 
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import Image from 'next/image'
+
+/* Animated grid lines background */
+function RetroGrid({ isDark }: { isDark: boolean }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Horizontal grid lines */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: `
+          linear-gradient(${isDark ? 'rgba(0,255,240,0.04)' : 'rgba(0,144,255,0.06)'} 1px, transparent 1px),
+          linear-gradient(90deg, ${isDark ? 'rgba(0,255,240,0.04)' : 'rgba(0,144,255,0.06)'} 1px, transparent 1px)
+        `,
+        backgroundSize: '60px 60px',
+      }} />
+      {/* Perspective fade */}
+      <div className="absolute inset-0" style={{
+        background: isDark 
+          ? 'radial-gradient(ellipse at center, transparent 30%, #0a0a0f 75%)'
+          : 'radial-gradient(ellipse at center, transparent 30%, #f0f0f5 75%)'
+      }} />
+    </div>
+  )
+}
+
+/* Floating data fragments */
+function DataParticles({ isDark }: { isDark: boolean }) {
+  const particles = useMemo(() => 
+    Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 3 + 1,
+      delay: Math.random() * 5,
+      duration: Math.random() * 10 + 8,
+    })), []
+  )
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            background: isDark ? 'rgba(0,255,240,0.3)' : 'rgba(0,144,255,0.3)',
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0, 0.8, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* Status readout cycling text */
+function StatusReadout({ isDark }: { isDark: boolean }) {
+  const statuses = [
+    'NEURAL_MESH: ONLINE',
+    'INDEX_DEPTH: ∞',
+    'QUERY_ENGINE: ARMED',
+    'LATENCY: <1ms',
+    'SYNTHESIS: ACTIVE',
+  ]
+  const [idx, setIdx] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => setIdx(i => (i + 1) % statuses.length), 2400)
+    return () => clearInterval(interval)
+  }, [statuses.length])
+
+  return (
+    <motion.div
+      key={idx}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      className="font-mono text-[10px] sm:text-xs tracking-[0.3em] uppercase"
+      style={{ color: isDark ? 'rgba(0,255,240,0.5)' : 'rgba(0,144,255,0.6)' }}
+    >
+      {'>'} {statuses[idx]}
+      <span className="animate-terminal-blink ml-1">_</span>
+    </motion.div>
+  )
+}
 
 export default function Hero() {
   const { scrollY } = useScroll()
@@ -11,7 +107,6 @@ export default function Hero() {
 
   useEffect(() => setMounted(true), [])
 
-  // Parallax transforms
   const y1 = useTransform(scrollY, [0, 500], [0, 80])
   const opacity = useTransform(scrollY, [0, 300], [1, 0])
   const scale = useTransform(scrollY, [0, 400], [1, 0.97])
@@ -19,125 +114,133 @@ export default function Hero() {
   const isDark = mounted ? resolvedTheme === 'dark' : true
 
   return (
-    <section className="w-full flex flex-col items-center justify-center relative overflow-visible pointer-events-none py-12">
-      {/* Ambient Background - Multi-layered Glow */}
-      <div className="absolute inset-0 overflow-visible flex items-center justify-center pointer-events-none z-0">
-         {/* Primary glow */}
-         <motion.div 
-           animate={{ 
-             scale: [1, 1.15, 1],
-             opacity: [0.08, 0.16, 0.08],
-           }}
-           transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-           className="absolute w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full blur-[100px]"
-           style={{
-             background: isDark 
-               ? 'radial-gradient(circle, rgba(59,130,246,0.25) 0%, rgba(139,92,246,0.15) 40%, transparent 70%)'
-               : 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.06) 40%, transparent 70%)'
-           }}
-         />
-         {/* Secondary accent */}
-         <motion.div 
-           animate={{ 
-             scale: [1.1, 1, 1.1],
-             opacity: [0.05, 0.12, 0.05],
-             rotate: [0, 180, 360]
-           }}
-           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-           className="absolute w-[35vw] h-[35vw] max-w-[400px] max-h-[400px] rounded-full blur-[80px]"
-           style={{
-             background: isDark
-               ? 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 60%)'
-               : 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 60%)'
-           }}
-         />
+    <section className="w-full flex flex-col items-center justify-center relative overflow-visible pointer-events-none py-8 sm:py-12">
+      
+      {/* RETRO GRID BACKGROUND */}
+      <RetroGrid isDark={isDark} />
+      <DataParticles isDark={isDark} />
+
+      {/* SCANLINE OVERLAY */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+        <motion.div
+          animate={{ y: ['0%', '200%'] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          className="absolute left-0 right-0 h-[2px]"
+          style={{
+            background: isDark 
+              ? 'linear-gradient(90deg, transparent, rgba(0,255,240,0.07), transparent)'
+              : 'linear-gradient(90deg, transparent, rgba(0,144,255,0.06), transparent)',
+            top: '-100%',
+          }}
+        />
       </div>
 
-      {/* HERO TYPOGRAPHY */}
-      <motion.div 
-         style={{ y: y1, scale }}
-         className="relative z-10 text-center px-4 pointer-events-auto"
+      {/* HERO CONTENT */}
+      <motion.div
+        style={{ y: y1, scale }}
+        className="relative z-10 text-center px-4 pointer-events-auto flex flex-col items-center"
       >
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-6 sm:mb-8 relative"
+        >
+          <div className="relative">
+            <Image
+              src="/logo.png"
+              alt="SeekEngine"
+              width={80}
+              height={80}
+              className="w-16 h-16 sm:w-20 sm:h-20"
+              priority
+            />
+            {/* Glow behind logo */}
+            <div 
+              className="absolute inset-0 blur-[20px] opacity-30 rounded-full"
+              style={{ background: isDark ? 'rgba(0,255,240,0.4)' : 'rgba(0,144,255,0.3)' }}
+            />
+          </div>
+        </motion.div>
+
+        {/* Title */}
         <div className="relative inline-block group">
-          <h1 
-            className="relative z-10 text-[13vw] sm:text-[10vw] md:text-[9vw] leading-[0.85] font-bold italic tracking-[-0.05em] select-none whitespace-nowrap"
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 text-[12vw] sm:text-[8vw] md:text-[7vw] leading-[0.9] font-bold tracking-[-0.04em] select-none whitespace-nowrap font-display"
             style={{
-              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-              backgroundImage: isDark 
-                 ? 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.0) 100%)'
-                 : 'linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.0) 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              color: 'transparent',
-              WebkitTextStroke: isDark ? '1.5px rgba(255,255,255,0.55)' : '1.5px rgba(0,0,0,0.12)',
+              color: isDark ? '#e0e0e8' : '#0a0a14',
               textShadow: isDark
-                ? '0 0 40px rgba(255,255,255,0.08), 0 0 80px rgba(59, 130, 246, 0.15)'
-                : '0 8px 24px rgba(0,0,0,0.04)',
-              filter: isDark ? 'drop-shadow(0 0 1px rgba(255,255,255,0.4))' : 'none'
+                ? '0 0 40px rgba(0,255,240,0.15), 0 0 80px rgba(0,255,240,0.08)'
+                : '0 0 40px rgba(0,144,255,0.1)',
             }}
           >
-             SeekEngine
-          </h1>
-          
-          {/* Subtle underline accent */}
+            SeekEngine
+          </motion.h1>
+
+          {/* Neon underline */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute -bottom-2 left-[10%] right-[10%] h-[1px] origin-left"
+            transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute -bottom-2 left-[5%] right-[5%] h-[2px] origin-left"
             style={{
               background: isDark
-                ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)'
-                : 'linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)'
+                ? 'linear-gradient(90deg, transparent, #00fff0, transparent)'
+                : 'linear-gradient(90deg, transparent, #0090ff, transparent)',
+              boxShadow: isDark
+                ? '0 0 10px rgba(0,255,240,0.3), 0 0 20px rgba(0,255,240,0.1)'
+                : '0 0 10px rgba(0,144,255,0.2)',
             }}
           />
         </div>
+
+        {/* Status readout */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="mt-6 sm:mt-8"
+        >
+          <StatusReadout isDark={isDark} />
+        </motion.div>
       </motion.div>
 
       {/* TAGLINE */}
-      <motion.div 
+      <motion.div
         style={{ opacity }}
-        className="mt-10 md:mt-14 text-center space-y-4 z-20 relative max-w-2xl px-6 pointer-events-auto"
+        className="mt-8 md:mt-12 text-center space-y-3 z-20 relative max-w-2xl px-6 pointer-events-auto"
       >
-        <motion.h2
+        <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-lg md:text-xl font-normal transition-colors duration-300"
-          style={{
-             fontFamily: 'SF Pro Text, -apple-system, sans-serif',
-             color: isDark ? '#86868b' : '#6e6e73',
-             letterSpacing: '-0.01em'
-          }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="text-base md:text-lg font-display font-light"
+          style={{ color: isDark ? '#6b6b80' : '#6b6b80', letterSpacing: '-0.01em' }}
         >
           The future of discovery is not a list of links.
-        </motion.h2>
-        <motion.h2 
+        </motion.p>
+        <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="text-lg md:text-xl font-medium transition-colors duration-300"
-           style={{
-             fontFamily: 'SF Pro Text, -apple-system, sans-serif',
-             color: isDark ? '#f5f5f7' : '#1D1D1F',
-             letterSpacing: '-0.01em',
-          }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+          className="text-base md:text-lg font-display font-medium"
+          style={{ color: isDark ? '#e0e0e8' : '#0a0a14', letterSpacing: '-0.01em' }}
         >
           It is a{' '}
-          <span 
-            className="relative inline-block"
-          >
-            <span className="relative z-10">sensed synthesis of human intent.</span>
-            <span 
-              className="absolute bottom-0 left-0 right-0 h-[6px] -z-0 rounded-sm"
-              style={{
-                background: isDark 
-                  ? 'linear-gradient(90deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2))'
-                  : 'linear-gradient(90deg, rgba(59,130,246,0.12), rgba(139,92,246,0.12))'
-              }}
-            />
+          <span className="relative inline-block">
+            <span className="relative z-10" style={{ 
+              color: isDark ? '#00fff0' : '#0090ff',
+              textShadow: isDark ? '0 0 12px rgba(0,255,240,0.3)' : 'none',
+            }}>
+              sensed synthesis
+            </span>
           </span>
-        </motion.h2>
+          {' '}of human intent.
+        </motion.p>
       </motion.div>
     </section>
   )

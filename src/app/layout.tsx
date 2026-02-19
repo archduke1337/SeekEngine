@@ -54,9 +54,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.gif', type: 'image/gif' },
+      { url: '/logo.png', type: 'image/png' },
     ],
-    apple: '/logo.svg',
+    apple: '/logo.png',
   },
   robots: {
     index: true,
@@ -114,7 +114,7 @@ export default function RootLayout({
                 "name": "SeekEngine",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://seekengine.vercel.app/logo.svg"
+                  "url": "https://seekengine.vercel.app/logo.png"
                 }
               }
             })

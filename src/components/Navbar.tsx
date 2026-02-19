@@ -66,11 +66,11 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden ml-0.5 sm:ml-1 flex-shrink-0 hover:scale-105 transition-transform duration-300">
           <Image
-            src="/logo.svg"
+            src="/logo.png"
             alt="SeekEngine"
             width={28}
             height={28}
-            className="w-7 h-7 sm:w-8 sm:h-8 dark:invert"
+            className="w-7 h-7 sm:w-8 sm:h-8"
             priority
           />
         </Link>

@@ -1,42 +1,53 @@
-'use client'
+﻿'use client'
 
 import { useTheme } from 'next-themes'
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 
-/* Animated grid lines background */
-function RetroGrid({ isDark }: { isDark: boolean }) {
+/* Floating ambient orbs */
+function GradientOrbs() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Horizontal grid lines */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: `
-          linear-gradient(${isDark ? 'rgba(0,255,240,0.04)' : 'rgba(0,144,255,0.06)'} 1px, transparent 1px),
-          linear-gradient(90deg, ${isDark ? 'rgba(0,255,240,0.04)' : 'rgba(0,144,255,0.06)'} 1px, transparent 1px)
-        `,
-        backgroundSize: '60px 60px',
-      }} />
-      {/* Perspective fade */}
-      <div className="absolute inset-0" style={{
-        background: isDark 
-          ? 'radial-gradient(ellipse at center, transparent 30%, #0a0a0f 75%)'
-          : 'radial-gradient(ellipse at center, transparent 30%, #f0f0f5 75%)'
-      }} />
+      <motion.div
+        animate={{ x: [0, 30, -20, 0], y: [0, -30, 10, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute -top-20 -right-20 w-[500px] h-[500px] rounded-full opacity-30 blur-[120px]"
+        style={{ background: 'radial-gradient(circle, var(--gradient-from), transparent 70%)' }}
+      />
+      <motion.div
+        animate={{ x: [0, -30, 20, 0], y: [0, 20, -30, 0] }}
+        transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full opacity-20 blur-[100px]"
+        style={{ background: 'radial-gradient(circle, var(--gradient-via), transparent 70%)' }}
+      />
+      <motion.div
+        animate={{ x: [0, 20, -10, 0], y: [0, -20, 20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full opacity-10 blur-[80px]"
+        style={{ background: 'radial-gradient(circle, var(--gradient-to), transparent 70%)' }}
+      />
     </div>
   )
 }
 
-/* Floating data fragments */
-function DataParticles({ isDark }: { isDark: boolean }) {
-  const particles = useMemo(() => 
-    Array.from({ length: 15 }, (_, i) => ({
+/* Dot grid pattern background */
+function DotPattern() {
+  return (
+    <div className="absolute inset-0 dot-grid opacity-50 pointer-events-none" />
+  )
+}
+
+/* Floating particles */
+function FloatingParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 20 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 3 + 1,
+      size: Math.random() * 3 + 1.5,
       delay: Math.random() * 5,
-      duration: Math.random() * 10 + 8,
+      duration: Math.random() * 10 + 10,
     })), []
   )
 
@@ -51,11 +62,12 @@ function DataParticles({ isDark }: { isDark: boolean }) {
             top: `${p.y}%`,
             width: p.size,
             height: p.size,
-            background: isDark ? 'rgba(0,255,240,0.3)' : 'rgba(0,144,255,0.3)',
+            background: `hsl(var(--primary) / 0.4)`,
           }}
           animate={{
-            y: [0, -30, 0],
-            opacity: [0, 0.8, 0],
+            y: [0, -40, 0],
+            opacity: [0, 0.6, 0],
+            scale: [0.5, 1, 0.5],
           }}
           transition={{
             duration: p.duration,
@@ -69,33 +81,31 @@ function DataParticles({ isDark }: { isDark: boolean }) {
   )
 }
 
-/* Status readout cycling text */
-function StatusReadout({ isDark }: { isDark: boolean }) {
-  const statuses = [
-    'NEURAL_MESH: ONLINE',
-    'INDEX_DEPTH: ∞',
-    'QUERY_ENGINE: ARMED',
-    'LATENCY: <1ms',
-    'SYNTHESIS: ACTIVE',
-  ]
+/* Rotating status badges */
+function StatusBadge() {
+  const labels = ['AI-Powered', 'Neural Search', 'Real-Time', 'Grounded']
   const [idx, setIdx] = useState(0)
 
   useEffect(() => {
-    const interval = setInterval(() => setIdx(i => (i + 1) % statuses.length), 2400)
+    const interval = setInterval(() => setIdx(i => (i + 1) % labels.length), 2800)
     return () => clearInterval(interval)
-  }, [statuses.length])
+  }, [labels.length])
 
   return (
     <motion.div
       key={idx}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      className="font-mono text-[10px] sm:text-xs tracking-[0.3em] uppercase"
-      style={{ color: isDark ? 'rgba(0,255,240,0.5)' : 'rgba(0,144,255,0.6)' }}
+      initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
+      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium tracking-wide border"
+      style={{
+        background: 'hsl(var(--primary) / 0.06)',
+        borderColor: 'hsl(var(--primary) / 0.12)',
+        color: 'hsl(var(--primary))',
+      }}
     >
-      {'>'} {statuses[idx]}
-      <span className="animate-terminal-blink ml-1">_</span>
+      <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+      {labels[idx]}
     </motion.div>
   )
 }
@@ -111,35 +121,29 @@ export default function Hero() {
   const opacity = useTransform(scrollY, [0, 300], [1, 0])
   const scale = useTransform(scrollY, [0, 400], [1, 0.97])
 
-  const isDark = mounted ? resolvedTheme === 'dark' : true
-
   return (
     <section className="w-full flex flex-col items-center justify-center relative overflow-visible pointer-events-none py-8 sm:py-12">
       
-      {/* RETRO GRID BACKGROUND */}
-      <RetroGrid isDark={isDark} />
-      <DataParticles isDark={isDark} />
-
-      {/* SCANLINE OVERLAY */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-        <motion.div
-          animate={{ y: ['0%', '200%'] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-          className="absolute left-0 right-0 h-[2px]"
-          style={{
-            background: isDark 
-              ? 'linear-gradient(90deg, transparent, rgba(0,255,240,0.07), transparent)'
-              : 'linear-gradient(90deg, transparent, rgba(0,144,255,0.06), transparent)',
-            top: '-100%',
-          }}
-        />
-      </div>
+      {/* Background effects */}
+      <GradientOrbs />
+      <DotPattern />
+      <FloatingParticles />
 
       {/* HERO CONTENT */}
       <motion.div
         style={{ y: y1, scale }}
         className="relative z-10 text-center px-4 pointer-events-auto flex flex-col items-center"
       >
+        {/* Status badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="mb-6"
+        >
+          <StatusBadge />
+        </motion.div>
+
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -156,10 +160,10 @@ export default function Hero() {
               className="w-16 h-16 sm:w-20 sm:h-20"
               priority
             />
-            {/* Glow behind logo */}
+            {/* Gradient glow behind logo */}
             <div 
-              className="absolute inset-0 blur-[20px] opacity-30 rounded-full"
-              style={{ background: isDark ? 'rgba(0,255,240,0.4)' : 'rgba(0,144,255,0.3)' }}
+              className="absolute inset-0 blur-[24px] opacity-40 rounded-full"
+              style={{ background: 'var(--gradient-from)' }}
             />
           </div>
         </motion.div>
@@ -170,43 +174,22 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 text-[12vw] sm:text-[8vw] md:text-[7vw] leading-[0.9] font-bold tracking-[-0.04em] select-none whitespace-nowrap font-display"
-            style={{
-              color: isDark ? '#e0e0e8' : '#0a0a14',
-              textShadow: isDark
-                ? '0 0 40px rgba(0,255,240,0.15), 0 0 80px rgba(0,255,240,0.08)'
-                : '0 0 40px rgba(0,144,255,0.1)',
-            }}
+            className="relative z-10 text-[12vw] sm:text-[8vw] md:text-[7vw] leading-[0.9] font-extrabold tracking-[-0.04em] select-none gradient-text"
           >
             SeekEngine
           </motion.h1>
 
-          {/* Neon underline */}
+          {/* Gradient underline */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute -bottom-2 left-[5%] right-[5%] h-[2px] origin-left"
+            className="absolute -bottom-2 left-[5%] right-[5%] h-[2px] origin-left rounded-full"
             style={{
-              background: isDark
-                ? 'linear-gradient(90deg, transparent, #00fff0, transparent)'
-                : 'linear-gradient(90deg, transparent, #0090ff, transparent)',
-              boxShadow: isDark
-                ? '0 0 10px rgba(0,255,240,0.3), 0 0 20px rgba(0,255,240,0.1)'
-                : '0 0 10px rgba(0,144,255,0.2)',
+              background: 'linear-gradient(90deg, transparent, var(--gradient-from), var(--gradient-via), var(--gradient-to), transparent)',
             }}
           />
         </div>
-
-        {/* Status readout */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-6 sm:mt-8"
-        >
-          <StatusReadout isDark={isDark} />
-        </motion.div>
       </motion.div>
 
       {/* TAGLINE */}
@@ -218,8 +201,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-base md:text-lg font-display font-light"
-          style={{ color: isDark ? '#6b6b80' : '#6b6b80', letterSpacing: '-0.01em' }}
+          className="text-base md:text-lg font-light text-muted-foreground"
+          style={{ letterSpacing: '-0.01em' }}
         >
           The future of discovery is not a list of links.
         </motion.p>
@@ -227,17 +210,12 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-base md:text-lg font-display font-medium"
-          style={{ color: isDark ? '#e0e0e8' : '#0a0a14', letterSpacing: '-0.01em' }}
+          className="text-base md:text-lg font-medium text-foreground"
+          style={{ letterSpacing: '-0.01em' }}
         >
           It is a{' '}
-          <span className="relative inline-block">
-            <span className="relative z-10" style={{ 
-              color: isDark ? '#00fff0' : '#0090ff',
-              textShadow: isDark ? '0 0 12px rgba(0,255,240,0.3)' : 'none',
-            }}>
-              sensed synthesis
-            </span>
+          <span className="gradient-text font-semibold">
+            sensed synthesis
           </span>
           {' '}of human intent.
         </motion.p>

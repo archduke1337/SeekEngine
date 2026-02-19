@@ -1,17 +1,29 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ResultCard from '../../components/ResultCard'
 import SearchBar from '../../components/SearchBar'
 import { ResultCardSkeleton } from '../../components/Skeleton'
 import { SearchResult } from '../../lib/google-search'
 import { StreamingAnswer } from '../../components/StreamingAnswer'
+import { useSearchHistory } from '../../hooks/useSearchHistory'
 import { motion, AnimatePresence } from 'framer-motion'
 import LivingIcon from '../../components/LivingIcon'
+import Link from 'next/link'
+
+const TIME_OPTIONS = [
+  { label: 'Any time', value: '' },
+  { label: 'Past hour', value: 'h' },
+  { label: 'Past day', value: 'd' },
+  { label: 'Past week', value: 'w' },
+  { label: 'Past month', value: 'm' },
+  { label: 'Past year', value: 'y' },
+] as const
 
 export default function ResultsClient() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const query = searchParams.get('q') || ''
 
   const [aiAnswer, setAiAnswer] = useState('')
@@ -23,6 +35,14 @@ export default function ResultsClient() {
 
   const [followUpQuery, setFollowUpQuery] = useState('')
   const followUpInputRef = useRef<HTMLInputElement>(null)
+  const searchAbortRef = useRef<AbortController | null>(null)
+  const { addEntry } = useSearchHistory()
+  const [timeFilter, setTimeFilter] = useState('')
+
+  // Record search in history
+  useEffect(() => {
+    if (query) addEntry(query)
+  }, [query, addEntry])
 
   // Global Keybinds
   useEffect(() => {
@@ -40,27 +60,53 @@ export default function ResultsClient() {
   useEffect(() => {
     if (!query) return
 
+    // Reset state for new query
     setResultsLoading(true)
     setResultsError('')
+    setResults([])
+    setAiAnswer('')
+    setFollowUpQuery('')
+    setCopied(false)
+
+    // Abort previous in-flight search request
+    if (searchAbortRef.current) {
+      searchAbortRef.current.abort()
+    }
+    const controller = new AbortController()
+    searchAbortRef.current = controller
 
     const fetchResults = async () => {
       try {
+        const params = new URLSearchParams({ q: query })
+        if (timeFilter) params.set('time', timeFilter)
         const response = await fetch(
-          `/api/search?q=${encodeURIComponent(query)}`
+          `/api/search?${params.toString()}`,
+          { signal: controller.signal }
         )
         if (!response.ok) throw new Error('Failed to fetch results')
         const data = await response.json()
-        setResults(data.results || [])
+        if (!controller.signal.aborted) {
+          setResults(data.results || [])
+        }
       } catch (error) {
+        if ((error as Error).name === 'AbortError') return
         console.error('Error fetching results:', error)
-        setResultsError('Could not fetch search results. Please try again.')
+        if (!controller.signal.aborted) {
+          setResultsError('Could not fetch search results. Please try again.')
+        }
       } finally {
-        setResultsLoading(false)
+        if (!controller.signal.aborted) {
+          setResultsLoading(false)
+        }
       }
     }
 
     fetchResults()
-  }, [query])
+
+    return () => {
+      controller.abort()
+    }
+  }, [query, timeFilter])
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(aiAnswer)
@@ -82,7 +128,7 @@ export default function ResultsClient() {
 
   const handleSearch = (searchQuery: string) => {
     if (searchQuery.trim()) {
-      window.location.href = `/results?q=${encodeURIComponent(searchQuery)}`
+      router.push(`/results?q=${encodeURIComponent(searchQuery)}`)
     }
   }
 
@@ -115,14 +161,14 @@ export default function ResultsClient() {
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         {/* Header Navigation */}
         <header className="flex items-center justify-between py-8 mb-8">
-            <a href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 group">
               <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center transition-transform group-hover:scale-95 shadow-lg">
                 <svg className="w-4 h-4 text-white dark:text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
               <span className="font-bold text-lg tracking-tight text-black dark:text-white group-hover:opacity-70 transition-opacity">SeekEngine</span>
-            </a>
+            </Link>
 
             <div className="flex gap-4">
                <button 
@@ -168,6 +214,7 @@ export default function ResultsClient() {
                  <StreamingAnswer 
                     query={query} 
                     onComplete={setAiAnswer}
+                    onRegenerate={() => setAiAnswer('')}
                     className="text-[17px] leading-relaxed text-zinc-800 dark:text-zinc-200"
                  />
 
@@ -212,18 +259,40 @@ export default function ResultsClient() {
 
             {/* RIGHT COLUMN: Web Index (Results) */}
             <div className="w-full lg:w-1/3 animate-fade-in-up animate-delay-100">
-               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2">
+               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2">
                   <LivingIcon color="bg-zinc-400" size="w-1.5 h-1.5" />
                   Visual Index
                </h3>
+
+               {/* Time Filter */}
+               <div className="flex flex-wrap gap-1.5 mb-5">
+                 {TIME_OPTIONS.map(opt => (
+                   <button
+                     key={opt.value}
+                     onClick={() => setTimeFilter(opt.value)}
+                     className={`px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all ${
+                       timeFilter === opt.value
+                         ? 'bg-black dark:bg-white text-white dark:text-black shadow-sm'
+                         : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                     }`}
+                   >
+                     {opt.label}
+                   </button>
+                 ))}
+               </div>
                
                <div className="space-y-4">
                   {resultsLoading ? (
                     Array.from({ length: 4 }).map((_, i) => <ResultCardSkeleton key={i} />)
+                  ) : resultsError ? (
+                    <div className="p-6 text-center rounded-2xl border border-dashed border-red-200 dark:border-red-800">
+                        <p className="text-sm text-red-500 dark:text-red-400">{resultsError}</p>
+                    </div>
                   ) : results.length > 0 ? (
                     results.map((result, index) => (
                       <motion.div
                         key={result.link}
+                        data-result-index={index + 1}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 * index }}

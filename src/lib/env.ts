@@ -22,10 +22,7 @@ const env = envSchema.safeParse({
 
 if (!env.success) {
   console.error('❌ Invalid environment variables:', env.error.flatten().fieldErrors)
-  // In production, we might want to throw an error, but for development we just log
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Invalid environment variables')
-  }
+  // Don't throw during build — env vars are injected at runtime on Vercel edge
 }
 
 export const ENV = env.success ? env.data : ({} as z.infer<typeof envSchema>)

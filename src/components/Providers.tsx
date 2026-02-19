@@ -2,7 +2,6 @@
 
 import { ReactNode } from 'react'
 import { ThemeProvider } from 'next-themes'
-import LenisProvider from './LenisProvider'
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
@@ -12,7 +11,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       enableSystem
       disableTransitionOnChange={false}
     >
-      <LenisProvider>{children}</LenisProvider>
+      {children}
     </ThemeProvider>
   )
 }

@@ -58,8 +58,8 @@ export function normalizeQuery(query: string): string {
     .trim()
     // Remove punctuation variations
     .replace(/[?!.,;:'"]/g, '')
-    // Remove common filler words
-    .replace(/\b(what|how|why|when|where|who|which|can|could|would|should|is|are|was|were|do|does|did|the|a|an|to|for|of|in|on|at|by|with|about|please|tell|me|explain|describe)\b/gi, ' ')
+    // Remove only structural filler words (preserve question-intent words like how/why/what)
+    .replace(/\b(can|could|would|should|do|does|did|the|a|an|to|for|of|in|on|at|by|with|about|please|tell|me|explain|describe)\b/gi, ' ')
     // Remove extra whitespace again
     .replace(/\s+/g, ' ')
     .trim()

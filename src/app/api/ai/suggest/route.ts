@@ -5,6 +5,7 @@
 
 import { getSearchSuggestions } from '../../../../lib/openrouter'
 import { validateSearchQuery } from '../../../../lib/validation'
+import { checkRateLimit, getClientIP, RATE_LIMITS, rateLimitResponse } from '../../../../lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Simple in-memory cache for suggestions (shorter TTL)
@@ -26,6 +27,11 @@ export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  // Rate limiting
+  const ip = getClientIP(request)
+  const rl = checkRateLimit(`suggest:${ip}`, RATE_LIMITS.suggest)
+  if (!rl.allowed) return rateLimitResponse(rl)
+
   const { searchParams } = new URL(request.url)
   
   // Validate query

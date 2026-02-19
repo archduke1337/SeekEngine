@@ -73,6 +73,7 @@ export default function Navbar() {
                 key={link.label}
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
                 aria-label={link.label}
                 aria-current={isActive ? "page" : undefined}
                 className={`relative px-3 sm:px-5 py-2 sm:py-2.5 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] rounded-full transition-all duration-500 ${

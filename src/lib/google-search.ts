@@ -13,7 +13,7 @@ export interface SearchResult {
   title: string
   link: string
   snippet: string
-  displayLink: string
+  displayLink?: string
   source?: string
 }
 
@@ -25,7 +25,8 @@ export interface SearchResult {
  */
 export async function getWebSearchResults(
   query: string,
-  startIndex: number = 1
+  startIndex: number = 1,
+  dateRestrict?: string
 ): Promise<SearchResult[]> {
   if (!GOOGLE_API_KEY || !GOOGLE_CX) {
     console.warn('⚠️ Google API Key or CX is missing. Search will be empty.')
@@ -39,6 +40,7 @@ export async function getWebSearchResults(
     url.searchParams.append('cx', GOOGLE_CX)
     url.searchParams.append('start', startIndex.toString())
     url.searchParams.append('num', '10')
+    if (dateRestrict) url.searchParams.append('dateRestrict', dateRestrict)
 
     const response = await fetch(url.toString())
     

@@ -20,9 +20,9 @@ export default function ResultCard({ result }: { result: SearchResult }) {
           {/* Header */}
           <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
              <div className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-[9px] text-zinc-500">
-                {(result.source || 'W').charAt(0).toUpperCase()}
+                {(result.source || result.displayLink || 'W').charAt(0).toUpperCase()}
              </div>
-             <span className="font-medium truncate max-w-[200px]">{result.displayLink || result.source}</span>
+             <span className="font-medium truncate max-w-[200px]">{result.source || result.displayLink || new URL(result.link).hostname}</span>
           </div>
 
           {/* Title - The main interactive bit */}

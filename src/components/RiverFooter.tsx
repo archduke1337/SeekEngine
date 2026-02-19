@@ -24,6 +24,7 @@ export default function RiverFooter() {
     if (!ctx) return
 
     let animationFrameId: number
+    let throttleTimeoutId: ReturnType<typeof setTimeout> | null = null
     let w: number, h: number
     let offset = 0
 
@@ -41,15 +42,17 @@ export default function RiverFooter() {
       h = 150
       canvas.width = w * dpr
       canvas.height = h * dpr
-      ctx.scale(dpr, dpr)
+      // Reset transform before scaling to prevent compounding on repeated resizes
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
     const render = () => {
       // Visibility Throttling: If not visible, slow down the loop to save battery
       if (!isVisibleRef.current) {
-        animationFrameId = setTimeout(() => {
-            requestAnimationFrame(render)
-        }, 250) as unknown as number
+        throttleTimeoutId = setTimeout(() => {
+            throttleTimeoutId = null
+            animationFrameId = requestAnimationFrame(render)
+        }, 250)
         return
       }
       
@@ -85,7 +88,7 @@ export default function RiverFooter() {
     window.addEventListener('resize', handleResize)
     return () => {
       cancelAnimationFrame(animationFrameId)
-      clearTimeout(animationFrameId) // handle the timeout variant
+      if (throttleTimeoutId !== null) clearTimeout(throttleTimeoutId)
       cancelAnimationFrame(resizeRaf)
       window.removeEventListener('resize', handleResize)
     }

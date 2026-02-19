@@ -18,7 +18,7 @@ export interface SerpResult {
 /**
  * Fetch real-time search results from SerpApi
  */
-export async function getSerpResults(query: string): Promise<SerpResult[]> {
+export async function getSerpResults(query: string, timeRange?: string): Promise<SerpResult[]> {
   if (!SERPAPI_KEY) {
     console.warn('⚠️ SERPAPI_KEY is missing.')
     return []
@@ -30,6 +30,7 @@ export async function getSerpResults(query: string): Promise<SerpResult[]> {
     url.searchParams.append('api_key', SERPAPI_KEY)
     url.searchParams.append('engine', 'google')
     url.searchParams.append('num', '8')
+    if (timeRange) url.searchParams.append('tbs', timeRange)
 
     const response = await fetch(url.toString())
     

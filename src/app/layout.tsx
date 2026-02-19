@@ -3,10 +3,14 @@ import Navbar from '../components/Navbar'
 import Providers from '../components/Providers'
 import PageTransition from '../components/PageTransition'
 import LenisProvider from '../components/LenisProvider'
+import ErrorBoundary from '../components/ErrorBoundary'
+import KeyboardShortcuts from '../components/KeyboardShortcuts'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import RiverFooter from '../components/RiverFooter'
+import dynamic from 'next/dynamic'
 import '../globals.css'
+
+const RiverFooter = dynamic(() => import('../components/RiverFooter'), { ssr: false })
 
 export const metadata: Metadata = {
   title: 'SeekEngine | Sync of Human Intent',
@@ -84,6 +88,8 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://openrouter.ai" />
         <link rel="preconnect" href="https://www.googleapis.com" />
+        <link rel="preconnect" href="https://serpapi.com" />
+        <link rel="manifest" href="/manifest.json" />
         {/* JSON-LD Structured Data for Search Engines */}
         <script
           type="application/ld+json"
@@ -113,15 +119,18 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased selection:bg-red-500/[0.08] dark:selection:bg-red-500/20 selection:text-current min-h-screen flex flex-col overflow-x-hidden">
         <Providers>
-          <Navbar />
-          <LenisProvider>
-            <PageTransition>
-              <div className="flex-1">
-                 {children}
-              </div>
-              <RiverFooter />
-            </PageTransition>
-          </LenisProvider>
+          <ErrorBoundary>
+            <Navbar />
+            <LenisProvider>
+              <PageTransition>
+                <div className="flex-1">
+                   {children}
+                </div>
+                <RiverFooter />
+              </PageTransition>
+            </LenisProvider>
+            <KeyboardShortcuts />
+          </ErrorBoundary>
         </Providers>
         <Analytics />
         <SpeedInsights />

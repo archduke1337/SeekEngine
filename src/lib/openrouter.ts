@@ -583,7 +583,7 @@ export async function* streamOpenRouter(
   yield { type: 'thinking', content: 'Connecting to AI...' }
 
   // Helper: Race a single model to first token (Strict 800ms TTFT)
-  const connectToModel = async (model: string): Promise<{
+  const connectToModel = async (model: string, externalController?: AbortController): Promise<{
     model: string,
     reader: ReadableStreamDefaultReader<Uint8Array>,
     decoder: TextDecoder,
@@ -594,7 +594,7 @@ export async function* streamOpenRouter(
     tier: ModelTier
   }> => {
     const tier = classifyModel(model.replace(/:free$/, ''))
-    const controller = new AbortController()
+    const controller = externalController || new AbortController()
     const modelStartTime = Date.now()
 
     try {
@@ -705,23 +705,37 @@ export async function* streamOpenRouter(
     const batch = models.slice(i, i + 2)
     attempts += batch.length
     
-    const pendingControllers: AbortController[] = []
+    // Create abort controllers upfront so we can always clean up
+    const batchControllers = new Map<string, AbortController>()
+    // Pre-create controllers so they're available for cleanup even if promise hasn't resolved
+    for (const m of batch) {
+      batchControllers.set(m, new AbortController())
+    }
     
     try {
       const promises = batch.map(m => {
-        return connectToModel(m).then(res => {
-          pendingControllers.push(res.controller)
-          return res
-        })
+        return connectToModel(m, batchControllers.get(m)!)
       })
 
       // Wait for FIRST successful connection with token
       const winner = await Promise.any(promises)
 
-      // 🛑 Abort all other pending requests in this batch
-      pendingControllers.forEach(c => {
-        if (c !== winner.controller) c.abort()
-      })
+      // Abort all other connections in this batch
+      for (const [model, controller] of batchControllers) {
+        if (model !== winner.model) {
+          controller.abort()
+        }
+      }
+
+      // Also abort any models whose .then() hasn't fired yet
+      // by waiting a tick and cleaning up stragglers
+      setTimeout(() => {
+        for (const [model, controller] of batchControllers) {
+          if (model !== winner.model) {
+            controller.abort()
+          }
+        }
+      }, 100)
 
       // Emit selection info
       yield { 
@@ -812,8 +826,10 @@ export async function* streamOpenRouter(
       return
 
     } catch (e) {
-      // Both failed, continue to next batch
-       pendingControllers.forEach(c => c.abort())
+      // Both failed, abort all controllers in this batch and continue
+       for (const controller of batchControllers.values()) {
+         controller.abort()
+       }
     }
     
     if (Date.now() - startTime > policy.globalTimeout) {

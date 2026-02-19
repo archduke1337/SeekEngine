@@ -17,6 +17,7 @@ import {
   setCachedAnswer,
   type CachedAnswer 
 } from '../../../../lib/semantic-cache'
+import { checkRateLimit, getClientIP, RATE_LIMITS, rateLimitResponse } from '../../../../lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Enable edge runtime for faster cold starts
@@ -24,6 +25,11 @@ export const runtime = 'edge'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
+  // Rate limiting
+  const ip = getClientIP(request)
+  const rl = checkRateLimit(`answer:${ip}`, RATE_LIMITS.answer)
+  if (!rl.allowed) return rateLimitResponse(rl)
+
   const { searchParams } = new URL(request.url)
   
   // Validate query
@@ -73,7 +79,7 @@ export async function GET(request: NextRequest) {
          title: r.title,
          snippet: r.snippet,
          link: r.link,
-         source: r.displayLink
+         source: r.displayLink || ''
        }))
     }
 

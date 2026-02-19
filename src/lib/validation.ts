@@ -29,7 +29,8 @@ export const searchResultSchema = z.object({
   title: z.string(),
   link: z.string().url(),
   snippet: z.string(),
-  displayLink: z.string(),
+  displayLink: z.string().optional(),
+  source: z.string().optional(),
 })
 
 // Search results response

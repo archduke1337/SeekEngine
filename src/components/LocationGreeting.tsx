@@ -33,10 +33,13 @@ export default function LocationGreeting() {
       .then(res => res.json())
       .then(data => {
         clearTimeout(timeoutId)
+        // Guard against late responses after abort
+        if (controller.signal.aborted) return
         if (data.city) setLocation(data.city)
         else if (data.region) setLocation(data.region)
       })
       .catch(() => {
+        clearTimeout(timeoutId)
         // Silent failure defaults to 'your world' initialized above
       })
 

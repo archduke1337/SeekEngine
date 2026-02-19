@@ -15,6 +15,7 @@ interface StreamingAnswerProps {
   autoStart?: boolean
   className?: string
   onComplete?: (answer: string) => void
+  onRegenerate?: () => void
 }
 
 const STEPS = [
@@ -128,7 +129,8 @@ export function StreamingAnswer({
   query, 
   autoStart = true, 
   className = '',
-  onComplete 
+  onComplete,
+  onRegenerate,
 }: StreamingAnswerProps) {
   const { 
     answer, 
@@ -194,11 +196,12 @@ export function StreamingAnswer({
       case 'streaming':
         return (
           <div className="w-full max-w-none">
-            <div className="whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
-              {answer}
-              {/* Avoid cursor drop if ending with newline */}
-              {!answer.endsWith('\n') && <StreamingCursor />}
-            </div>
+            <div 
+              className="prose prose-zinc dark:prose-invert max-w-none text-[17px] leading-7"
+              dangerouslySetInnerHTML={{ 
+                __html: formatMarkdown(answer) + '<span class="inline-block w-2 h-4 ml-0.5 bg-blue-500 dark:bg-blue-400 animate-pulse rounded-sm align-middle"></span>'
+              }}
+            />
           </div>
         )
         
@@ -212,15 +215,32 @@ export function StreamingAnswer({
                  __html: formatMarkdown(answer) || '<p class="opacity-50 italic">No content generated.</p>' 
               }}
             />
-            {metadata && (
-              <ModelBadge 
-                modelHuman={metadata.modelHuman}
-                tier={metadata.tier}
-                latencyMs={metadata.latencyMs}
-                attempts={metadata.attempts}
-                cached={metadata.cached}
-              />
-            )}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              {metadata && (
+                <ModelBadge 
+                  modelHuman={metadata.modelHuman}
+                  tier={metadata.tier}
+                  latencyMs={metadata.latencyMs}
+                  attempts={metadata.attempts}
+                  cached={metadata.cached}
+                />
+              )}
+              <button
+                onClick={() => {
+                  completed.current = false
+                  lastStartedQuery.current = null
+                  onRegenerate?.()
+                  startStream(query)
+                }}
+                className="mt-4 pt-3 flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 font-medium transition-colors"
+                title="Regenerate answer"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+                </svg>
+                Regenerate
+              </button>
+            </div>
           </div>
         )
         
@@ -269,9 +289,25 @@ function escapeHTML(str: string) {
 function formatMarkdown(text: string): string {
   let formatted = escapeHTML(text)
 
-  // 1. Code Blocks (Preserve whitespace, dark mode contrast)
+  // 1. Code Blocks — Extract and replace with placeholders to protect from subsequent regex
+  const codeBlocks: string[] = []
   formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
-    return `<div class="my-6 rounded-xl overflow-hidden bg-[#0d0d0d] border border-white/10 shadow-lg"><div class="px-4 py-2 bg-white/5 border-b border-white/5 text-[11px] font-mono text-zinc-400 flex justify-between uppercase tracking-wider"><span>${lang || 'CODE'}</span></div><div class="p-4 overflow-x-auto"><pre><code class="font-mono text-sm text-zinc-300 leading-relaxed">${code.trim()}</code></pre></div></div>`
+    const placeholder = `\x00CODEBLOCK_${codeBlocks.length}\x00`
+    const codeId = `codeblock-${codeBlocks.length}`
+    codeBlocks.push(
+      `<div class="my-6 rounded-xl overflow-hidden bg-[#0d0d0d] border border-white/10 shadow-lg"><div class="px-4 py-2 bg-white/5 border-b border-white/5 text-[11px] font-mono text-zinc-400 flex justify-between items-center uppercase tracking-wider"><span>${lang || 'CODE'}</span><button onclick="(function(){var c=document.getElementById('${codeId}');navigator.clipboard.writeText(c.textContent);var b=event.target;b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},1500)})()" class="text-[10px] text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer normal-case tracking-normal">Copy</button></div><div class="p-4 overflow-x-auto"><pre><code id="${codeId}" class="font-mono text-sm text-zinc-300 leading-relaxed">${code.trim()}</code></pre></div></div>`
+    )
+    return placeholder
+  })
+
+  // 1b. Inline code — Extract and replace with placeholders before other formatting
+  const inlineCodes: string[] = []
+  formatted = formatted.replace(/`([^`]+)`/g, (_, code) => {
+    const placeholder = `\x00INLINECODE_${inlineCodes.length}\x00`
+    inlineCodes.push(
+      `<code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-white/10 rounded-[6px] font-mono text-[13px] text-pink-600 dark:text-pink-400 border border-black/5 dark:border-white/5">${code}</code>`
+    )
+    return placeholder
   })
 
   // 2. Headers (Apple-style hierarchy)
@@ -279,33 +315,48 @@ function formatMarkdown(text: string): string {
   formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-8 mb-3 text-zinc-900 dark:text-zinc-100 tracking-tight">$1</h2>')
   formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-medium mt-6 mb-3 text-zinc-800 dark:text-zinc-200">$1</h3>')
 
-  // 3. Bold & Italic
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-zinc-900 dark:text-zinc-50">$1</strong>')
-  formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic text-zinc-600 dark:text-zinc-400">$1</em>')
-
-  // 4. Inline Code
-  formatted = formatted.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-white/10 rounded-[6px] font-mono text-[13px] text-pink-600 dark:text-pink-400 border border-black/5 dark:border-white/5">$1</code>')
-
-  // 5. Lists (Unordered - Bullet points)
-  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1 group"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 shrink-0 group-hover:bg-blue-500 transition-colors"></span><span class="text-[17px] leading-relaxed text-zinc-700 dark:text-zinc-300">$1</span></div>')
+  // 3. Lists BEFORE bold/italic to prevent `* item` being matched as italic
+  // 3a. Lists (Unordered - Bullet points: both - and * prefixes)
+  formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1 group"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 shrink-0 group-hover:bg-blue-500 transition-colors"></span><span class="text-[17px] leading-relaxed text-zinc-700 dark:text-zinc-300">$1</span></div>')
   
-  // 6. Lists (Ordered)
+  // 3b. Lists (Ordered)
   formatted = formatted.replace(/^\s*(\d+)\.\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1"><span class="text-sm font-mono text-zinc-400 dark:text-zinc-500 mt-1 select-none">$1.</span><span class="text-[17px] leading-relaxed text-zinc-700 dark:text-zinc-300">$2</span></div>')
 
-  // 7. Citations (Superscript interactive)
-  formatted = formatted.replace(/\[(\d+)\]/g, '<sup class="ml-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors select-none">[$1]</sup>')
+  // 4. Bold & Italic (process bold FIRST, then italic with negative lookbehind to avoid double-processing)
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-zinc-900 dark:text-zinc-50">$1</strong>')
+  formatted = formatted.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em class="italic text-zinc-600 dark:text-zinc-400">$1</em>')
 
-  // 8. Paragraphs (Detect Double Newline)
-  // We first replace \n\n with a spacer div
+  // 5. Links — [text](url) with XSS protection (only allow http/https)
+  formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+    // Block javascript:, data:, vbscript: and other dangerous protocols
+    const trimmedUrl = url.trim()
+    if (/^(https?:\/\/|\/)/.test(trimmedUrl)) {
+      return `<a href="${trimmedUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline decoration-blue-300/40 dark:decoration-blue-500/40 hover:decoration-blue-500 dark:hover:decoration-blue-400 transition-colors">${text}</a>`
+    }
+    // Unsafe URL — render as plain text
+    return `${text} (${trimmedUrl})`
+  })
+
+  // 6. Citations (Superscript interactive) — clickable, scrolls to corresponding result card
+  formatted = formatted.replace(/(?<!=\"|&gt;\")\[(\d+)\](?![^<]*<\/a>)/g, '<sup data-citation="$1" onclick="(function(){var el=document.querySelector(\x27[data-result-index=\"\x27+$1+\x27\"]\x27);if(el){el.scrollIntoView({behavior:\x27smooth\x27,block:\x27center\x27});el.classList.add(\x27ring-2\x27,\x27ring-blue-500\x27);setTimeout(function(){el.classList.remove(\x27ring-2\x27,\x27ring-blue-500\x27)},2000)}})()" class="ml-0.5 text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors select-none">[$1]</sup>')
+
+  // 7. Paragraphs (Detect Double Newline)
   formatted = formatted.replace(/\n\n/g, '<div class="h-6"></div>')
-  // Then single newlines with spaces to allow text flowing, OR <br> if you prefer strict breaks.
-  // Standard Markdown usually ignores single newlines, but for AI chat, we often want to preserve them as soft breaks or spaces.
-  // Let's treat valid text blocks as paragraphs implicitly by the container's spacing, 
-  // but explicitly handle breaks that weren't double newlines.
   formatted = formatted.replace(/([^\n])\n([^\n])/g, '$1<br class="md:hidden" /> $2') 
+
+  // 8. Restore protected code blocks and inline code
+  inlineCodes.forEach((html, i) => {
+    formatted = formatted.replace(`\x00INLINECODE_${i}\x00`, html)
+  })
+  codeBlocks.forEach((html, i) => {
+    formatted = formatted.replace(`\x00CODEBLOCK_${i}\x00`, html)
+  })
 
   return formatted
 }
+
+// Export for testing and external use
+export { formatMarkdown }
 
 // Export state type for external use
 export type { StreamState }

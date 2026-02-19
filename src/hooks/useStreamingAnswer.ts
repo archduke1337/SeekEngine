@@ -44,9 +44,11 @@ export function useStreamingAnswer() {
   const [metadata, setMetadata] = useState<StreamMetadata | null>(null)
   const [error, setError] = useState<string | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const answerRef = useRef('')
 
   const reset = useCallback(() => {
     setAnswer('')
+    answerRef.current = ''
     setState('idle')
     setMetadata(null)
     setError(null)
@@ -81,6 +83,7 @@ export function useStreamingAnswer() {
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
+      let receivedDone = false
 
       while (true) {
         const { done, value } = await reader.read()
@@ -113,15 +116,32 @@ export function useStreamingAnswer() {
                 })
                 break
 
+              case 'cache_hit':
+                answerRef.current = event.content || ''
+                setAnswer(answerRef.current)
+                setMetadata({
+                  model: event.model || '',
+                  modelHuman: event.modelHuman || '',
+                  tier: 'cached',
+                  latencyMs: 0,
+                  attempts: 0,
+                  cached: true,
+                })
+                break
+
               case 'token':
                 setState('streaming')
-                setAnswer(prev => prev + (event.content || ''))
+                answerRef.current += (event.content || '')
+                setAnswer(answerRef.current)
                 break
 
               case 'done':
+                receivedDone = true
                 setState('done')
-                // Set full answer if provided (for cache hits)
-                if (event.content) {
+                // Only use event.content if we haven't accumulated tokens
+                // (i.e. cache_hit scenario where no tokens were streamed)
+                if (event.content && answerRef.current.length === 0) {
+                  answerRef.current = event.content
                   setAnswer(event.content)
                 }
                 setMetadata({
@@ -135,6 +155,7 @@ export function useStreamingAnswer() {
                 break
 
               case 'error':
+                receivedDone = true
                 setState('error')
                 setError(event.error || 'Unknown error')
                 break
@@ -143,6 +164,12 @@ export function useStreamingAnswer() {
             // Ignore parse errors
           }
         }
+      }
+
+      // Safety net: if the stream ended without a 'done' event
+      // (e.g. server crash, abrupt disconnect), finalize the state
+      if (!receivedDone && answerRef.current.length > 0) {
+        setState('done')
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {

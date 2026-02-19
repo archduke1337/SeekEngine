@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearch } from '../hooks/useSearch'
+import { useSearchHistory } from '../hooks/useSearchHistory'
 import { useTheme } from 'next-themes'
 
 export default function SearchBar({ 
@@ -36,6 +37,7 @@ export default function SearchBar({
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { resolvedTheme } = useTheme()
+  const { history, removeEntry } = useSearchHistory()
   const isDark = resolvedTheme === 'dark'
   
   const [isFocused, setIsFocused] = useState(false)
@@ -81,6 +83,9 @@ export default function SearchBar({
   useEffect(() => { onTyping?.(isTyping) }, [isTyping, onTyping])
   useEffect(() => { onFocusChange?.(isFocused) }, [isFocused, onFocusChange])
 
+  // Reset selected index when suggestions change
+  useEffect(() => { setSelectedIndex(-1) }, [suggestions])
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       if (!query.trim()) return
@@ -109,6 +114,7 @@ export default function SearchBar({
     : ''
   
   const showSuggestionsList = showSuggestions && !isCommand && suggestions.length > 0
+  const showHistory = isFocused && !isTyping && !showSuggestionsList && history.length > 0
 
   return (
     <div className="relative w-full z-[100]" ref={suggestionsRef}>
@@ -176,8 +182,13 @@ export default function SearchBar({
                    setIsFocused(true)
                    if(suggestions.length > 0) setShowSuggestions(true)
                  }}
-                 onBlur={() => {
-                   setTimeout(() => setIsFocused(false), 200)
+                 onBlur={(e) => {
+                   // Only blur if the new focus target is outside the search bar container
+                   const relatedTarget = e.relatedTarget as Node | null
+                   if (relatedTarget && suggestionsRef.current?.contains(relatedTarget)) {
+                     return // Focus is moving to suggestions dropdown, don't blur
+                   }
+                   setTimeout(() => setIsFocused(false), 150)
                  }}
                  onKeyDown={handleKeyDown}
                  placeholder="Search"
@@ -260,7 +271,7 @@ export default function SearchBar({
             className="absolute top-full left-0 right-0 z-40 overflow-hidden"
           >
             <div 
-              className="rounded-xl overflow-hidden shadow-2xl backdrop-blur-3xl border"
+              className="rounded-xl overflow-hidden shadow-2xl backdrop-blur-3xl border max-h-[60vh] overflow-y-auto"
               style={{
                 background: isDark ? 'rgba(30, 30, 30, 0.70)' : 'rgba(255, 255, 255, 0.75)',
                 borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)',
@@ -311,6 +322,66 @@ export default function SearchBar({
                   <span className="text-xs font-medium opacity-50 uppercase tracking-wider">Seek Intelligence</span>
                   <span className="text-xs opacity-40">Press ↵ to search</span>
                </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Search History Dropdown */}
+      <AnimatePresence>
+        {showHistory && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 8, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute top-full left-0 right-0 z-40 overflow-hidden"
+          >
+            <div 
+              className="rounded-xl overflow-hidden shadow-2xl backdrop-blur-3xl border max-h-[60vh] overflow-y-auto"
+              style={{
+                background: isDark ? 'rgba(30, 30, 30, 0.70)' : 'rgba(255, 255, 255, 0.75)',
+                borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)',
+              }}
+            >
+              <div className="px-5 py-2 border-b flex justify-between items-center"
+                   style={{ borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}>
+                <span className="text-xs font-medium opacity-50 uppercase tracking-wider">Recent Searches</span>
+              </div>
+              {history.slice(0, 8).map((entry, index) => (
+                <div
+                  key={entry.timestamp}
+                  className="px-5 py-3 cursor-pointer flex items-center gap-3 text-[17px] transition-colors hover:bg-black/5 dark:hover:bg-white/10 group"
+                  onClick={() => {
+                    updateQuery(entry.query)
+                    handleSearch(entry.query)
+                    setShowSuggestions(false)
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' }}
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span className="flex-1 truncate" style={{ color: isDark ? '#FFF' : '#000' }}>
+                    {entry.query}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      removeEntry(entry.query)
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-all"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      style={{ color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}>
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}

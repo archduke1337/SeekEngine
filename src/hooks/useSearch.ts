@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDebounce } from './useDebounce'
 import { useRouter } from 'next/navigation'
 
@@ -20,20 +20,37 @@ export function useSearch() {
   const [isLoading, setIsLoading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const debouncedQuery = useDebounce(query, 300)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const fetchSuggestions = useCallback(async (q: string) => {
+    // Cancel any in-flight suggestion request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+      abortControllerRef.current = null
+    }
+
     if (q.trim().length < 2) {
       setSuggestions([])
       setPrediction('')
+      setIsLoading(false)
       return
     }
 
     setIsLoading(true)
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+
     try {
-      const response = await fetch(`/api/ai/suggest?q=${encodeURIComponent(q)}`)
+      const response = await fetch(
+        `/api/ai/suggest?q=${encodeURIComponent(q)}`,
+        { signal: controller.signal }
+      )
       if (!response.ok) throw new Error('Failed to fetch suggestions')
       const data = await response.json()
       
+      // Only apply if this is still the active request
+      if (controller.signal.aborted) return
+
       const newSuggestions = data.suggestions || []
       setSuggestions(newSuggestions)
       
@@ -46,13 +63,18 @@ export function useSearch() {
         } else {
           setPrediction('')
         }
+      } else {
+        setPrediction('')
       }
     } catch (error) {
+      if ((error as Error).name === 'AbortError') return // Expected cancellation
       console.error('Error fetching suggestions:', error)
       setSuggestions([])
       setPrediction('')
     } finally {
-      setIsLoading(false)
+      if (!controller.signal.aborted) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
@@ -60,8 +82,22 @@ export function useSearch() {
     fetchSuggestions(debouncedQuery)
   }, [debouncedQuery, fetchSuggestions])
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [])
+
   const handleSearch = useCallback((searchQuery: string) => {
     if (searchQuery.trim()) {
+      // Cancel any pending suggestions when navigating
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
+      }
       router.push(`/results?q=${encodeURIComponent(searchQuery)}`)
     }
   }, [router])
@@ -72,12 +108,18 @@ export function useSearch() {
       router.push('/about')
       return
     }
-    if (newQuery === '/light') {
-       // Logic for light mode could go here or via dispatch
-    }
-
     setQuery(newQuery)
     setIsTyping(newQuery.length > 0)
+
+    // Immediately clear suggestions and prediction when input is emptied
+    if (newQuery.length === 0) {
+      setSuggestions([])
+      setPrediction('')
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
+      }
+    }
   }, [router])
 
   return {

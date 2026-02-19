@@ -237,3 +237,21 @@ html.theme-transition *::after {
   background: var(--glow);
   color: inherit;
 }
+
+/* TITLE SHIMMER */
+@keyframes title-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ANIMATED GRADIENT BORDER */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-spin {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+}

@@ -7,10 +7,8 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import KeyboardShortcuts from '../components/KeyboardShortcuts'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import dynamic from 'next/dynamic'
+import DynamicRiverFooter from '../components/DynamicRiverFooter'
 import '../globals.css'
-
-const RiverFooter = dynamic(() => import('../components/RiverFooter'), { ssr: false })
 
 export const metadata: Metadata = {
   title: 'SeekEngine | Sync of Human Intent',
@@ -126,7 +124,7 @@ export default function RootLayout({
                 <div className="flex-1">
                    {children}
                 </div>
-                <RiverFooter />
+                <DynamicRiverFooter />
               </PageTransition>
             </LenisProvider>
             <KeyboardShortcuts />

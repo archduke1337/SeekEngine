@@ -35,6 +35,14 @@ module.exports = {
           '0%, 80%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },
           '40%': { opacity: '1', transform: 'scale(1)' },
         },
+        'title-shimmer': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        'border-spin': {
+          from: { '--border-angle': '0deg' },
+          to: { '--border-angle': '360deg' },
+        },
       },
       animation: {
         shimmer: 'shimmer 2s infinite linear',
@@ -46,6 +54,8 @@ module.exports = {
         'dot-pulse-1': 'dot-pulse 1.4s ease-in-out infinite',
         'dot-pulse-2': 'dot-pulse 1.4s ease-in-out 0.2s infinite',
         'dot-pulse-3': 'dot-pulse 1.4s ease-in-out 0.4s infinite',
+        'title-shimmer': 'title-shimmer 8s ease-in-out infinite',
+        'border-spin': 'border-spin 4s linear infinite',
       },
       backgroundSize: {
         'gradient-xl': '200% 200%',

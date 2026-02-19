@@ -6,6 +6,7 @@
  */
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
@@ -62,6 +63,21 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 bg-white/75 dark:bg-zinc-900/70 backdrop-blur-2xl backdrop-saturate-150 border border-zinc-200/50 dark:border-zinc-800/50 rounded-full shadow-[0_2px_16px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_16px_-4px_rgba(0,0,0,0.3)] pointer-events-auto transition-all duration-700 hover:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.4)]"
       >
+        {/* Logo */}
+        <Link href="/" className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden ml-0.5 sm:ml-1 flex-shrink-0 hover:scale-105 transition-transform duration-300">
+          <Image
+            src="/logo.svg"
+            alt="SeekEngine"
+            width={28}
+            height={28}
+            className="w-7 h-7 sm:w-8 sm:h-8 dark:invert"
+            priority
+          />
+        </Link>
+
+        {/* Separator */}
+        <div className="w-[1px] h-3 sm:h-4 bg-zinc-400/20 dark:bg-white/15 mx-0.5 sm:mx-1" />
+
         {/* Dynamic Nav Items */}
         <div className="flex items-center relative gap-0.5 sm:gap-1 px-1">
           {navLinks.map((link) => {

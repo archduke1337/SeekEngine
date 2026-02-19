@@ -52,6 +52,12 @@ export const metadata: Metadata = {
       'facebook-domain-verification': 'facebook-verification-placeholder',
     },
   },
+  icons: {
+    icon: [
+      { url: '/favicon.gif', type: 'image/gif' },
+    ],
+    apple: '/logo.svg',
+  },
   robots: {
     index: true,
     follow: true,
@@ -108,7 +114,7 @@ export default function RootLayout({
                 "name": "SeekEngine",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://seekengine.vercel.app/logo.png"
+                  "url": "https://seekengine.vercel.app/logo.svg"
                 }
               }
             })

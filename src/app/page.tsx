@@ -17,9 +17,11 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden transition-colors duration-700 relative">
       
-      {/* Apple Intelligence animated border — full viewport */}
+      {/* Apple Intelligence glowing border — iOS style, all edges */}
       <div className={`ai-screen-border ${isTyping ? 'active' : ''}`} />
+      <div className={`ai-screen-bloom ${isTyping ? 'active' : ''}`} />
       <div className={`ai-screen-glow ${isTyping ? 'active' : ''}`} />
+      <div className={`ai-screen-inner ${isTyping ? 'active' : ''}`} />
 
       {/* Subtle noise texture */}
       <div className="fixed inset-0 pointer-events-none z-50 noise" />

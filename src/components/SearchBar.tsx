@@ -292,7 +292,7 @@ export default function SearchBar({
           </div>
       </motion.div>
 
-      {/* Suggestions Dropdown */
+      {/* Suggestions Dropdown */}
       <AnimatePresence>
         {showSuggestionsList && (
           <motion.div

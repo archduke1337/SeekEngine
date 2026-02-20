@@ -359,33 +359,33 @@ html.theme-transition *, html.theme-transition *::before, html.theme-transition 
 */
 
 @keyframes border-travel-h {
-  0% { transform: translateX(-66.66%); }
+  0% { transform: translateX(-75%); }
   100% { transform: translateX(0%); }
 }
 @keyframes border-travel-h-reverse {
   0% { transform: translateX(0%); }
-  100% { transform: translateX(-66.66%); }
+  100% { transform: translateX(-75%); }
 }
 @keyframes border-travel-v {
-  0% { transform: translateY(-66.66%); }
+  0% { transform: translateY(-75%); }
   100% { transform: translateY(0%); }
 }
 @keyframes border-travel-v-reverse {
   0% { transform: translateY(0%); }
-  100% { transform: translateY(-66.66%); }
+  100% { transform: translateY(-75%); }
 }
 
 .animate-border-travel-h {
-  animation: border-travel-h 6s linear infinite;
+  animation: border-travel-h 5s linear infinite;
 }
 .animate-border-travel-h-reverse {
-  animation: border-travel-h-reverse 6s linear infinite;
+  animation: border-travel-h-reverse 5s linear infinite;
 }
 .animate-border-travel-v {
-  animation: border-travel-v 6s linear infinite;
+  animation: border-travel-v 5s linear infinite;
 }
 .animate-border-travel-v-reverse {
-  animation: border-travel-v-reverse 6s linear infinite;
+  animation: border-travel-v-reverse 5s linear infinite;
 }
 
 /*

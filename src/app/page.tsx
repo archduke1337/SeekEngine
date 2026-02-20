@@ -19,7 +19,7 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden transition-colors duration-700 relative">
       
       {/* Apple Intelligence glowing border — iOS style */}
-      <AppleBorderGradient active={isTyping} intensity="lg" />
+      <AppleBorderGradient active={isTyping} intensity="xl" />
 
       {/* Subtle noise texture */}
       <div className="fixed inset-0 pointer-events-none z-50 noise" />

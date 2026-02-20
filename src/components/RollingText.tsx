@@ -2,7 +2,6 @@
 
 /**
  * RollingText Component — Marquee Banner
- * Inspired by Skiper UI Text Roll Navigation (skiper58)
  * Infinite horizontal scrolling text with separator
  */
 

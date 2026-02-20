@@ -133,12 +133,6 @@ export default function SearchBar({
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         style={{ perspective: '1200px' }}
       >
-        {/* Apple Intelligence aurora glow (behind) */}
-        <div className={`aurora-glow rounded-2xl ${showAurora ? 'active' : ''}`} />
-
-        {/* Animated gradient border — Apple Intelligence style */}
-        <div className={`ai-gradient-border rounded-2xl ${showAurora ? 'active' : ''}`}>
-
           {/* Mesh gradient background layer */}
           <div 
             className="relative overflow-hidden rounded-2xl transition-all duration-500"
@@ -147,7 +141,7 @@ export default function SearchBar({
                 ? 'rgba(10, 10, 10, 0.95)' 
                 : 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(40px) saturate(150%)',
-              border: showAurora ? 'none' : `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
             }}
           >
             {/* Animated mesh gradient overlay when focused */}
@@ -323,10 +317,9 @@ export default function SearchBar({
               )}
             </AnimatePresence>
           </div>
-        </div>
       </motion.div>
 
-      {/* Suggestions Dropdown */}
+      {/* Suggestions Dropdown */
       <AnimatePresence>
         {showSuggestionsList && (
           <motion.div

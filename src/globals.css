@@ -307,7 +307,7 @@ html.theme-transition *, html.theme-transition *::before, html.theme-transition 
 
 /*
    APPLE AI GRADIENT BORDER
-   Rotating conic gradient for search bar focus
+   Rotating conic gradient for component focus
 */
 
 .ai-gradient-border {
@@ -352,6 +352,71 @@ html.theme-transition *, html.theme-transition *::before, html.theme-transition 
 .aurora-glow.active {
   opacity: 0.15;
   animation: ai-rotate 4s linear infinite, aurora-pulse 3s ease-in-out infinite;
+}
+
+/*
+   FULL-SCREEN AI BORDER — Apple Intelligence viewport border
+   Thicker, more prominent for page-level usage
+*/
+
+.ai-screen-border {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 0;
+}
+.ai-screen-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 3px;
+  background: var(--ai-aurora);
+  animation: ai-rotate 4s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.ai-screen-border.active::before {
+  opacity: 0.7;
+}
+
+/* Corner aurora blobs for screen-level effect */
+.ai-screen-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 39;
+  overflow: hidden;
+}
+.ai-screen-glow::before,
+.ai-screen-glow::after {
+  content: '';
+  position: absolute;
+  width: 40vmax;
+  height: 40vmax;
+  border-radius: 50%;
+  background: var(--ai-aurora);
+  filter: blur(100px);
+  opacity: 0;
+  transition: opacity 1s ease;
+  animation: ai-rotate 6s linear infinite;
+}
+.ai-screen-glow::before {
+  top: -15vmax;
+  left: -15vmax;
+}
+.ai-screen-glow::after {
+  bottom: -15vmax;
+  right: -15vmax;
+  animation-delay: -3s;
+}
+.ai-screen-glow.active::before,
+.ai-screen-glow.active::after {
+  opacity: 0.06;
+  animation: ai-rotate 6s linear infinite, aurora-pulse 4s ease-in-out infinite;
 }
 
 /*

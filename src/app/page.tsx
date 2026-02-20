@@ -3,16 +3,24 @@
 /**
  * Home Page — Creative B&W with atmospheric background
  * Inspired by cosmos.so, sanalabs.com, fiddle.digital
+ * Features: Apple Intelligence animated gradient border around viewport
  */
 
 import Hero from '../components/Hero'
 import SearchBar from '../components/SearchBar'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 export default function Home() {
+  const [isTyping, setIsTyping] = useState(false)
+
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden transition-colors duration-700 relative">
       
+      {/* Apple Intelligence animated border — full viewport */}
+      <div className={`ai-screen-border ${isTyping ? 'active' : ''}`} />
+      <div className={`ai-screen-glow ${isTyping ? 'active' : ''}`} />
+
       {/* Subtle noise texture */}
       <div className="fixed inset-0 pointer-events-none z-50 noise" />
 
@@ -27,7 +35,7 @@ export default function Home() {
           transition={{ delay: 0.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-[640px] px-6 mt-10"
         >
-          <SearchBar />
+          <SearchBar onTyping={setIsTyping} />
         </motion.div>
 
         {/* Footer tagline */}

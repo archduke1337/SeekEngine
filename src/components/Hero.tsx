@@ -6,7 +6,7 @@
  * Bold serif typography, atmospheric dot grid, contrast accents
  */
 
-import { useEffect, useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 
@@ -51,31 +51,6 @@ function FloatingParticles() {
   )
 }
 
-/* Rotating status words */
-const STATUS_WORDS = ['AI-Powered', 'Grounded', 'Real-Time', 'Neural'] as const
-
-function StatusRotator() {
-  const [idx, setIdx] = useState(0)
-
-  useEffect(() => {
-    const interval = setInterval(() => setIdx(i => (i + 1) % STATUS_WORDS.length), 3000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <motion.div
-      key={idx}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-medium tracking-[0.15em] uppercase border border-foreground/8 bg-foreground/[0.02]"
-    >
-      <span className="w-1.5 h-1.5 rounded-full bg-foreground/30 animate-pulse" />
-      <span className="text-muted-foreground">{STATUS_WORDS[idx]}</span>
-    </motion.div>
-  )
-}
-
 export default function Hero() {
   const { scrollY } = useScroll()
 
@@ -96,16 +71,6 @@ export default function Hero() {
         style={{ y: y1 }}
         className="relative z-10 text-center px-4 pointer-events-auto flex flex-col items-center"
       >
-        {/* Status badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.6 }}
-          className="mb-8"
-        >
-          <StatusRotator />
-        </motion.div>
-
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}

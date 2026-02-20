@@ -12,18 +12,6 @@ import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
-import RollingText from './RollingText'
-
-const ROLLING_WORDS = [
-  'Search',
-  'Discover',
-  'Synthesize',
-  'Understand',
-  'Neural',
-  'Grounded',
-  'Real-Time',
-  'Intelligent',
-]
 
 /* Text Roll hover effect — character stagger */
 function TextRollLink({ children, href, isActive, external }: {
@@ -114,17 +102,6 @@ export default function Navbar() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col pointer-events-none">
-      {/* Rolling text banner */}
-      <div className="w-full pointer-events-auto border-b border-border/20 bg-background/60 backdrop-blur-2xl">
-        <RollingText
-          items={ROLLING_WORDS}
-          separator={'\u00B7'}
-          speed={40}
-          className="py-1.5"
-          itemClassName="text-[9px] font-medium uppercase tracking-[0.3em] text-muted-foreground/35"
-        />
-      </div>
-
       {/* Main navigation */}
       <div className="flex justify-center px-4 sm:px-8 pt-3 pb-2">
         <motion.nav

@@ -1,17 +1,18 @@
 ﻿'use client'
 
 /**
- * Search Bar — AI Input with Apple AI Gradient
- * Inspired by Skiper UI AI Input 004 (skiper84) + Apple AI Gradient (skiper86)
- * Features: Rotating aurora gradient border on focus/typing,
- * mesh-like glow background, perspective transforms
+ * Search Bar — AI Chat Input with Mesh Gradient & Apple Intelligence Border
+ * Features: Animated mesh gradient background, text shimmer effects,
+ * perspective transforms, auto-resizing textarea, loading state transitions,
+ * Apple Intelligence rotating gradient border on typing/focus
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearch } from '../hooks/useSearch'
 import { useSearchHistory } from '../hooks/useSearchHistory'
 import { useTheme } from 'next-themes'
+import { Sparkles, ArrowRight, X, Search, Loader2 } from 'lucide-react'
 
 export default function SearchBar({ 
   autoFocus = false, 
@@ -34,7 +35,7 @@ export default function SearchBar({
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const suggestionsRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { resolvedTheme } = useTheme()
   const { history, removeEntry } = useSearchHistory()
   const isDark = resolvedTheme === 'dark'
@@ -42,15 +43,27 @@ export default function SearchBar({
   const [isFocused, setIsFocused] = useState(false)
   const isCommand = query.startsWith('/')
   const isTyping = query.length > 0
+  const showAurora = isFocused || isTyping
+
+  // Auto-resize textarea
+  const resizeTextarea = useCallback(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+    textarea.style.height = '0px'
+    const scrollH = textarea.scrollHeight
+    textarea.style.height = Math.min(scrollH, 160) + 'px'
+  }, [])
+
+  useEffect(() => { resizeTextarea() }, [query, resizeTextarea])
 
   useEffect(() => {
     function handleGlobalKeyDown(e: KeyboardEvent) {
-      if (e.key === '/' && !isFocused && !inputRef.current?.matches(':focus')) {
+      if (e.key === '/' && !isFocused && !textareaRef.current?.matches(':focus')) {
         e.preventDefault()
-        inputRef.current?.focus()
+        textareaRef.current?.focus()
       }
       if (e.key === 'Escape' && isFocused) {
-        inputRef.current?.blur()
+        textareaRef.current?.blur()
         setShowSuggestions(false)
       }
     }
@@ -64,7 +77,7 @@ export default function SearchBar({
       if (!suggestionsRef.current) return
       const target = event.target as Node
       const isInside = suggestionsRef.current.contains(target)
-      const isInput = inputRef.current?.contains(target)
+      const isInput = textareaRef.current?.contains(target)
       if (!isInside && !isInput) {
         setShowSuggestions(false)
         setSelectedIndex(-1)
@@ -78,8 +91,9 @@ export default function SearchBar({
   useEffect(() => { onFocusChange?.(isFocused) }, [isFocused, onFocusChange])
   useEffect(() => { setSelectedIndex(-1) }, [suggestions])
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
       if (!query.trim()) return
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
         handleSearch(suggestions[selectedIndex])
@@ -108,28 +122,26 @@ export default function SearchBar({
   const showSuggestionsList = showSuggestions && !isCommand && suggestions.length > 0
   const showHistory = isFocused && !isTyping && !showSuggestionsList && history.length > 0
 
-  const showAurora = isFocused || isTyping
-
   return (
     <div className="relative w-full z-[100]" ref={suggestionsRef}>
-      {/* Main search container with AI gradient */}
+      {/* Main search container */}
       <motion.div 
         layout
         className="relative z-50 group"
         initial={false}
         animate={isFocused ? { scale: 1.01 } : { scale: 1 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        style={{ perspective: '1200px' }}
       >
-        {/* Apple AI Aurora glow (behind) */}
-        <div 
-          className={`aurora-glow rounded-2xl ${showAurora ? 'active' : ''}`}
-        />
+        {/* Apple Intelligence aurora glow (behind) */}
+        <div className={`aurora-glow rounded-2xl ${showAurora ? 'active' : ''}`} />
 
-        {/* Rotating gradient border */}
+        {/* Animated gradient border — Apple Intelligence style */}
         <div className={`ai-gradient-border rounded-2xl ${showAurora ? 'active' : ''}`}>
 
+          {/* Mesh gradient background layer */}
           <div 
-            className={`relative overflow-hidden rounded-2xl flex items-center transition-all duration-500`}
+            className="relative overflow-hidden rounded-2xl transition-all duration-500"
             style={{
               background: isDark 
                 ? 'rgba(10, 10, 10, 0.95)' 
@@ -138,115 +150,178 @@ export default function SearchBar({
               border: showAurora ? 'none' : `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
             }}
           >
-              {/* Search icon */}
-              <div className="pl-5 pr-2 flex items-center justify-center relative z-10">
-                {isLoading ? (
-                  <div className="w-[18px] h-[18px] rounded-full border-[2px] border-foreground/20 border-t-foreground/60 animate-spin" />
-                ) : (
-                  <svg
-                    className={`w-[18px] h-[18px] transition-colors duration-300 ${isFocused ? 'text-foreground' : 'text-muted-foreground/30'}`}
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                  </svg>
+            {/* Animated mesh gradient overlay when focused */}
+            <AnimatePresence>
+              {showAurora && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden"
+                >
+                  <div 
+                    className="absolute inset-0 mesh-gradient-bg"
+                    style={{
+                      background: isDark
+                        ? 'radial-gradient(ellipse at 20% 50%, rgba(120,80,255,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(60,150,255,0.05) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(200,100,255,0.04) 0%, transparent 50%)'
+                        : 'radial-gradient(ellipse at 20% 50%, rgba(120,80,255,0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(60,150,255,0.03) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(200,100,255,0.03) 0%, transparent 50%)',
+                      animation: 'mesh-shift 8s ease-in-out infinite',
+                    }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="relative flex items-start">
+              {/* Left icon area */}
+              <div className="pl-4 pt-[15px] flex items-center justify-center relative z-10 shrink-0">
+                <AnimatePresence mode="wait">
+                  {isLoading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Loader2 className="w-[18px] h-[18px] text-foreground/40 animate-spin" />
+                    </motion.div>
+                  ) : isTyping ? (
+                    <motion.div
+                      key="sparkles"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Sparkles className="w-[18px] h-[18px] text-foreground/40" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="search"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Search className={`w-[18px] h-[18px] transition-colors duration-300 ${isFocused ? 'text-foreground/50' : 'text-muted-foreground/30'}`} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Textarea with auto-resize */}
+              <div className="relative flex-1 z-10 py-1">
+                {/* Ghost text prediction */}
+                {ghostText && (
+                  <div className="absolute inset-0 flex items-start pointer-events-none text-[15px] tracking-tight overflow-hidden whitespace-pre px-3 py-[13px]">
+                    <span className="opacity-0">{query}</span>
+                    <span className="text-muted-foreground/15">{ghostText}</span>
+                  </div>
                 )}
+
+                <textarea
+                  ref={textareaRef}
+                  value={query}
+                  onChange={(e) => {
+                    updateQuery(e.target.value)
+                    setShowSuggestions(true)
+                  }}
+                  onFocus={() => {
+                    setIsFocused(true)
+                    if(suggestions.length > 0) setShowSuggestions(true)
+                  }}
+                  onBlur={(e) => {
+                    const relatedTarget = e.relatedTarget as Node | null
+                    if (relatedTarget && suggestionsRef.current?.contains(relatedTarget)) return
+                    setTimeout(() => setIsFocused(false), 150)
+                  }}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  placeholder="Ask anything…"
+                  className="w-full bg-transparent border-none outline-none text-[15px] tracking-tight text-foreground placeholder:text-muted-foreground/25 resize-none px-3 py-[13px] min-h-[48px] max-h-[160px] leading-relaxed"
+                  style={{ caretColor: 'hsl(var(--foreground))' }}
+                  spellCheck={false}
+                  autoComplete="off"
+                  autoFocus={autoFocus}
+                />
               </div>
 
-              {/* Input Field */}
-              <div className="relative flex-1 h-[52px] z-10">
-                 {/* Ghost Text */}
-                 {ghostText && (
-                    <div className="absolute inset-0 flex items-center pointer-events-none text-[15px] tracking-tight overflow-hidden whitespace-pre pl-0.5">
-                      <span className="opacity-0">{query}</span>
-                      <span className="text-muted-foreground/15">{ghostText}</span>
-                    </div>
-                 )}
-
-                 <input
-                   ref={inputRef}
-                   type="text"
-                   value={query}
-                   onChange={(e) => {
-                     updateQuery(e.target.value)
-                     setShowSuggestions(true)
-                   }}
-                   onFocus={() => {
-                     setIsFocused(true)
-                     if(suggestions.length > 0) setShowSuggestions(true)
-                   }}
-                   onBlur={(e) => {
-                     const relatedTarget = e.relatedTarget as Node | null
-                     if (relatedTarget && suggestionsRef.current?.contains(relatedTarget)) return
-                     setTimeout(() => setIsFocused(false), 150)
-                   }}
-                   onKeyDown={handleKeyDown}
-                   placeholder="Ask anything\u2026"
-                   className="w-full h-full bg-transparent border-none outline-none text-[15px] tracking-tight text-foreground placeholder:text-muted-foreground/25"
-                   style={{ caretColor: 'hsl(var(--foreground))' }}
-                   spellCheck={false}
-                   autoComplete="off"
-                   autoFocus={autoFocus}
-                 />
+              {/* Right action buttons */}
+              <div className="pr-3 pt-[10px] flex items-center gap-1.5 relative z-10 shrink-0">
+                {/* Keyboard hint */}
+                <AnimatePresence>
+                  {!isFocused && !query && (
+                    <motion.kbd
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="hidden sm:inline-flex items-center justify-center w-6 h-6 text-[11px] font-medium rounded-md border border-border/40 text-muted-foreground/25 bg-muted/20"
+                    >
+                      /
+                    </motion.kbd>
+                  )}
+                </AnimatePresence>
+                
+                {/* Clear */}
+                <AnimatePresence>
+                  {query && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      onClick={() => {
+                        updateQuery('')
+                        textareaRef.current?.focus()
+                      }}
+                      className="p-1.5 rounded-lg transition-colors text-muted-foreground/30 hover:text-muted-foreground"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+                
+                {/* Submit */}
+                <AnimatePresence>
+                  {query && (
+                    <motion.button
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      whileHover={{ scale: 1.06 }}
+                      whileTap={{ scale: 0.92 }}
+                      onClick={() => handleSearch(query)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center bg-foreground text-background transition-all"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="pr-3.5 flex items-center gap-1.5 relative z-10">
-                 {/* Keyboard hint */}
-                 <AnimatePresence>
-                   {!isFocused && !query && (
-                     <motion.kbd
-                       initial={{ opacity: 0 }}
-                       animate={{ opacity: 1 }}
-                       exit={{ opacity: 0 }}
-                       className="hidden sm:inline-flex items-center justify-center w-6 h-6 text-[11px] font-medium rounded-md border border-border/40 text-muted-foreground/25 bg-muted/20"
-                     >
-                       /
-                     </motion.kbd>
-                   )}
-                 </AnimatePresence>
-                 
-                 {/* Clear */}
-                 <AnimatePresence>
-                   {query && (
-                     <motion.button
-                       initial={{ opacity: 0, scale: 0.8 }}
-                       animate={{ opacity: 1, scale: 1 }}
-                       exit={{ opacity: 0, scale: 0.8 }}
-                       onClick={() => {
-                         updateQuery('')
-                         inputRef.current?.focus()
-                       }}
-                       className="p-1.5 rounded-lg transition-colors text-muted-foreground/30 hover:text-muted-foreground"
-                     >
-                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                       </svg>
-                     </motion.button>
-                   )}
-                 </AnimatePresence>
-                 
-                 {/* Submit */}
-                 <AnimatePresence>
-                    {query && (
-                      <motion.button
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        whileHover={{ scale: 1.06 }}
-                        whileTap={{ scale: 0.92 }}
-                        onClick={() => handleSearch(query)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-foreground text-background transition-all"
-                      >
-                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                            <polyline points="12 5 19 12 12 19" />
-                         </svg>
-                      </motion.button>
-                    )}
-                 </AnimatePresence>
-              </div>
+            {/* Shimmer loading indicator at bottom */}
+            <AnimatePresence>
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  animate={{ opacity: 1, scaleX: 1 }}
+                  exit={{ opacity: 0, scaleX: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="h-[2px] mx-4 mb-1 rounded-full origin-left overflow-hidden"
+                >
+                  <div 
+                    className="h-full w-full rounded-full"
+                    style={{
+                      background: 'linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.15), transparent)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmer 1.5s ease-in-out infinite',
+                    }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </motion.div>
@@ -278,11 +353,7 @@ export default function SearchBar({
                    onMouseEnter={() => setSelectedIndex(index)}
                    className={`px-4 py-3 cursor-pointer flex items-center gap-3 text-[14px] transition-colors duration-100 ${index === selectedIndex ? 'bg-foreground/[0.04]' : 'hover:bg-foreground/[0.02]'}`}
                  >
-                    <svg className={`w-3.5 h-3.5 shrink-0 ${index === selectedIndex ? 'text-foreground/40' : 'text-muted-foreground/20'}`}
-                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.35-4.35" />
-                    </svg>
+                    <Search className={`w-3.5 h-3.5 shrink-0 ${index === selectedIndex ? 'text-foreground/40' : 'text-muted-foreground/20'}`} />
                     
                     <span className="text-foreground/70">
                       {suggestion.toLowerCase().startsWith(query.toLowerCase()) ? (
@@ -347,10 +418,7 @@ export default function SearchBar({
                     }}
                     className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all text-muted-foreground/30 hover:text-destructive"
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                    <X className="w-3 h-3" />
                   </button>
                 </div>
               ))}

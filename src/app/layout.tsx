@@ -7,7 +7,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import KeyboardShortcuts from '../components/KeyboardShortcuts'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import DynamicCanvasCrowd from '../components/DynamicCanvasCrowd'
+import ConditionalFooter from '../components/ConditionalFooter'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -133,7 +133,7 @@ export default function RootLayout({
                 <div className="flex-1">
                    {children}
                 </div>
-                <DynamicCanvasCrowd />
+                <ConditionalFooter />
               </PageTransition>
             </LenisProvider>
             <KeyboardShortcuts />

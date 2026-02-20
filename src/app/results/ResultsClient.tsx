@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import LivingIcon from '../../components/LivingIcon'
 import Link from 'next/link'
 import Image from 'next/image'
+import ResultsFooter from '../../components/ResultsFooter'
 
 const TIME_OPTIONS = [
   { label: 'Any time', value: '' },
@@ -299,6 +300,9 @@ export default function ResultsClient() {
             </div>
         </div>
       </div>
+
+      {/* Results page footer with location greeting */}
+      <ResultsFooter />
     </main>
   )
 }

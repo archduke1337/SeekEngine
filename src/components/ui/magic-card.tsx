@@ -36,7 +36,8 @@ export function MagicCard({
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      const { left, top } = ref.current!.getBoundingClientRect()
+      if (!ref.current) return
+      const { left, top } = ref.current.getBoundingClientRect()
       mouseX.set(e.clientX - left)
       mouseY.set(e.clientY - top)
     },

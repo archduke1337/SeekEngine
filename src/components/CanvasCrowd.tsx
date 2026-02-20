@@ -6,7 +6,7 @@
  */
 
 import { gsap } from "gsap";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface CrowdCanvasProps {
   src: string;
@@ -289,4 +289,3 @@ const CrowdCanvas = ({ src, rows = 15, cols = 7 }: CrowdCanvasProps) => {
 };
 
 export default CrowdCanvas;
-export { CrowdCanvas };

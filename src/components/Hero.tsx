@@ -52,14 +52,15 @@ function FloatingParticles() {
 }
 
 /* Rotating status words */
+const STATUS_WORDS = ['AI-Powered', 'Grounded', 'Real-Time', 'Neural'] as const
+
 function StatusRotator() {
-  const words = ['AI-Powered', 'Grounded', 'Real-Time', 'Neural']
   const [idx, setIdx] = useState(0)
 
   useEffect(() => {
-    const interval = setInterval(() => setIdx(i => (i + 1) % words.length), 3000)
+    const interval = setInterval(() => setIdx(i => (i + 1) % STATUS_WORDS.length), 3000)
     return () => clearInterval(interval)
-  }, [words.length])
+  }, [])
 
   return (
     <motion.div
@@ -70,16 +71,13 @@ function StatusRotator() {
       className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-medium tracking-[0.15em] uppercase border border-foreground/8 bg-foreground/[0.02]"
     >
       <span className="w-1.5 h-1.5 rounded-full bg-foreground/30 animate-pulse" />
-      <span className="text-muted-foreground">{words[idx]}</span>
+      <span className="text-muted-foreground">{STATUS_WORDS[idx]}</span>
     </motion.div>
   )
 }
 
 export default function Hero() {
   const { scrollY } = useScroll()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
 
   const y1 = useTransform(scrollY, [0, 500], [0, 80])
   const opacity = useTransform(scrollY, [0, 300], [1, 0])

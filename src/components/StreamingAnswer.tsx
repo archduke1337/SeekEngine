@@ -58,12 +58,6 @@ function ProcessingSteps() {
   )
 }
 
-function StreamingCursor() {
-  return (
-    <span className="inline-block w-2 h-4 ml-0.5 animate-pulse rounded-sm align-middle bg-primary" />
-  )
-}
-
 function getTierStyles(tier: string) {
   switch (tier) {
     case 'fast':
@@ -76,16 +70,6 @@ function getTierStyles(tier: string) {
       return { className: 'bg-amber-500/10 text-amber-500 border-amber-500/20' }
     default:
       return { className: 'bg-muted text-muted-foreground border-border' }
-  }
-}
-
-function getTierIcon(tier: string) {
-  switch (tier) {
-    case 'fast': return ''
-    case 'balanced': return ''
-    case 'heavy': return ''
-    case 'code': return ''
-    default: return ''
   }
 }
 
@@ -116,7 +100,7 @@ function ModelBadge({
       )}
       
       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium border ${tierStyle.className}`}>
-        <span>{getTierIcon(tier)}</span> {tier}
+        {tier}
       </span>
       
       <span className="text-[11px] text-muted-foreground">

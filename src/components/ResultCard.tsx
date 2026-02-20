@@ -74,7 +74,7 @@ export default function ResultCard({ result, index = 0 }: { result: SearchResult
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`block p-4 rounded-xl group relative overflow-hidden transition-all duration-400 ${SHADER_VARIANTS[index % 3]}`}
+      className={`block p-4 rounded-xl group relative overflow-hidden transition-all duration-400 ${shaderClass}`}
     >
       {/* Mouse-tracking spotlight — subtle */}
       {isHovered && (

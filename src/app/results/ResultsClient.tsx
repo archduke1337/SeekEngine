@@ -12,7 +12,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import LivingIcon from '../../components/LivingIcon'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useTheme } from 'next-themes'
 
 const TIME_OPTIONS = [
   { label: 'Any time', value: '' },
@@ -27,8 +26,6 @@ export default function ResultsClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const query = searchParams.get('q') || ''
-  const { resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === 'dark'
 
   const [aiAnswer, setAiAnswer] = useState('')
   const [copied, setCopied] = useState(false)

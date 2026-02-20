@@ -29,8 +29,6 @@ export default function SearchBar({
     isLoading, 
     updateQuery, 
     handleSearch,
-    setSuggestions,
-    setPrediction
   } = useSearch()
   
   const [showSuggestions, setShowSuggestions] = useState(false)

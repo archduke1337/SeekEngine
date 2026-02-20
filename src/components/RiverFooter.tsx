@@ -145,9 +145,9 @@ export default function RiverFooter() {
   useEffect(() => {
     // Attempt to fetch user location for personalized "System Active" status
     // Silently updates if successful, otherwise stays "SYSTEM ONLINE"
+    const controller = new AbortController()
     const fetchLocation = async () => {
         try {
-            const controller = new AbortController()
             const timeoutId = setTimeout(() => controller.abort(), 3000) // 3s timeout
             
             const res = await fetch('https://ipapi.co/json/', { signal: controller.signal })
@@ -164,6 +164,7 @@ export default function RiverFooter() {
         }
     }
     fetchLocation()
+    return () => controller.abort()
   }, [])
 
   if (!mounted) return null

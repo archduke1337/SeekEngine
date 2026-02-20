@@ -156,7 +156,7 @@ export default function Navbar() {
           {/* Nav Items with text-roll hover */}
           <div className="flex items-center relative gap-0.5 sm:gap-1 px-1">
             {navLinks.map((link) => {
-              const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
+              const isActive = link.external ? false : link.href === '/' ? pathname === '/' : pathname.startsWith(link.href)
               return (
                 <TextRollLink
                   key={link.label}

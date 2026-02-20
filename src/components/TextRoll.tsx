@@ -7,7 +7,6 @@
  */
 
 import { motion } from "framer-motion";
-import React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -88,4 +87,3 @@ const TextRoll: React.FC<{
 };
 
 export default TextRoll;
-export { TextRoll };

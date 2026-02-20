@@ -1,8 +1,10 @@
 ﻿'use client'
 
 /**
- * Search Bar Component
- * Aesthetic: Modern glassmorphism with gradient accents
+ * Search Bar — AI Input with Apple AI Gradient
+ * Inspired by Skiper UI AI Input 004 (skiper84) + Apple AI Gradient (skiper86)
+ * Features: Rotating aurora gradient border on focus/typing,
+ * mesh-like glow background, perspective transforms
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -108,152 +110,146 @@ export default function SearchBar({
   const showSuggestionsList = showSuggestions && !isCommand && suggestions.length > 0
   const showHistory = isFocused && !isTyping && !showSuggestionsList && history.length > 0
 
+  const showAurora = isFocused || isTyping
+
   return (
     <div className="relative w-full z-[100]" ref={suggestionsRef}>
-      {/* Main search container */}
+      {/* Main search container with AI gradient */}
       <motion.div 
         layout
-        className="relative z-50 group rounded-2xl transition-all duration-500 ease-out"
+        className="relative z-50 group"
         initial={false}
         animate={isFocused ? { scale: 1.01 } : { scale: 1 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Animated gradient border (visible on focus) */}
-        <AnimatePresence>
-          {isFocused && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute -inset-[1px] rounded-2xl z-0"
-              style={{
-                background: 'linear-gradient(135deg, var(--gradient-from), var(--gradient-via), var(--gradient-to))',
-                backgroundSize: '200% 200%',
-                animation: 'gradient-shift 4s ease infinite',
-              }}
-            />
-          )}
-        </AnimatePresence>
-
+        {/* Apple AI Aurora glow (behind) */}
         <div 
-           className={`relative overflow-hidden rounded-2xl flex items-center transition-all duration-500 glass-heavy ${isFocused ? 'shadow-xl' : 'shadow-lg shadow-black/5 dark:shadow-black/20'}`}
-           style={{
-             background: isFocused
-               ? (isDark ? 'rgba(10, 10, 20, 0.95)' : 'rgba(255, 255, 255, 0.95)')
-               : undefined,
-           }}
-        >
-            {/* Search icon */}
-            <div className="pl-4 pr-2 flex items-center justify-center relative z-10">
-              {isLoading ? (
-                <div className="w-[18px] h-[18px] rounded-full border-[2px] border-primary/30 border-t-primary animate-spin" />
-              ) : (
-                <svg
-                  className={`w-[18px] h-[18px] transition-colors duration-300 ${isFocused ? 'text-primary' : 'text-muted-foreground/40'}`}
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-              )}
-            </div>
+          className={`aurora-glow rounded-2xl ${showAurora ? 'active' : ''}`}
+        />
 
-            {/* Input Field */}
-            <div className="relative flex-1 h-[48px] z-10">
-               {/* Ghost Text */}
-               {ghostText && (
-                  <div className="absolute inset-0 flex items-center pointer-events-none text-[15px] tracking-tight overflow-hidden whitespace-pre pl-0.5">
-                    <span className="opacity-0">{query}</span>
-                    <span className="text-muted-foreground/20">{ghostText}</span>
-                  </div>
-               )}
+        {/* Rotating gradient border */}
+        <div className={`ai-gradient-border rounded-2xl ${showAurora ? 'active' : ''}`}>
 
-               <input
-                 ref={inputRef}
-                 type="text"
-                 value={query}
-                 onChange={(e) => {
-                   updateQuery(e.target.value)
-                   setShowSuggestions(true)
-                 }}
-                 onFocus={() => {
-                   setIsFocused(true)
-                   if(suggestions.length > 0) setShowSuggestions(true)
-                 }}
-                 onBlur={(e) => {
-                   const relatedTarget = e.relatedTarget as Node | null
-                   if (relatedTarget && suggestionsRef.current?.contains(relatedTarget)) return
-                   setTimeout(() => setIsFocused(false), 150)
-                 }}
-                 onKeyDown={handleKeyDown}
-                 placeholder="Search anything..."
-                 className="w-full h-full bg-transparent border-none outline-none text-[15px] tracking-tight text-foreground placeholder:text-muted-foreground/30"
-                 style={{ caretColor: 'hsl(var(--primary))' }}
-                 spellCheck={false}
-                 autoComplete="off"
-               />
-            </div>
+          <div 
+            className={`relative overflow-hidden rounded-2xl flex items-center transition-all duration-500`}
+            style={{
+              background: isDark 
+                ? 'rgba(10, 10, 10, 0.95)' 
+                : 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(40px) saturate(150%)',
+              border: showAurora ? 'none' : `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+            }}
+          >
+              {/* Search icon */}
+              <div className="pl-5 pr-2 flex items-center justify-center relative z-10">
+                {isLoading ? (
+                  <div className="w-[18px] h-[18px] rounded-full border-[2px] border-foreground/20 border-t-foreground/60 animate-spin" />
+                ) : (
+                  <svg
+                    className={`w-[18px] h-[18px] transition-colors duration-300 ${isFocused ? 'text-foreground' : 'text-muted-foreground/30'}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                )}
+              </div>
 
-            {/* Action Buttons */}
-            <div className="pr-3 flex items-center gap-1.5 relative z-10">
-               {/* Keyboard hint */}
-               <AnimatePresence>
-                 {!isFocused && !query && (
-                   <motion.kbd
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     exit={{ opacity: 0 }}
-                     className="hidden sm:inline-flex items-center justify-center w-6 h-6 text-[11px] font-medium rounded-md border border-border/50 text-muted-foreground/30 bg-muted/30"
-                   >
-                     /
-                   </motion.kbd>
+              {/* Input Field */}
+              <div className="relative flex-1 h-[52px] z-10">
+                 {/* Ghost Text */}
+                 {ghostText && (
+                    <div className="absolute inset-0 flex items-center pointer-events-none text-[15px] tracking-tight overflow-hidden whitespace-pre pl-0.5">
+                      <span className="opacity-0">{query}</span>
+                      <span className="text-muted-foreground/15">{ghostText}</span>
+                    </div>
                  )}
-               </AnimatePresence>
-               
-               {/* Clear */}
-               <AnimatePresence>
-                 {query && (
-                   <motion.button
-                     initial={{ opacity: 0, scale: 0.8 }}
-                     animate={{ opacity: 1, scale: 1 }}
-                     exit={{ opacity: 0, scale: 0.8 }}
-                     onClick={() => {
-                       updateQuery('')
-                       inputRef.current?.focus()
-                     }}
-                     className="p-1.5 rounded-lg transition-colors text-muted-foreground/40 hover:text-muted-foreground"
-                   >
-                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                     </svg>
-                   </motion.button>
-                 )}
-               </AnimatePresence>
-               
-               {/* Submit */}
-               <AnimatePresence>
-                  {query && (
-                    <motion.button
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      whileHover={{ scale: 1.08 }}
-                      whileTap={{ scale: 0.92 }}
-                      onClick={() => handleSearch(query)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-primary-foreground transition-all"
-                      style={{
-                        background: 'linear-gradient(135deg, var(--gradient-from), var(--gradient-to))',
-                        boxShadow: '0 2px 12px -2px var(--glow-color)',
-                      }}
-                    >
-                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                          <polyline points="12 5 19 12 12 19" />
+
+                 <input
+                   ref={inputRef}
+                   type="text"
+                   value={query}
+                   onChange={(e) => {
+                     updateQuery(e.target.value)
+                     setShowSuggestions(true)
+                   }}
+                   onFocus={() => {
+                     setIsFocused(true)
+                     if(suggestions.length > 0) setShowSuggestions(true)
+                   }}
+                   onBlur={(e) => {
+                     const relatedTarget = e.relatedTarget as Node | null
+                     if (relatedTarget && suggestionsRef.current?.contains(relatedTarget)) return
+                     setTimeout(() => setIsFocused(false), 150)
+                   }}
+                   onKeyDown={handleKeyDown}
+                   placeholder="Ask anything\u2026"
+                   className="w-full h-full bg-transparent border-none outline-none text-[15px] tracking-tight text-foreground placeholder:text-muted-foreground/25"
+                   style={{ caretColor: 'hsl(var(--foreground))' }}
+                   spellCheck={false}
+                   autoComplete="off"
+                   autoFocus={autoFocus}
+                 />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pr-3.5 flex items-center gap-1.5 relative z-10">
+                 {/* Keyboard hint */}
+                 <AnimatePresence>
+                   {!isFocused && !query && (
+                     <motion.kbd
+                       initial={{ opacity: 0 }}
+                       animate={{ opacity: 1 }}
+                       exit={{ opacity: 0 }}
+                       className="hidden sm:inline-flex items-center justify-center w-6 h-6 text-[11px] font-medium rounded-md border border-border/40 text-muted-foreground/25 bg-muted/20"
+                     >
+                       /
+                     </motion.kbd>
+                   )}
+                 </AnimatePresence>
+                 
+                 {/* Clear */}
+                 <AnimatePresence>
+                   {query && (
+                     <motion.button
+                       initial={{ opacity: 0, scale: 0.8 }}
+                       animate={{ opacity: 1, scale: 1 }}
+                       exit={{ opacity: 0, scale: 0.8 }}
+                       onClick={() => {
+                         updateQuery('')
+                         inputRef.current?.focus()
+                       }}
+                       className="p-1.5 rounded-lg transition-colors text-muted-foreground/30 hover:text-muted-foreground"
+                     >
+                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
                        </svg>
-                    </motion.button>
-                  )}
-               </AnimatePresence>
-            </div>
+                     </motion.button>
+                   )}
+                 </AnimatePresence>
+                 
+                 {/* Submit */}
+                 <AnimatePresence>
+                    {query && (
+                      <motion.button
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        whileHover={{ scale: 1.06 }}
+                        whileTap={{ scale: 0.92 }}
+                        onClick={() => handleSearch(query)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center bg-foreground text-background transition-all"
+                      >
+                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                         </svg>
+                      </motion.button>
+                    )}
+                 </AnimatePresence>
+              </div>
+          </div>
         </div>
       </motion.div>
 
@@ -267,7 +263,12 @@ export default function SearchBar({
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="absolute top-full left-0 right-0 z-40 overflow-hidden"
           >
-            <div className="rounded-xl overflow-hidden shadow-2xl border border-border/50 glass-heavy max-h-[60vh] overflow-y-auto">
+            <div className="rounded-xl overflow-hidden shadow-2xl border border-border/40 max-h-[60vh] overflow-y-auto"
+              style={{
+                background: isDark ? 'rgba(12, 12, 12, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(40px)',
+              }}
+            >
                {suggestions.map((suggestion, index) => (
                  <div
                    key={index}
@@ -277,21 +278,19 @@ export default function SearchBar({
                      setShowSuggestions(false)
                    }}
                    onMouseEnter={() => setSelectedIndex(index)}
-                   className={`px-4 py-3 cursor-pointer flex items-center gap-3 text-[14px] transition-colors duration-100 ${
-                     selectedIndex === index ? 'bg-primary/5' : ''
-                   }`}
+                   className={`px-4 py-3 cursor-pointer flex items-center gap-3 text-[14px] transition-colors duration-100 ${index === selectedIndex ? 'bg-foreground/[0.04]' : 'hover:bg-foreground/[0.02]'}`}
                  >
-                    <svg className={`w-3.5 h-3.5 shrink-0 ${selectedIndex === index ? 'text-primary' : 'text-muted-foreground/20'}`}
+                    <svg className={`w-3.5 h-3.5 shrink-0 ${index === selectedIndex ? 'text-foreground/40' : 'text-muted-foreground/20'}`}
                       fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <circle cx="11" cy="11" r="8" />
                       <path d="m21 21-4.35-4.35" />
                     </svg>
                     
-                    <span className="text-foreground/80">
+                    <span className="text-foreground/70">
                       {suggestion.toLowerCase().startsWith(query.toLowerCase()) ? (
                         <>
-                          <span className="text-primary font-medium">{query}</span>
-                          <span className="opacity-60">{suggestion.slice(query.length)}</span>
+                          <span className="text-foreground font-medium">{query}</span>
+                          <span className="opacity-50">{suggestion.slice(query.length)}</span>
                         </>
                       ) : (
                         suggestion
@@ -300,9 +299,9 @@ export default function SearchBar({
                  </div>
                ))}
                
-               <div className="px-4 py-2 border-t border-border/30 flex justify-between items-center bg-muted/20">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/30">suggestions</span>
-                  <kbd className="px-1.5 py-0.5 text-[10px] rounded border border-border/30 text-muted-foreground/30">enter</kbd>
+               <div className="px-4 py-2 border-t border-border/20 flex justify-between items-center">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/25">suggestions</span>
+                  <kbd className="px-1.5 py-0.5 text-[10px] rounded border border-border/20 text-muted-foreground/25">enter</kbd>
                </div>
             </div>
           </motion.div>
@@ -319,31 +318,36 @@ export default function SearchBar({
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="absolute top-full left-0 right-0 z-40 overflow-hidden"
           >
-            <div className="rounded-xl overflow-hidden shadow-2xl border border-border/50 glass-heavy max-h-[60vh] overflow-y-auto">
-              <div className="px-4 py-2 border-b border-border/30 flex justify-between items-center">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/30">recent searches</span>
+            <div className="rounded-xl overflow-hidden shadow-2xl border border-border/40 max-h-[60vh] overflow-y-auto"
+              style={{
+                background: isDark ? 'rgba(12, 12, 12, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(40px)',
+              }}
+            >
+              <div className="px-4 py-2 border-b border-border/20 flex justify-between items-center">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/25">recent searches</span>
               </div>
               {history.slice(0, 8).map((entry) => (
                 <div
                   key={entry.timestamp}
-                  className="px-4 py-3 cursor-pointer flex items-center gap-3 text-[14px] transition-colors group hover:bg-primary/5"
+                  className="px-4 py-3 cursor-pointer flex items-center gap-3 text-[14px] transition-colors group hover:bg-foreground/[0.03]"
                   onClick={() => {
                     updateQuery(entry.query)
                     handleSearch(entry.query)
                     setShowSuggestions(false)
                   }}
                 >
-                  <svg className="w-3.5 h-3.5 shrink-0 text-muted-foreground/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg className="w-3.5 h-3.5 shrink-0 text-muted-foreground/15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                   </svg>
-                  <span className="flex-1 truncate text-foreground/70">{entry.query}</span>
+                  <span className="flex-1 truncate text-foreground/60">{entry.query}</span>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
                       removeEntry(entry.query)
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all text-muted-foreground/40 hover:text-destructive"
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all text-muted-foreground/30 hover:text-destructive"
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18" />

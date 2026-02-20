@@ -102,8 +102,8 @@ export default function ResultsClient() {
   const shareResults = () => {
     if (navigator.share) {
       navigator.share({
-        title: `SeekEngine Search: ${query}`,
-        text: `Check out these results for "${query}" on SeekEngine`,
+        title: `SeekEngine: ${query}`,
+        text: `Results for "${query}"`,
         url: window.location.href,
       })
     } else {
@@ -123,8 +123,8 @@ export default function ResultsClient() {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-4 pt-24 bg-background">
         <div className="w-full max-w-2xl space-y-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight gradient-text">
-            Query the Machine
+          <h1 className="font-display text-4xl sm:text-5xl tracking-tight text-foreground">
+            Query the <span className="font-display-italic text-muted-foreground/60">Machine</span>
           </h1>
           <SearchBar autoFocus />
         </div>
@@ -134,14 +134,6 @@ export default function ResultsClient() {
 
   return (
     <main className="w-full flex-1 pt-24 pb-16 bg-background flex flex-col">
-      {/* Ambient Background Gradients */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full blur-[120px] opacity-20"
-             style={{ background: 'radial-gradient(circle, var(--gradient-from), transparent 70%)' }} />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full blur-[100px] opacity-15"
-             style={{ background: 'radial-gradient(circle, var(--gradient-via), transparent 70%)' }} />
-      </div>
-
       {/* Noise */}
       <div className="fixed inset-0 pointer-events-none z-[1] noise" />
 
@@ -150,7 +142,7 @@ export default function ResultsClient() {
         <header className="flex items-center justify-between py-6 mb-6">
             <Link href="/" className="flex items-center gap-2.5 group">
               <Image src="/logo.png" alt="SeekEngine" width={28} height={28} className="transition-transform group-hover:scale-90" />
-              <span className="font-bold text-lg tracking-tight text-foreground group-hover:opacity-70 transition-opacity">
+              <span className="font-display text-xl tracking-tight text-foreground group-hover:opacity-70 transition-opacity">
                 SeekEngine
               </span>
             </Link>
@@ -158,7 +150,7 @@ export default function ResultsClient() {
             <div className="flex gap-3">
                <button 
                  onClick={shareResults}
-                 className="px-4 py-2 rounded-xl text-xs font-medium transition-all active:scale-95 border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/20 bg-card/50"
+                 className="px-4 py-2 rounded-xl text-xs font-medium transition-all active:scale-95 border border-border/40 text-muted-foreground hover:text-foreground hover:border-foreground/20"
                >
                  Share
                </button>
@@ -168,12 +160,12 @@ export default function ResultsClient() {
         {/* Query Title */}
         <div className="mb-10 animate-fade-in-up">
            <div className="flex items-center gap-2 mb-3">
-             <div className="w-1 h-4 rounded-full bg-primary/60" />
-             <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground/50">
+             <div className="w-[3px] h-4 rounded-full bg-foreground/20" />
+             <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/40">
                Search Results
              </span>
            </div>
-           <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
+           <h1 className="font-display text-3xl md:text-5xl tracking-tight leading-tight text-foreground">
              {query}
            </h1>
         </div>
@@ -182,21 +174,20 @@ export default function ResultsClient() {
             
             {/* LEFT COLUMN: Synthesis */}
             <div className="w-full lg:w-2/3 animate-fade-in-up">
-              <div className="relative group p-6 md:p-8 rounded-2xl overflow-hidden mb-10 border border-border/50 bg-card/50 glass">
+              <div className="relative group p-6 md:p-8 rounded-2xl overflow-hidden mb-10 shader-card">
                  
-                 {/* Top gradient accent */}
-                 <div className="absolute top-0 left-0 right-0 h-[1px]"
-                      style={{ background: 'linear-gradient(90deg, transparent, var(--gradient-from), var(--gradient-via), var(--gradient-to), transparent)' }} />
+                 {/* Top accent line */}
+                 <div className="absolute top-0 left-0 right-0 h-[1px] bg-foreground/6" />
                  
-                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border/30">
-                    <LivingIcon color="bg-primary" size="w-2 h-2" />
-                    <span className="text-sm font-semibold tracking-tight text-foreground/80">
+                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-foreground/[0.06]">
+                    <LivingIcon color="bg-foreground/50" size="w-2 h-2" />
+                    <span className="text-sm font-semibold tracking-tight text-foreground/70">
                       Deep Analysis
                     </span>
                     <div className="ml-auto flex items-center gap-2">
                       <button 
                         onClick={copyToClipboard}
-                        className="flex items-center gap-1.5 text-xs font-medium transition-colors px-2 py-1 rounded-lg text-muted-foreground hover:text-primary"
+                        className="flex items-center gap-1.5 text-xs font-medium transition-colors px-2 py-1 rounded-lg text-muted-foreground hover:text-foreground"
                       >
                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -220,10 +211,10 @@ export default function ResultsClient() {
                      <motion.div 
                        initial={{ opacity: 0, height: 0 }}
                        animate={{ opacity: 1, height: 'auto' }}
-                       className="mt-6 pt-6 border-t border-border/30"
+                       className="mt-6 pt-6 border-t border-foreground/[0.06]"
                      >
                         <div className="relative">
-                           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                            </svg>
                            <input 
@@ -235,17 +226,16 @@ export default function ResultsClient() {
                                 if (e.key === 'Enter') handleFollowUp()
                                 if (e.key === 'Escape') followUpInputRef.current?.blur()
                               }}
-                              placeholder="Ask a follow-up..."
-                              className="w-full rounded-xl py-3 pl-10 pr-14 text-sm transition-all outline-none bg-muted/30 border border-border/30 text-foreground placeholder:text-muted-foreground/30 focus:border-primary/20"
-                              style={{ caretColor: 'hsl(var(--primary))' }}
+                              placeholder="Ask a follow-up\u2026"
+                              className="w-full rounded-xl py-3 pl-10 pr-14 text-sm transition-all outline-none bg-foreground/[0.02] border border-foreground/[0.06] text-foreground placeholder:text-muted-foreground/25 focus:border-foreground/15"
+                              style={{ caretColor: 'hsl(var(--foreground))' }}
                            />
                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                             <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] rounded border border-border/30 text-muted-foreground/30">/</kbd>
+                             <kbd className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] rounded border border-foreground/[0.06] text-muted-foreground/25">/</kbd>
                              <button 
                                onClick={handleFollowUp}
                                disabled={!followUpQuery.trim()}
-                               className="p-1.5 rounded-lg transition-all active:scale-95 disabled:opacity-30 text-primary-foreground"
-                               style={{ background: 'linear-gradient(135deg, var(--gradient-from), var(--gradient-to))' }}
+                               className="p-1.5 rounded-lg transition-all active:scale-95 disabled:opacity-30 bg-foreground text-background"
                              >
                                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -259,10 +249,10 @@ export default function ResultsClient() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Web Sources */}
+            {/* RIGHT COLUMN: Web Sources with scroll fade */}
             <div className="w-full lg:w-1/3 animate-fade-in-up animate-delay-100">
-               <h3 className="text-[11px] font-semibold uppercase tracking-widest mb-4 flex items-center gap-2 text-muted-foreground/50">
-                  <LivingIcon color="bg-primary/40" size="w-1.5 h-1.5" />
+               <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] mb-4 flex items-center gap-2 text-muted-foreground/40">
+                  <LivingIcon color="bg-foreground/30" size="w-1.5 h-1.5" />
                   Web Sources
                </h3>
 
@@ -274,8 +264,8 @@ export default function ResultsClient() {
                      onClick={() => setTimeFilter(opt.value)}
                      className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 border ${
                        timeFilter === opt.value
-                         ? 'bg-primary text-primary-foreground border-primary'
-                         : 'bg-card/50 text-muted-foreground border-border/30 hover:border-primary/20'
+                         ? 'bg-foreground text-background border-foreground'
+                         : 'border-foreground/[0.06] text-muted-foreground hover:border-foreground/15 hover:text-foreground'
                      }`}
                    >
                      {opt.label}
@@ -283,7 +273,8 @@ export default function ResultsClient() {
                  ))}
                </div>
                
-               <div className="space-y-3">
+               {/* Results list — wrapped in scroll-fade-y container */}
+               <div className="space-y-3 max-h-[70vh] overflow-y-auto scroll-fade-y pr-1">
                   {resultsLoading ? (
                     Array.from({ length: 4 }).map((_, i) => <ResultCardSkeleton key={i} />)
                   ) : resultsError ? (
@@ -297,13 +288,13 @@ export default function ResultsClient() {
                         data-result-index={index + 1}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * index }}
+                        transition={{ delay: 0.08 * index }}
                       >
-                        <ResultCard result={result} />
+                        <ResultCard result={result} index={index} />
                       </motion.div>
                     ))
                   ) : (
-                    <div className="p-6 text-center rounded-xl border border-dashed border-border/30">
+                    <div className="p-6 text-center rounded-xl border border-dashed border-foreground/10">
                         <p className="text-sm text-muted-foreground">No results found.</p>
                     </div>
                   )}

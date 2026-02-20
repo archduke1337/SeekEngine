@@ -7,7 +7,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import KeyboardShortcuts from '../components/KeyboardShortcuts'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import DynamicRiverFooter from '../components/DynamicRiverFooter'
+import DynamicCanvasCrowd from '../components/DynamicCanvasCrowd'
 import '../globals.css'
 
 export const metadata: Metadata = {
@@ -77,8 +77,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbfbfd' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: '(prefers-color-scheme: light)', color: '#fafafa' },
+    { media: '(prefers-color-scheme: dark)', color: '#080808' },
   ],
 }
 
@@ -90,6 +90,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
         <link rel="preconnect" href="https://openrouter.ai" />
         <link rel="preconnect" href="https://www.googleapis.com" />
         <link rel="preconnect" href="https://serpapi.com" />
@@ -130,7 +133,7 @@ export default function RootLayout({
                 <div className="flex-1">
                    {children}
                 </div>
-                <DynamicRiverFooter />
+                <DynamicCanvasCrowd />
               </PageTransition>
             </LenisProvider>
             <KeyboardShortcuts />

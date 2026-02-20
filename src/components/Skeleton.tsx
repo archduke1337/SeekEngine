@@ -24,16 +24,16 @@ export function AnswerSkeleton() {
 
 export function ResultCardSkeleton() {
   return (
-    <div className="p-4 rounded-xl border border-border/30 bg-card/30">
+    <div className="p-4 rounded-xl border border-foreground/[0.06] bg-foreground/[0.02]">
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-md animate-pulse bg-muted/40" />
-          <div className="h-3 w-24 rounded-md animate-pulse bg-muted/30" />
+          <div className="w-5 h-5 rounded-md animate-pulse bg-foreground/[0.06]" />
+          <div className="h-3 w-24 rounded-md animate-pulse bg-foreground/[0.04]" />
         </div>
-        <div className="h-4 w-3/4 rounded-md animate-pulse bg-muted/40" />
+        <div className="h-4 w-3/4 rounded-md animate-pulse bg-foreground/[0.06]" />
         <div className="space-y-1.5">
-          <div className="h-3 w-full rounded-md animate-pulse bg-muted/25" />
-          <div className="h-3 w-4/5 rounded-md animate-pulse bg-muted/25" />
+          <div className="h-3 w-full rounded-md animate-pulse bg-foreground/[0.04]" />
+          <div className="h-3 w-4/5 rounded-md animate-pulse bg-foreground/[0.04]" />
         </div>
       </div>
     </div>

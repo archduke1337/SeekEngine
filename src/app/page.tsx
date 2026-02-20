@@ -1,7 +1,8 @@
 ﻿'use client'
 
 /**
- * Home Page — Modern Gradient UI
+ * Home Page — Creative B&W with atmospheric background
+ * Inspired by cosmos.so, sanalabs.com, fiddle.digital
  */
 
 import Hero from '../components/Hero'
@@ -23,7 +24,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: 0.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-[640px] px-6 mt-10"
         >
           <SearchBar />
@@ -34,15 +35,13 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 1 }}
-          className="mt-12 flex items-center gap-3 text-[10px] font-medium tracking-[0.15em] uppercase text-muted-foreground/40"
+          className="mt-14 flex items-center gap-4 text-[9px] font-medium tracking-[0.25em] uppercase text-muted-foreground/25"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
           <span>Seek</span>
-          <span className="opacity-40"></span>
+          <span className="w-[3px] h-[3px] rounded-full bg-foreground/10" />
           <span>Understand</span>
-          <span className="opacity-40"></span>
+          <span className="w-[3px] h-[3px] rounded-full bg-foreground/10" />
           <span>Discover</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
         </motion.div>
       </div>
     </main>

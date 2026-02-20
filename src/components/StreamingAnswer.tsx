@@ -301,18 +301,18 @@ function formatMarkdown(text: string): string {
   formatted = formatted.replace(/`([^`]+)`/g, (_, code) => {
     const placeholder = `\x00INLINECODE_${inlineCodes.length}\x00`
     inlineCodes.push(
-      `<code class="px-1.5 py-0.5 rounded-md font-mono text-[13px] border border-primary/15 bg-primary/5 text-primary">${code}</code>`
+      `<code class="px-1.5 py-0.5 rounded-md font-mono text-[13px] border border-foreground/10 bg-foreground/[0.03] text-foreground/80">${code}</code>`
     )
     return placeholder
   })
 
-  formatted = formatted.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-semibold mt-8 mb-4 tracking-tight text-foreground">$1</h1>')
-  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-8 mb-3 tracking-tight text-foreground">$1</h2>')
-  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-medium mt-6 mb-3 text-foreground/90">$1</h3>')
+  formatted = formatted.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-semibold mt-8 mb-4 tracking-tight text-foreground" style="font-family:var(--font-display)">$1</h1>')
+  formatted = formatted.replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-8 mb-3 tracking-tight text-foreground" style="font-family:var(--font-display)">$1</h2>')
+  formatted = formatted.replace(/^### (.*$)/gm, '<h3 class="text-lg font-medium mt-6 mb-3 text-foreground/90" style="font-family:var(--font-display)">$1</h3>')
 
-  formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1 group"><span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0 bg-primary/40"></span><span class="text-[17px] leading-relaxed text-foreground/85">$1</span></div>')
+  formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1 group"><span class="mt-2 w-1.5 h-1.5 rounded-full shrink-0 bg-foreground/25"></span><span class="text-[17px] leading-relaxed text-foreground/85">$1</span></div>')
   
-  formatted = formatted.replace(/^\s*(\d+)\.\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1"><span class="text-sm font-mono mt-1 select-none text-primary/50">$1.</span><span class="text-[17px] leading-relaxed text-foreground/85">$2</span></div>')
+  formatted = formatted.replace(/^\s*(\d+)\.\s+(.*)$/gm, '<div class="flex items-start gap-3 mb-3 ml-1"><span class="text-sm font-mono mt-1 select-none text-foreground/30">$1.</span><span class="text-[17px] leading-relaxed text-foreground/85">$2</span></div>')
 
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
   formatted = formatted.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em class="italic text-muted-foreground">$1</em>')
@@ -320,12 +320,12 @@ function formatMarkdown(text: string): string {
   formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
     const trimmedUrl = url.trim()
     if (/^(https?:\/\/|\/)/.test(trimmedUrl)) {
-      return `<a href="${trimmedUrl}" target="_blank" rel="noopener noreferrer" class="underline transition-colors text-primary hover:text-primary/70 decoration-primary/30">${text}</a>`
+      return `<a href="${trimmedUrl}" target="_blank" rel="noopener noreferrer" class="underline transition-colors text-foreground hover:text-foreground/60 decoration-foreground/20">${text}</a>`
     }
     return `${text} (${trimmedUrl})`
   })
 
-  formatted = formatted.replace(/(?<!=\"|&gt;\")(\[(\d+)\])(?![^<]*<\/a>)/g, '<sup data-citation="$2" onclick="(function(){var el=document.querySelector(\x27[data-result-index=\"\x27+$2+\x27\"]\x27);if(el){el.scrollIntoView({behavior:\x27smooth\x27,block:\x27center\x27});el.classList.add(\x27ring-2\x27,\x27ring-primary\x27);setTimeout(function(){el.classList.remove(\x27ring-2\x27,\x27ring-primary\x27)},2000)}})()" class="ml-0.5 text-[10px] font-bold font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none text-primary bg-primary/5">[$2]</sup>')
+  formatted = formatted.replace(/(?<!\="|&gt;\")(\ [(\d+)\])(?![^<]*<\/a>)/g, '<sup data-citation="$2" onclick="(function(){var el=document.querySelector(\x27[data-result-index=\"\x27+$2+\x27\"]\x27);if(el){el.scrollIntoView({behavior:\x27smooth\x27,block:\x27center\x27});el.classList.add(\x27ring-2\x27,\x27ring-foreground/30\x27);setTimeout(function(){el.classList.remove(\x27ring-2\x27,\x27ring-foreground/30\x27)},2000)}})()" class="ml-0.5 text-[10px] font-bold font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none text-foreground/60 bg-foreground/[0.04]">[$2]</sup>')
 
   formatted = formatted.replace(/\n\n/g, '<div class="h-6"></div>')
   formatted = formatted.replace(/([^\n])\n([^\n])/g, '$1<br class="md:hidden" /> $2') 

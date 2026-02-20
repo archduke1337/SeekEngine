@@ -17,11 +17,9 @@ import { Sparkles, ArrowRight, X, Search, Loader2 } from 'lucide-react'
 export default function SearchBar({ 
   autoFocus = false, 
   onTyping,
-  onFocusChange
 }: { 
   autoFocus?: boolean, 
   onTyping?: (isTyping: boolean) => void,
-  onFocusChange?: (isFocused: boolean) => void
 }) {
   const { 
     query, 
@@ -43,7 +41,6 @@ export default function SearchBar({
   const [isFocused, setIsFocused] = useState(false)
   const isCommand = query.startsWith('/')
   const isTyping = query.length > 0
-  const showAurora = isFocused || isTyping
 
   // Auto-resize textarea
   const resizeTextarea = useCallback(() => {
@@ -88,7 +85,6 @@ export default function SearchBar({
   }, [showSuggestions])
 
   useEffect(() => { onTyping?.(isTyping) }, [isTyping, onTyping])
-  useEffect(() => { onFocusChange?.(isFocused) }, [isFocused, onFocusChange])
   useEffect(() => { setSelectedIndex(-1) }, [suggestions])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -144,29 +140,6 @@ export default function SearchBar({
               border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
             }}
           >
-            {/* Animated mesh gradient overlay when focused */}
-            <AnimatePresence>
-              {showAurora && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden"
-                >
-                  <div 
-                    className="absolute inset-0 mesh-gradient-bg"
-                    style={{
-                      background: isDark
-                        ? 'radial-gradient(ellipse at 20% 50%, rgba(120,80,255,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(60,150,255,0.05) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(200,100,255,0.04) 0%, transparent 50%)'
-                        : 'radial-gradient(ellipse at 20% 50%, rgba(120,80,255,0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(60,150,255,0.03) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(200,100,255,0.03) 0%, transparent 50%)',
-                      animation: 'mesh-shift 8s ease-in-out infinite',
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             <div className="relative flex items-start">
               {/* Left icon area */}
               <div className="pl-4 pt-[15px] flex items-center justify-center relative z-10 shrink-0">

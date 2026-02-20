@@ -376,16 +376,16 @@ html.theme-transition *, html.theme-transition *::before, html.theme-transition 
 }
 
 .animate-border-travel-h {
-  animation: border-travel-h 5s linear infinite;
+  animation: border-travel-h 4s linear infinite;
 }
 .animate-border-travel-h-reverse {
-  animation: border-travel-h-reverse 5s linear infinite;
+  animation: border-travel-h-reverse 4s linear infinite;
 }
 .animate-border-travel-v {
-  animation: border-travel-v 5s linear infinite;
+  animation: border-travel-v 4s linear infinite;
 }
 .animate-border-travel-v-reverse {
-  animation: border-travel-v-reverse 5s linear infinite;
+  animation: border-travel-v-reverse 4s linear infinite;
 }
 
 /*

@@ -9,6 +9,7 @@ interface RateLimitEntry {
 }
 
 const store = new Map<string, RateLimitEntry>()
+const MAX_STORE_SIZE = 10_000 // Prevent memory exhaustion from IP spoofing
 
 // Periodic cleanup to prevent memory leaks
 const CLEANUP_INTERVAL = 60_000 // 1 min
@@ -20,6 +21,15 @@ function cleanup() {
   lastCleanup = now
   for (const [key, entry] of store.entries()) {
     if (now > entry.resetAt) store.delete(key)
+  }
+  // Hard cap: if store is still too large, evict oldest entries
+  if (store.size > MAX_STORE_SIZE) {
+    const excess = store.size - MAX_STORE_SIZE
+    const iter = store.keys()
+    for (let i = 0; i < excess; i++) {
+      const key = iter.next().value
+      if (key) store.delete(key)
+    }
   }
 }
 
@@ -96,7 +106,7 @@ export function rateLimitResponse(result: RateLimitResult): Response {
       status: 429,
       headers: {
         'Content-Type': 'application/json',
-        'Retry-After': String(Math.ceil((result.resetAt - Date.now()) / 1000)),
+        'Retry-After': String(Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000))),
         'X-RateLimit-Remaining': String(result.remaining),
         'X-RateLimit-Reset': String(result.resetAt),
       },

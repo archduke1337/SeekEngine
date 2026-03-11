@@ -309,7 +309,7 @@ function formatMarkdown(text: string): string {
     return `${text} (${trimmedUrl})`
   })
 
-  formatted = formatted.replace(/(?<!\="|&gt;\")(\ [(\d+)\])(?![^<]*<\/a>)/g, '<sup data-citation="$2" onclick="(function(){var el=document.querySelector(\x27[data-result-index=\"\x27+$2+\x27\"]\x27);if(el){el.scrollIntoView({behavior:\x27smooth\x27,block:\x27center\x27});el.classList.add(\x27ring-2\x27,\x27ring-foreground/30\x27);setTimeout(function(){el.classList.remove(\x27ring-2\x27,\x27ring-foreground/30\x27)},2000)}})()" class="ml-0.5 text-[10px] font-bold font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none text-foreground/60 bg-foreground/[0.04]">[$2]</sup>')
+  formatted = formatted.replace(/(?<!\="|&gt;\")\s?\[(\d+)\](?![^<]*<\/a>)/g, '<sup data-citation="$1" onclick="(function(){var el=document.querySelector(\x27[data-result-index=\"\x27+$1+\x27\"]\x27);if(el){el.scrollIntoView({behavior:\x27smooth\x27,block:\x27center\x27});el.classList.add(\x27ring-2\x27,\x27ring-foreground/30\x27);setTimeout(function(){el.classList.remove(\x27ring-2\x27,\x27ring-foreground/30\x27)},2000)}})()"\ class="ml-0.5 text-[10px] font-bold font-mono px-1.5 py-0.5 rounded cursor-pointer transition-colors select-none text-foreground/60 bg-foreground/[0.04]">[$1]</sup>')
 
   formatted = formatted.replace(/\n\n/g, '<div class="h-6"></div>')
   formatted = formatted.replace(/([^\n])\n([^\n])/g, '$1<br class="md:hidden" /> $2') 

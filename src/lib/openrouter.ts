@@ -24,8 +24,10 @@ const OPENROUTER_API_KEY = ENV.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const MODELS_ENDPOINT = 'https://openrouter.ai/api/v1/models'
 
-// Debug API Key presence (safe log)
-console.log(`🔑 OpenRouter API Key Present: ${!!OPENROUTER_API_KEY}`)
+// Debug API Key presence (safe log — development only)
+if (process.env.NODE_ENV === 'development') {
+  console.log(`🔑 OpenRouter API Key Present: ${!!OPENROUTER_API_KEY}`)
+}
 
 
 type ChatRole = 'system' | 'user' | 'assistant'
@@ -353,9 +355,13 @@ async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
       tieredModels[tier].push(modelId)
     }
 
-    // Shuffle models within each tier to ensure variety in attribution
+    // Shuffle models within each tier using Fisher-Yates for unbiased distribution
     for (const tier of Object.keys(tieredModels) as ModelTier[]) {
-      tieredModels[tier] = tieredModels[tier].sort(() => Math.random() - 0.5)
+      const arr = tieredModels[tier]
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]]
+      }
     }
 
     cachedModels = tieredModels
@@ -630,7 +636,6 @@ export async function* streamOpenRouter(
       let buffer = ''
       
       
-      // STRICT TTFT CHECK: Tier-aware timeouts
       // STRICT TTFT CHECK: Tier-aware timeouts
       // Relaxed significantly (15s global) to fix instability
       const limit = tier === 'fast' ? 2000 : 5000

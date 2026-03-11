@@ -84,8 +84,15 @@ export async function GET(request: NextRequest) {
       
       // LRU cleanup if cache gets too large
       if (suggestionsCache.size > 200) {
-        const firstKey = suggestionsCache.keys().next().value
-        if (firstKey) suggestionsCache.delete(firstKey)
+        let oldestKey: string | null = null
+        let oldestTime = Infinity
+        for (const [key, entry] of suggestionsCache.entries()) {
+          if (entry.cachedAt < oldestTime) {
+            oldestTime = entry.cachedAt
+            oldestKey = key
+          }
+        }
+        if (oldestKey) suggestionsCache.delete(oldestKey)
       }
     }
     

@@ -75,6 +75,11 @@ export async function GET(request: NextRequest) {
     let context = await getSerpResults(query)
     let source = 'SerpApi'
     
+    // Abort early if client disconnected during search
+    if (request.signal.aborted) {
+      return new Response(null, { status: 499 })
+    }
+    
     // Fallback if SerpApi empty
     if (!context || context.length === 0) {
        console.log(`⚠️  SerpApi returned no results, falling back to Google Custom Search...`)

@@ -8,7 +8,7 @@
 'use client'
 
 import { useEffect, useRef, useState, CSSProperties } from 'react'
-import { useStreamingAnswer, StreamState } from '../hooks/useStreamingAnswer'
+import { useStreamingAnswer, StreamState } from '../../hooks/useStreamingAnswer'
 
 interface StreamingAnswerProps {
   query: string

@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import DynamicCanvasCrowd from './DynamicCanvasCrowd'
+import DynamicCanvasCrowd from '../footer/DynamicCanvasCrowd'
 
 /**
  * ConditionalFooter — Shows the global CrowdCanvas footer

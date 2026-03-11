@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import LocationGreeting from './LocationGreeting'
+import LocationGreeting from '../shared/LocationGreeting'
 
 /**
  * SiteLoader Component - Cinematic Location Greeting

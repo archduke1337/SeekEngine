@@ -9,8 +9,8 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearch } from '../hooks/useSearch'
-import { useSearchHistory } from '../hooks/useSearchHistory'
+import { useSearch } from '../../hooks/useSearch'
+import { useSearchHistory } from '../../hooks/useSearchHistory'
 import { useTheme } from 'next-themes'
 import { Sparkles, ArrowRight, X, Search, Loader2 } from 'lucide-react'
 

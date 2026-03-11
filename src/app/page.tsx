@@ -6,8 +6,8 @@
  * Features: Apple Intelligence animated gradient border around viewport
  */
 
-import Hero from '../components/Hero'
-import SearchBar from '../components/SearchBar'
+import Hero from '../components/home/Hero'
+import SearchBar from '../components/search/SearchBar'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 

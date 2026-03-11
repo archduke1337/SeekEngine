@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import LivingIcon from './LivingIcon'
+import LivingIcon from '../shared/LivingIcon'
 
 /**
  * RiverFooter Component

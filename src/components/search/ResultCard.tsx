@@ -7,7 +7,7 @@
  * mouse tracking spotlight, smooth hover transitions
  */
 
-import { SearchResult } from '../lib/google-search'
+import { SearchResult } from '../../lib/google-search'
 import { motion } from 'framer-motion'
 import { useState, useRef, useCallback } from 'react'
 

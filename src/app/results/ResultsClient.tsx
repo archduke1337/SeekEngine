@@ -2,17 +2,17 @@
 
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
-import ResultCard from '../../components/ResultCard'
-import SearchBar from '../../components/SearchBar'
-import { ResultCardSkeleton } from '../../components/Skeleton'
+import ResultCard from '../../components/search/ResultCard'
+import SearchBar from '../../components/search/SearchBar'
+import { ResultCardSkeleton } from '../../components/search/Skeleton'
 import { SearchResult } from '../../lib/google-search'
-import { StreamingAnswer } from '../../components/StreamingAnswer'
+import { StreamingAnswer } from '../../components/search/StreamingAnswer'
 import { useSearchHistory } from '../../hooks/useSearchHistory'
 import { motion, AnimatePresence } from 'framer-motion'
-import LivingIcon from '../../components/LivingIcon'
+import LivingIcon from '../../components/shared/LivingIcon'
 import Link from 'next/link'
 import Image from 'next/image'
-import ResultsFooter from '../../components/ResultsFooter'
+import ResultsFooter from '../../components/footer/ResultsFooter'
 
 const TIME_OPTIONS = [
   { label: 'Any time', value: '' },

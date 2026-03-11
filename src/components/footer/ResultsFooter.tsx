@@ -1,50 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useLocation } from '../../hooks/useLocation'
 
 /**
  * ResultsFooter — Refined footer for the search results page
  * Features: Location greeting, keyboard shortcuts, navigation, ambient design
  */
 export default function ResultsFooter() {
-  const [location, setLocation] = useState<string>('your world')
-  const [timeOfDay, setTimeOfDay] = useState<string>('')
-
-  useEffect(() => {
-    const updateTime = () => {
-      const hour = new Date().getHours()
-      if (hour < 12) setTimeOfDay('morning')
-      else if (hour < 18) setTimeOfDay('afternoon')
-      else setTimeOfDay('evening')
-    }
-
-    updateTime()
-    const timeInterval = setInterval(updateTime, 60_000)
-
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 1200)
-
-    fetch('https://ipapi.co/json/', { signal: controller.signal })
-      .then(res => res.json())
-      .then(data => {
-        clearTimeout(timeoutId)
-        if (controller.signal.aborted) return
-        if (data.city) setLocation(data.city)
-        else if (data.region) setLocation(data.region)
-      })
-      .catch(() => {
-        clearTimeout(timeoutId)
-      })
-
-    return () => {
-      clearInterval(timeInterval)
-      clearTimeout(timeoutId)
-      controller.abort()
-    }
-  }, [])
+  const { location, timeOfDay } = useLocation()
 
   return (
     <footer className="w-full mt-20 relative">

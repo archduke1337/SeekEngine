@@ -19,12 +19,14 @@ export function humanizeModel(model: string): string {
   const lower = model.toLowerCase()
   
   // Google models
-  if (lower.includes('gemini-2.0-flash')) return 'Gemini 2.0 Flash'
-  if (lower.includes('gemini')) return 'Gemini'
+  if (lower.includes('gemma-3n-e2b')) return 'Gemma 3N 2B'
+  if (lower.includes('gemma-3n-e4b')) return 'Gemma 3N 4B'
   if (lower.includes('gemma-3n')) return 'Gemma 3N'
   if (lower.includes('gemma-3-27b')) return 'Gemma 3 27B'
   if (lower.includes('gemma-3-12b')) return 'Gemma 3 12B'
+  if (lower.includes('gemma-3-4b')) return 'Gemma 3 4B'
   if (lower.includes('gemma')) return 'Gemma'
+  if (lower.includes('gemini')) return 'Gemini'
   
   // Meta models
   if (lower.includes('llama-3.3-70b')) return 'LLaMA 3.3 70B'
@@ -33,16 +35,15 @@ export function humanizeModel(model: string): string {
   if (lower.includes('llama')) return 'LLaMA'
   
   // Mistral models
+  if (lower.includes('dolphin-mistral')) return 'Dolphin Mistral'
   if (lower.includes('devstral')) return 'Devstral'
   if (lower.includes('mistral-small')) return 'Mistral Small'
-  if (lower.includes('mistral-7b')) return 'Mistral 7B'
   if (lower.includes('mistral')) return 'Mistral'
   
   // Qwen models
   if (lower.includes('qwen3-coder')) return 'Qwen3 Coder'
-  if (lower.includes('qwen-2.5-72b')) return 'Qwen 2.5 72B'
-  if (lower.includes('qwen-2.5-vl')) return 'Qwen 2.5 VL'
-  if (lower.includes('qwen-3-4b')) return 'Qwen 3 4B'
+  if (lower.includes('qwen3-next-80b')) return 'Qwen3 Next 80B'
+  if (lower.includes('qwen3-4b')) return 'Qwen3 4B'
   if (lower.includes('qwen')) return 'Qwen'
   
   // DeepSeek models
@@ -51,18 +52,29 @@ export function humanizeModel(model: string): string {
   if (lower.includes('deepseek')) return 'DeepSeek'
   
   // NVIDIA models
+  if (lower.includes('nemotron-3-super')) return 'Nemotron 3 Super'
+  if (lower.includes('nemotron-3-nano')) return 'Nemotron 3 Nano'
   if (lower.includes('nemotron-nano')) return 'Nemotron Nano'
   if (lower.includes('nemotron')) return 'Nemotron'
   
+  // StepFun
+  if (lower.includes('step-3.5-flash')) return 'Step 3.5 Flash'
+  
+  // Liquid
+  if (lower.includes('lfm-2.5') && lower.includes('thinking')) return 'LFM 2.5 Thinking'
+  if (lower.includes('lfm-2.5')) return 'LFM 2.5'
+  
+  // OpenRouter models
+  if (lower.includes('hunter-alpha')) return 'Hunter Alpha'
+  if (lower.includes('healer-alpha')) return 'Healer Alpha'
+  
   // Other notable models
-  if (lower.includes('phi-3')) return 'Phi-3'
-  if (lower.includes('olmo')) return 'OLMo'
-  if (lower.includes('mimo')) return 'MiMo'
-  if (lower.includes('kimi')) return 'Kimi K2'
-  if (lower.includes('hermes')) return 'Hermes'
+  if (lower.includes('hermes')) return 'Hermes 405B'
+  if (lower.includes('trinity-large')) return 'Trinity Large'
   if (lower.includes('trinity')) return 'Trinity'
+  if (lower.includes('gpt-oss-120b')) return 'GPT-OSS 120B'
   if (lower.includes('gpt-oss')) return 'GPT-OSS'
-  if (lower.includes('chimera')) return 'Chimera'
+  if (lower.includes('glm-4.5')) return 'GLM 4.5'
   
   // Fallback: extract provider/model name
   const parts = model.split('/')
@@ -98,6 +110,13 @@ function isFree(model: OpenRouterModel): boolean {
 
 function supportsText(model: OpenRouterModel): boolean {
   return model.architecture?.output_modalities?.includes('text') ?? false
+}
+
+/** Filter out meta-routers (e.g. openrouter/free) that would cause double-routing */
+const EXCLUDED_MODEL_IDS = new Set(['openrouter/free'])
+
+function isUsableModel(model: OpenRouterModel): boolean {
+  return !EXCLUDED_MODEL_IDS.has(model.id)
 }
 
 // ── Model Health Memory ──────────────────────────────────────────────────────
@@ -144,7 +163,7 @@ export async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
     const models: OpenRouterModel[] = data?.data ?? []
     console.log(`🌐 Fetched ${models.length} raw models from OpenRouter`)
 
-    const freeTextModels = models.filter(isFree).filter(supportsText)
+    const freeTextModels = models.filter(isFree).filter(supportsText).filter(isUsableModel)
     console.log(`🆓 Found ${freeTextModels.length} free text-capable models`)
 
     const tieredModels: Record<ModelTier, string[]> = {
@@ -155,9 +174,9 @@ export async function getModelsByTier(): Promise<Record<ModelTier, string[]>> {
     }
 
     for (const model of freeTextModels) {
-      const modelId = model.id.endsWith(':free') ? model.id : `${model.id}:free`
+      // Use model ID as-is — some free models don't use :free suffix
       const tier = classifyModel(model.id)
-      tieredModels[tier].push(modelId)
+      tieredModels[tier].push(model.id)
     }
 
     // Shuffle models within each tier using Fisher-Yates for unbiased distribution

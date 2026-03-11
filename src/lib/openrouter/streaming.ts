@@ -53,7 +53,7 @@ export async function* streamOpenRouter(
     controller: AbortController
     tier: ModelTier
   }> => {
-    const tier = classifyModel(model.replace(/:free$/, ''))
+    const tier = classifyModel(model)
     const controller = externalController || new AbortController()
     const modelStartTime = Date.now()
 

@@ -10,7 +10,7 @@ import { AITask as AITaskEnum } from './types'
 export const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 export const MODELS_ENDPOINT = 'https://openrouter.ai/api/v1/models'
 export const MAX_MODEL_FAILURES = 3
-export const CACHE_TTL = 1000 * 60 * 30 // 30 minutes
+export const CACHE_TTL = 1000 * 60 * 10 // 10 minutes — free model list changes frequently
 
 export const BASE_SYSTEM_PROMPT = "You are SeekEngine AI. Concise markdown. Cite sources as [n]."
 
@@ -46,31 +46,37 @@ export const TASK_POLICIES: Record<AITask, TaskPolicy> = {
 export const MODEL_TIER_PATTERNS: Record<ModelTier, RegExp[]> = {
   fast: [
     /gemini.*flash/i,
-    /phi-3/i,
     /gemma-3n/i,
-    /mimo/i,
+    /gemma-3-4b/i,
     /nano/i,
     /3b-instruct/i,
-    /4b/i,
+    /qwen3-4b/i,
     /trinity-mini/i,
+    /lfm-.*instruct/i,
+    /step-.*flash/i,
+    /glm-.*air/i,
   ],
   balanced: [
     /mistral.*small/i,
-    /mistral-7b/i,
     /gemma-3-12b/i,
     /gemma-3-27b/i,
-    /qwen.*7b/i,
-    /deepseek-chat/i,
+    /dolphin-mistral/i,
     /devstral/i,
+    /deepseek-chat/i,
   ],
   heavy: [
     /70b/i,
-    /72b/i,
+    /80b/i,
+    /120b/i,
     /405b/i,
     /think/i,
-    /chimera/i,
-    /120b/i,
-    /kimi/i,
+    /trinity-large/i,
+    /hunter-alpha/i,
+    /healer-alpha/i,
+    /gpt-oss/i,
+    /hermes.*405b/i,
+    /nemotron-3-super/i,
+    /qwen3-next/i,
   ],
   code: [
     /coder/i,
@@ -81,36 +87,42 @@ export const MODEL_TIER_PATTERNS: Record<ModelTier, RegExp[]> = {
   ],
 }
 
+// Emergency-only fallback — used when the dynamic fetch fails.
+// Keep synced with https://openrouter.ai/models?max_price=0
 export const STATIC_FALLBACK_MODELS: Record<ModelTier, string[]> = {
   fast: [
-    'google/gemini-2.0-flash-exp:free',
-    'xiaomi/mimo-v2-flash:free',
+    'google/gemma-3n-e4b-it:free',
+    'google/gemma-3n-e2b-it:free',
+    'google/gemma-3-4b-it:free',
     'nvidia/nemotron-nano-12b-v2-vl:free',
     'nvidia/nemotron-nano-9b-v2:free',
-    'google/gemma-3n-e4b-it:free',
+    'nvidia/nemotron-3-nano-30b-a3b:free',
     'meta-llama/llama-3.2-3b-instruct:free',
-    'qwen/qwen-3-4b:free',
+    'qwen/qwen3-4b:free',
     'arcee-ai/trinity-mini:free',
+    'stepfun/step-3.5-flash:free',
+    'liquid/lfm-2.5-1.2b-instruct:free',
+    'z-ai/glm-4.5-air:free',
   ],
   balanced: [
-    'mistral/devstral-2-2512:free',
-    'deepseek/deepseek-chat:free',
-    'mistralai/mistral-small-24b-instruct-2501:free',
-    'qwen/qwen-2.5-vl-7b-instruct:free',
+    'mistralai/mistral-small-3.1-24b-instruct:free',
+    'google/gemma-3-12b-it:free',
+    'google/gemma-3-27b-it:free',
+    'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
   ],
   heavy: [
-    'qwen/qwen-2.5-72b-instruct:free',
     'meta-llama/llama-3.3-70b-instruct:free',
-    'allenai/olmo-3.1-32b-think:free',
-    'tngtech/deepseek-r1t2-chimera:free',
-    'tngtech/deepseek-r1t-chimera:free',
-    'moonshotai/kimi-k2:free',
-    'openai/gpt-oss-20b:free',
+    'nousresearch/hermes-3-llama-3.1-405b:free',
+    'nvidia/nemotron-3-super-120b-a12b:free',
     'openai/gpt-oss-120b:free',
-    'nex-agi/deepseek-v3.1-nex-n1:free',
+    'openai/gpt-oss-20b:free',
+    'qwen/qwen3-next-80b-a3b-instruct:free',
+    'arcee-ai/trinity-large-preview:free',
+    'openrouter/hunter-alpha',
+    'openrouter/healer-alpha',
+    'liquid/lfm-2.5-1.2b-thinking:free',
   ],
   code: [
     'qwen/qwen3-coder:free',
-    'mistral/devstral-2-2512:free',
   ],
 }

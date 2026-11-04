@@ -401,7 +401,11 @@ export default memo(function SearchBar({
                     </button>
                     <button
                       type="button"
-                      onClick={() => removeEntry(entry.query)}
+                      onClick={() => {
+                        if (window.confirm(`Remove "${entry.query}" from history?`)) {
+                          removeEntry(entry.query)
+                        }
+                      }}
                       aria-label={`Remove ${entry.query} from history`}
                       className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 p-2 rounded-md transition-[opacity,color,background-color] duration-150 text-muted-foreground/25 hover:text-destructive hover:bg-destructive/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
                     >

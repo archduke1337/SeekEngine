@@ -57,7 +57,8 @@ export default function KeyboardShortcuts() {
     <>
       <dialog
         ref={dialogRef}
-        className="fixed inset-0 z-[200] flex items-center justify-center px-4"
+        aria-labelledby="keyboard-shortcuts-title"
+        className="fixed inset-0 z-[200] flex items-center justify-center w-full max-w-none h-full m-0 px-4 backdrop:bg-black/60 backdrop:backdrop-blur-sm"
         onClose={handleClose}
         onClick={handleBackdropClick}
       >

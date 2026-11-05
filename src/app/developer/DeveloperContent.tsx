@@ -72,7 +72,7 @@ export default function DeveloperContent() {
 
       <LegalSection id="the-stack" index={2} total={TOC.length} tone="neutral" title="The stack" summary="Boring, typed, fast. and free to run.">
         <ul className="list-disc space-y-1 pl-5">
-          <li><strong>Next.js 15</strong> (App Router) and <strong>React 19</strong>, TypeScript end to end</li>
+          <li><strong>Next.js 16</strong> (App Router) and <strong>React 19</strong>, TypeScript end to end</li>
           <li><strong>Edge runtime</strong> for all API routes. low latency, no cold Node containers</li>
           <li><strong>Tailwind CSS</strong> + design tokens; <strong>Framer Motion</strong> for motion (gated on reduced-motion)</li>
           <li><strong>Upstash-compatible Redis</strong> (REST) for shared semantic caches and rate limiting; in-memory fallback</li>

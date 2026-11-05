@@ -46,7 +46,7 @@ npm run dev`}</pre>
           <li>Set <code>OPENROUTER_API_KEY</code> at minimum. Add search keys to unlock the full retrieval fan-out.</li>
           <li>For a fleet of instances, set <code>UPSTASH_REDIS_REST_URL</code> and <code>UPSTASH_REDIS_REST_TOKEN</code> (free tier is enough).</li>
         </ol>
-        <p>Using Layerbase as the fallback cache instead? <code>.github/workflows/redis-warm.yml</code> pings it every 10 minutes over TLS+SNI so it never sleeps. Configure the <code>LAYERBASE_REDIS_URL</code> repository secret and the workflow does the rest.</p>
+        <p>Using Layerbase as the fallback cache instead? <code>.github/workflows/redis-warm.yml</code> pings it every 10 minutes over TLS+SNI so it never sleeps. Set <code>APP_URL</code> (your production URL, e.g. <code>https://seekengine.vercel.app</code>) and <code>CRON_SECRET</code> (same value as your Vercel <code>CRON_SECRET</code> env var) as repository secrets, keep <code>LAYERBASE_REDIS_REST_URL</code> / <code>LAYERBASE_REDIS_REST_TOKEN</code> in Vercel, and the workflow does the rest.</p>
       </LegalSection>
 
       <LegalSection id="configuration" index={3} total={TOC.length} tone="neutral" title="Configuration" summary="All environment variables, grouped by job.">
@@ -95,7 +95,7 @@ npm run dev`}</pre>
         <p><strong>Answers are generic or ignore sources.</strong> No search keys configured. retrieval fell through to DuckDuckGo only, or everything failed. Check logs for the provider fan-out; add at least one search key.</p>
         <p><strong>429 responses.</strong> Rate limits are per IP: 30/min for search, 20/min for the answer stream, 60/min for suggestions. Check <code>Retry-After</code>.</p>
         <p><strong>/api/ai/cache/stats returns 401.</strong> The Bearer token must match <code>CACHE_STATS_SECRET</code> (or <code>ADMIN_SECRET</code>). A mismatched or absent secret returns 500 <code>SERVER_MISCONFIGURED</code>, not 401. check the server logs first.</p>
-        <p><strong>Layerbase keeps sleeping.</strong> The warm workflow must be on the default branch to run on schedule, and <code>LAYERBASE_REDIS_URL</code> must be set as a repository secret. Manual trigger: Actions → Keep Redis warm → Run workflow; expect <code>PONG</code>.</p>
+        <p><strong>Layerbase keeps sleeping.</strong> The warm workflow must be on the default branch to run on schedule, and <code>APP_URL</code> + <code>CRON_SECRET</code> must be set as repository secrets (<code>CRON_SECRET</code> must match the Vercel <code>CRON_SECRET</code>). Manual trigger: Actions → Keep Redis warm → Run workflow; expect <code>HTTP 200</code> with a warm-check JSON payload.</p>
         <p><strong>Answers arrive when they should not.</strong> They cannot: the answer stream only starts after the grounding set is ready, and if retrieval fails or returns nothing, no answer is generated at all.</p>
         <p>Maintained by <a href="https://github.com/Aviox8" className="underline underline-offset-2 hover:text-foreground focus-visible:text-foreground" target="_blank" rel="noopener noreferrer">Aviox8</a>, originally developed by <a href="https://github.com/archduke1337" className="underline underline-offset-2 hover:text-foreground focus-visible:text-foreground" target="_blank" rel="noopener noreferrer">archduke1337</a>.</p>
       </LegalSection>

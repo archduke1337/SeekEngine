@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, type MouseEvent } from 'react'
 
 const SHORTCUT_GROUPS = [
   {
@@ -44,11 +44,14 @@ export default function KeyboardShortcuts() {
     dialogRef.current?.close()
   }, [])
 
-  const handleBackdropClick = useCallback((e: MouseEvent) => {
-    if (e.target === dialogRef.current) {
-      dialogRef.current?.close()
-    }
-  }, [])
+  const handleBackdropClick = useCallback(
+    (e: MouseEvent<HTMLDialogElement>) => {
+      if (e.target === dialogRef.current) {
+        dialogRef.current?.close()
+      }
+    },
+    []
+  )
 
   return (
     <>

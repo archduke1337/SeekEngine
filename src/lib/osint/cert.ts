@@ -77,9 +77,13 @@ export async function lookupCertificate(
       totalCount: certificates.length,
     }
     } catch (error) {
-    logger.error(`Certificate transparency lookup failed for ${domain}`, error, {
-      reason: error instanceof Error ? error.message : String(error),
-    })
+    logger.error(
+      `Certificate transparency lookup failed for ${domain}`,
+      error instanceof Error ? error : String(error),
+      {
+        reason: error instanceof Error ? error.message : String(error),
+      }
+    )
     return { domain, certificates: [], totalCount: 0 }
   }
 }

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'About | SeekEngine',
     description: 'Learn about SeekEngine - an open source AI-enhanced search engine built with grounding and retrieval-augmented generation research.',
-    url: 'https://seekengine.vercel.appabout',
+    url: 'https://seekengine.vercel.app/about',
     siteName: 'SeekEngine',
     type: 'website',
     images: [

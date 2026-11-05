@@ -13,7 +13,7 @@
 import { fetchWithTimeout } from '../http-utils'
 import { EXTERNAL_API_TIMEOUT_MS } from '../constants'
 import { logger } from '../logger'
-import { getDnsRecords, resolveDns, resolveDnsRecord } from './dns'
+import { resolveDnsRecord } from './dns'
 import { lookupWhois } from './whois'
 import { lookupCertificate, lookupSubdomains } from './cert'
 import { lookupIp } from './geo'

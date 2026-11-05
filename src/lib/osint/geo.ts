@@ -92,9 +92,13 @@ export async function lookupIp(
       query: data.query ?? ip,
     }
     } catch (error) {
-    logger.error(`IP geolocation lookup failed for ${ip}`, error, {
-      reason: error instanceof Error ? error.message : String(error),
-    })
+    logger.error(
+      `IP geolocation lookup failed for ${ip}`,
+      error instanceof Error ? error : String(error),
+      {
+        reason: error instanceof Error ? error.message : String(error),
+      }
+    )
     throw error
   }
 }

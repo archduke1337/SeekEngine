@@ -1,9 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import LegalPageShell, { LegalSection } from '../../components/ui/legal-page-shell'
 
 const TOC = [
   { id: 'the-project', label: 'The project', summary: 'What this is and why it exists.' },
+  { id: 'developers', label: 'Developers', summary: 'The people behind SeekEngine.' },
   { id: 'the-stack', label: 'The stack', summary: 'Next.js, edge runtime, Redis, zero magic.' },
   { id: 'run-locally', label: 'Run it locally', summary: 'Clone, install, key, dev server.' },
   { id: 'contributing', label: 'Contributing', summary: 'Branches, commits, PRs, tests.' },
@@ -26,7 +28,49 @@ export default function DeveloperContent() {
         <p>It is maintained by one person. <a className="underline underline-offset-2 decoration-foreground/20 hover:decoration-foreground/60 focus-visible:decoration-foreground/60" href="https://github.com/archduke1337" target="_blank" rel="noopener noreferrer">archduke1337</a>. Originally developed by <a className="underline underline-offset-2 decoration-foreground/20 hover:decoration-foreground/60 focus-visible:decoration-foreground/60" href="https://github.com/archduke1337" target="_blank" rel="noopener noreferrer">archduke1337</a>, now maintained by <a className="underline underline-offset-2 decoration-foreground/20 hover:decoration-foreground/60 focus-visible:decoration-foreground/60" href="https://github.com/Aviox8" target="_blank" rel="noopener noreferrer">Aviox8</a>. Bug reports are welcome; roadmaps are deliberately not published, because the project follows curiosity, not sprints.</p>
       </LegalSection>
 
-      <LegalSection id="the-stack" index={1} total={TOC.length} tone="neutral" title="The stack" summary="Boring, typed, fast. and free to run.">
+      <LegalSection
+        id="developers"
+        index={1}
+        total={TOC.length}
+        tone="neutral"
+        title="Developers"
+        summary="SeekEngine is built and maintained by developers who believe search should show its work."
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 items-start">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <Image
+              src="/aditya.png"
+              alt="Aditya — Developer"
+              width={160}
+              height={160}
+              className="w-32 h-32 rounded-full object-cover border border-foreground/[0.08] shadow-lg"
+            />
+            <div>
+              <p className="font-semibold text-foreground">Aditya</p>
+              <p className="text-xs text-foreground/50">Developer</p>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-3 text-center">
+            <Image
+              src="/gaurav.png"
+              alt="Gaurav — Developer"
+              width={160}
+              height={160}
+              className="w-32 h-32 rounded-full object-cover border border-foreground/[0.08] shadow-lg"
+            />
+            <div>
+              <p className="font-semibold text-foreground">Gaurav</p>
+              <p className="text-xs text-foreground/50">Developer</p>
+            </div>
+          </div>
+        </div>
+        <p className="mt-6 text-prose-tight text-foreground/70 leading-relaxed">
+          SeekEngine is an open-source research project exploring honest, grounded AI search. The codebase
+          is public, the design is deliberate, and contributions are welcome.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="the-stack" index={2} total={TOC.length} tone="neutral" title="The stack" summary="Boring, typed, fast. and free to run.">
         <ul className="list-disc space-y-1 pl-5">
           <li><strong>Next.js 15</strong> (App Router) and <strong>React 19</strong>, TypeScript end to end</li>
           <li><strong>Edge runtime</strong> for all API routes. low latency, no cold Node containers</li>
@@ -39,7 +83,7 @@ export default function DeveloperContent() {
         <p>The design system is deliberately constrained: monochrome, edgeless floating surfaces, ambient shadows, Instrument Serif for display type, one accent for nothing. Constraints age better than palettes.</p>
       </LegalSection>
 
-      <LegalSection id="run-locally" index={2} total={TOC.length} tone="neutral" title="Run it locally" summary="Four commands and one API key.">
+      <LegalSection id="run-locally" index={3} total={TOC.length} tone="neutral" title="Run it locally" summary="Four commands and one API key.">
         <pre className="overflow-x-auto rounded-xl bg-foreground/[0.04] p-4 font-mono text-[11px] leading-relaxed text-foreground/80">{`git clone https://github.com/archduke1337/SeekEngine.git
 cd SeekEngine
 npm install
@@ -48,7 +92,7 @@ npm run dev                  # http://localhost:3000`}</pre>
         <p>Contributions verify with <code>npm run typecheck</code> and <code>npm test</code>. Both pass on main; if they do not on yours, that is the first thing to fix.</p>
       </LegalSection>
 
-      <LegalSection id="contributing" index={3} total={TOC.length} tone="neutral" title="Contributing" summary="Small diffs, clear commits, no ceremony.">
+      <LegalSection id="contributing" index={4} total={TOC.length} tone="neutral" title="Contributing" summary="Small diffs, clear commits, no ceremony.">
         <ol className="list-decimal space-y-1.5 pl-5">
           <li>Fork <code>archduke1337/SeekEngine</code> and cut a branch off <code>main</code>.</li>
           <li>Keep diffs small and scoped; one concern per pull request.</li>
@@ -59,7 +103,7 @@ npm run dev                  # http://localhost:3000`}</pre>
         <p>Big changes. new providers, architectural shifts, new pages. start as an issue. Describe the failure first, the fix second.</p>
       </LegalSection>
 
-      <LegalSection id="license" index={4} total={TOC.length} tone="neutral" title="License and credits" summary="MIT. Everything public, everything auditable.">
+      <LegalSection id="license" index={5} total={TOC.length} tone="neutral" title="License and credits" summary="MIT. Everything public, everything auditable.">
         <p>SeekEngine is MIT-licensed; see <code>LICENSE</code>. Copyright 2025 Archduke1337. Do what you want, keep the notice.</p>
         <p>Built on public work: OpenRouter and Ollama Cloud (inference), SerpAPI, Google Custom Search, Exa and DuckDuckGo (retrieval), Anthropic’s open model ecosystem via OpenRouter’s free tier, Instrument Serif (typography), Vercel (platform), and the open-source ideas of Perplexity, DuckDuckGo Instant Answers, and every search engine that refused to be a black box.</p>
         <p>Inspired by the Vercel and ElevenLabs AI design languages. restrained, modern, provenance-forward.</p>

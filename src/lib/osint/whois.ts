@@ -94,10 +94,10 @@ function parseDomainRecord(data: Record<string, unknown>): WhoisRecord {
     })
 
     entities.push({
-      name: entFields['fn'],
+      name: fields['fn'],
       roles: entity['roles'] as string[] ?? [],
       emails,
-      countries: entFields['country'] ? [entFields['country']] : [],
+      countries: fields['country'] ? [fields['country']] : [],
     })
   })
 
@@ -176,9 +176,14 @@ export async function lookupWhois(
         const data = await rdapQuery(fallbackUrl, signal)
         return parseDomainRecord(data)
       } catch (fallbackError) {
-        logger.error(`WHOIS/RDAP lookup failed for domain ${query}`, fallbackError, {
-          reason: fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
-        })
+        logger.error(
+          `WHOIS/RDAP lookup failed for domain ${query}`,
+          fallbackError instanceof Error ? fallbackError : String(fallbackError),
+          {
+            reason:
+              fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
+          }
+        )
         throw error
       }
     }
@@ -194,9 +199,14 @@ export async function lookupWhois(
         const data = await rdapQuery(fallbackUrl, signal)
         return parseIpRecord(data)
       } catch (fallbackError) {
-        logger.error(`WHOIS/RDAP lookup failed for IP ${query}`, fallbackError, {
-          reason: fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
-        })
+        logger.error(
+          `WHOIS/RDAP lookup failed for IP ${query}`,
+          fallbackError instanceof Error ? fallbackError : String(fallbackError),
+          {
+            reason:
+              fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
+          }
+        )
         throw error
       }
     }

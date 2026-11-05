@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { SITE_URL } from '../../lib/site'
 import ApiContent from './ApiContent'
 
 export const metadata: Metadata = {

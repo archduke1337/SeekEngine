@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { SITE_URL } from '../../lib/site'
 
 export const metadata: Metadata = {
   title: 'Robots.txt & Crawler Control | SeekEngine',
@@ -110,7 +109,7 @@ export default function RobotsPage() {
         </header>
 
         <section className="space-y-8 sm:space-y-10">
-          {sections.map((section, i) => (
+          {sections.map((section) => (
             <section key={section.id} id={section.id} aria-labelledby={`${section.id}-title`} className="scroll-mt-24">
               <h2 id={`${section.id}-title`} className="text-lg sm:text-xl font-semibold tracking-tight text-foreground mb-2">
                 {section.title}

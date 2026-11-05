@@ -82,15 +82,12 @@ export async function resolveDns(
 
   for (const type of recordTypes) {
     let records: DnsRecord[] = []
-    let lastError: unknown = null
-
     // Try primary resolver, fall back to secondary
     for (const resolverUrl of PUBLIC_DOH_RESOLVERS) {
       try {
         records = await dohQuery(resolverUrl, domain, type, signal)
         break
       } catch (error) {
-        lastError = error
         logger.debug(`DoH resolver ${resolverUrl} failed for ${domain} ${type}`, {
           reason: error instanceof Error ? error.message : String(error),
         })
@@ -123,7 +120,7 @@ export async function resolveDnsRecord(
     // Fall back to secondary resolver
     try {
       return await dohQuery(PUBLIC_DOH_RESOLVERS[1], domain, type, signal)
-    } catch (fallbackError) {
+    } catch {
       logger.warn(`DNS resolution failed for ${domain} ${type}`, {
         reason: error instanceof Error ? error.message : String(error),
       })

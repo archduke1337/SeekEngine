@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { SITE_URL } from '../../lib/site'
 import ComplianceContent from './ComplianceContent'
 
 export const metadata: Metadata = {

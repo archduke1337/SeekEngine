@@ -76,7 +76,6 @@ function parseDomainRecord(data: Record<string, unknown>): WhoisRecord {
     })
 
     const emails: string[] = []
-    const roles: string[] = []
 
     // Handle entities array structure
     const entityArray = entity['entities'] as Array<Record<string, unknown>> ?? []

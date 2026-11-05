@@ -21,7 +21,7 @@ export function useSearch() {
   const [prediction, setPrediction] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [, setError] = useState<string | null>(null)
   const debouncedQuery = useDebounce(query, DEBOUNCE_MS)
   const abortControllerRef = useRef<AbortController | null>(null)
   const suggestionsCacheRef = useRef<Map<string, string[]>>(new Map())

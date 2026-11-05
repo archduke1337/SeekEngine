@@ -28,7 +28,6 @@
 
 import { NextResponse } from 'next/server'
 import { checkRateLimit, getClientIP, RATE_LIMITS, rateLimitResponse } from '@/lib/rate-limit'
-import { sanitizeSearchQuery } from '@/lib/sanitize'
 import { logger } from '@/lib/logger'
 import { createErrorResponse, Errors } from '@/lib/errors'
 import { validateSearchQuery } from '@/lib/validation'

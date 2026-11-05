@@ -10,8 +10,7 @@
  * All backends are free, keyless, and edge-runtime safe.
  */
 
-import { fetchWithTimeout } from '../http-utils'
-import { EXTERNAL_API_TIMEOUT_MS } from '../constants'
+
 import { logger } from '../logger'
 import { resolveDnsRecord } from './dns'
 import { lookupWhois } from './whois'
@@ -173,8 +172,6 @@ export async function runOsintLookup(
   if (!isIp && !isDomain) {
     throw new Error(`"${target}" is not a valid domain or IP address`)
   }
-
-  const startTime = Date.now()
 
   // Run DNS resolution first (needed for IP geolocation)
   const [aRecords, aaaaRecords, mxRecords, txtRecords, nsRecords] =

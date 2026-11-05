@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 export interface OsintResult {
   target: string
@@ -91,6 +91,7 @@ export default function OsintCard({ target, type }: OsintCardProps) {
 
   useEffect(() => {
     if (target) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch on mount/target change is the intended behavior
       fetchOsint()
     }
   }, [target, fetchOsint])

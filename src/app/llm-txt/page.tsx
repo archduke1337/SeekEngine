@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { SITE_URL } from '../../lib/site'
 
 export const metadata: Metadata = {
   title: 'llms.txt | SeekEngine',

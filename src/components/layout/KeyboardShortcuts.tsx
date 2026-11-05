@@ -27,7 +27,11 @@ export default function KeyboardShortcuts() {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === '?' && !e.ctrlKey && !e.metaKey && !document.activeElement?.matches('input, textarea')) {
       e.preventDefault()
-      dialogRef.current?.showModal()
+      if (dialogRef.current?.open) {
+        dialogRef.current.close()
+      } else {
+        dialogRef.current?.showModal()
+      }
     }
   }, [])
 

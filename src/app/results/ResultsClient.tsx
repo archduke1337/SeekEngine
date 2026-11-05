@@ -280,7 +280,7 @@ export default function ResultsClient() {
                     onClick={copyToClipboard}
                     disabled={!aiAnswer.trim()}
                     aria-label={copied ? 'Copied to clipboard' : 'Copy answer to clipboard'}
-                    className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide transition-[color,background-color,transform] px-2 py-1.5 rounded-md text-muted-foreground/70 hover:text-foreground hover:bg-accent/10 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:gap-1.5 sm:px-2.5 sm:rounded-lg"
+                    className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold transition-[color,background-color,transform] px-2 py-1.5 rounded-md text-muted-foreground/70 hover:text-foreground hover:bg-accent/10 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 sm:gap-1.5 sm:px-2.5 sm:rounded-lg"
                   >
                     {copied ? (
                       <>
@@ -356,7 +356,7 @@ export default function ResultsClient() {
                     animate={{ opacity: 1, height: 'auto' }}
                     className="mt-4 pt-4 border-t border-foreground/5 sm:mt-6 sm:pt-5"
                   >
-                    <label htmlFor="follow-up-question" className="block text-[10px] sm:text-xs font-bold uppercase tracking-wide text-muted-foreground/60 mb-2 sm:text-sm sm:mb-3">
+                    <label htmlFor="follow-up-question" className="block text-[10px] sm:text-xs font-semibold text-muted-foreground/60 mb-2 sm:text-sm sm:mb-3">
                       Follow-up Question
                     </label>
                     <div className="relative group">
@@ -402,7 +402,7 @@ export default function ResultsClient() {
 
           {/* RIGHT COLUMN: Web Sources — sticky on desktop so it stays in view on long answers */}
           <div className="w-full min-w-0 lg:w-[37%] animate-fade-in-up animate-delay-100 lg:sticky lg:top-24 lg:self-start">
-            <h3 className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.15em] mb-3 text-muted-foreground/40 sm:text-sm sm:tracking-[0.2em] sm:mb-4">
+            <h3 className="text-[10px] sm:text-xs font-semibold mb-3 text-muted-foreground/40 sm:text-sm sm:mb-4">
               Web Sources
             </h3>
 

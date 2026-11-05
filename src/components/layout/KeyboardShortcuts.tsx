@@ -76,7 +76,7 @@ export default function KeyboardShortcuts() {
           ref={dialogRef}
           onCancel={handleDialogCancel}
           tabIndex={-1}
-          className="fixed inset-0 z-[201] m-auto flex h-fit w-full max-w-sm items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 p-0 shadow-2xl outline-none backdrop:bg-black/30 dark:backdrop:bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[201] m-auto flex h-fit w-full max-w-sm items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 p-0 shadow-2xl backdrop:bg-black/30 dark:backdrop:bg-black/50 backdrop-blur-sm"
         >
           <div className="w-full">
               {/* Header */}

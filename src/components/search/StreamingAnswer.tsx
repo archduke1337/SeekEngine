@@ -114,7 +114,7 @@ function PhaseIndicator({ phase, sourceCount }: { phase: StreamPhase; sourceCoun
                 }`}
                 style={isActive ? { animation: 'pulse 1.6s ease-in-out infinite' } : undefined}
               />
-              <span className={`text-[9px] sm:text-[10px] font-medium uppercase tracking-wider ${
+              <span className={`text-[9px] sm:text-[10px] font-medium ${
                 isComplete || isActive ? 'text-foreground/45' : 'text-foreground/20'
               }`}>
                 {s.label}
@@ -316,9 +316,11 @@ export function StreamingAnswer({
             {sources && sources.length > 0 && (
               <Sources sources={sources} className="mb-6" />
             )}
-            <Response isStreaming className="min-h-[100px]">
-              {answer}
-            </Response>
+            <div role="status" aria-live="polite">
+              <Response isStreaming className="min-h-[100px]">
+                {answer}
+              </Response>
+            </div>
           </div>
         )
 

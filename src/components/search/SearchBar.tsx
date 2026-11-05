@@ -35,6 +35,18 @@ export default memo(function SearchBar({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { history, removeEntry } = useSearchHistory()
+  const [confirmQuery, setConfirmQuery] = useState<string | null>(null)
+  const confirmRef = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    const dialog = confirmRef.current
+    if (!dialog) return
+    if (confirmQuery !== null) {
+      dialog.showModal()
+    } else if (dialog.open) {
+      dialog.close()
+    }
+  }, [confirmQuery])
   
   // PERF: Memoize dropdown style objects using CSS tokens
   const dropdownStyle = useMemo(() => ({
@@ -401,11 +413,7 @@ export default memo(function SearchBar({
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        if (window.confirm(`Remove "${entry.query}" from history?`)) {
-                          removeEntry(entry.query)
-                        }
-                      }}
+                      onClick={() => setConfirmQuery(entry.query)}
                       aria-label={`Remove ${entry.query} from history`}
                       className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 p-2 rounded-md transition-[opacity,color,background-color] duration-150 text-muted-foreground/25 hover:text-destructive hover:bg-destructive/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
                     >
@@ -417,6 +425,39 @@ export default memo(function SearchBar({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Confirmation for destructive history removal */}
+      {confirmQuery !== null && (
+        <dialog
+          ref={confirmRef}
+          onCancel={(e) => { e.preventDefault(); setConfirmQuery(null) }}
+          aria-label="Remove from history"
+          className="fixed inset-0 z-[300] m-auto flex h-fit w-full max-w-sm items-center justify-center rounded-2xl bg-background p-0 text-foreground shadow-2xl backdrop:bg-black/30 dark:backdrop:bg-black/60 backdrop-blur-sm"
+        >
+          <div className="w-full p-5 sm:p-6">
+            <h3 className="text-sm font-semibold text-foreground">Remove from history?</h3>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-foreground/60">
+              This will remove &quot;{confirmQuery}&quot; from your search history.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmQuery(null)}
+                className="px-3.5 py-2 text-xs font-medium rounded-xl text-muted-foreground hover:text-foreground hover:bg-foreground/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => { removeEntry(confirmQuery); setConfirmQuery(null) }}
+                className="px-3.5 py-2 text-xs font-medium rounded-xl text-destructive-foreground bg-destructive hover:bg-destructive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 transition-colors"
+              >
+                Remove &quot;{confirmQuery}&quot;
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   )
 })

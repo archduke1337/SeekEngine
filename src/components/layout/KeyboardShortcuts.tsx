@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useState, useRef, useCallback, type SyntheticEvent } from 'react'
 
 const SHORTCUT_GROUPS = [
   {
@@ -24,93 +23,62 @@ const SHORTCUT_GROUPS = [
 
 export default function KeyboardShortcuts() {
   const [open, setOpen] = useState(false)
-  const modalRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === '?' && !e.ctrlKey && !e.metaKey && !document.activeElement?.matches('input, textarea')) {
       e.preventDefault()
-      setOpen(prev => !prev)
+      setOpen((prev) => !prev)
     }
-    if (e.key === 'Escape' && open) {
-      e.preventDefault()
-      setOpen(false)
-    }
-  }, [open])
+  }, [])
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
-  // Focus trap when modal is open
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+
+    if (open) {
+      dialog.showModal()
+      const timer = setTimeout(() => dialog.focus(), 50)
+      return () => {
+        clearTimeout(timer)
+        dialog.close()
+      }
+    }
+    return () => {
+      dialog.close()
+    }
+  }, [open])
+
   useEffect(() => {
     if (open) {
       previousFocusRef.current = document.activeElement as HTMLElement
-      // Focus the modal after animation
-      const timer = setTimeout(() => {
-        modalRef.current?.focus()
-      }, 100)
-      return () => clearTimeout(timer)
     } else if (previousFocusRef.current) {
       previousFocusRef.current.focus()
       previousFocusRef.current = null
     }
   }, [open])
 
-  // Trap focus inside modal
-  const handleModalKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key !== 'Tab' || !modalRef.current) return
-    
-    const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )
-    const firstElement = focusableElements[0]
-    const lastElement = focusableElements[focusableElements.length - 1]
-
-    if (e.shiftKey) {
-      if (document.activeElement === firstElement) {
-        e.preventDefault()
-        lastElement?.focus()
-      }
-    } else {
-      if (document.activeElement === lastElement) {
-        e.preventDefault()
-        firstElement?.focus()
-      }
-    }
+  const handleDialogCancel = useCallback((e: SyntheticEvent<HTMLDialogElement>) => {
+    e.preventDefault()
+    setOpen(false)
   }, [])
 
   return (
-    <AnimatePresence>
+    <>
       {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-[200] bg-black/30 dark:bg-black/50 backdrop-blur-sm"
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[201] flex items-center justify-center px-4 pointer-events-none"
-          >
-            <div
-              ref={modalRef}
-              tabIndex={-1}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="keyboard-shortcuts-title"
-              onKeyDown={handleModalKeyDown}
-              className="pointer-events-auto w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
-            >
+        <dialog
+          ref={dialogRef}
+          onCancel={handleDialogCancel}
+          tabIndex={-1}
+          className="fixed inset-0 z-[201] m-auto flex h-fit w-full max-w-sm items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 p-0 shadow-2xl outline-none backdrop:bg-black/30 dark:backdrop:bg-black/50 backdrop-blur-sm"
+        >
+          <div className="w-full">
               {/* Header */}
               <div className="flex items-center justify-between px-6 pt-5 pb-4">
                 <div className="flex items-center gap-2">
@@ -168,10 +136,9 @@ export default function KeyboardShortcuts() {
                   Press <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white dark:bg-zinc-800 rounded">?</kbd> anywhere to toggle
                 </p>
               </div>
-            </div>
-          </motion.div>
-        </>
+          </div>
+        </dialog>
       )}
-    </AnimatePresence>
+    </>
   )
 }
